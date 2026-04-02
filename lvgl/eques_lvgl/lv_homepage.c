@@ -502,7 +502,7 @@ static void homepage_scr_load_cb(lv_event_t *e)
     scr, 795, 24, 205, 174, 16, 0x34568F, 0x1F3150, LV_GRAD_DIR_VER, 0, 225, LV_OPA_100);
     create_text_label(scr, "monitor_video", &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 810, 135, LV_OPA_100);
     //lv_obj_t *monitor_video_img = create_image_obj(scr, "H:monitor_video.png", 351, 754);
-    lv_obj_t *monitor_video_img = create_container_circle(scr, 849, 53, 65,
+    lv_obj_t *monitor_video_img = create_container_circle(scr, 865, 50, 65,
     true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
     lv_obj_set_style_bg_opa(monitor_video_img, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(monitor_video_con, LV_OBJ_FLAG_CLICKABLE);
@@ -527,7 +527,7 @@ static void homepage_scr_load_cb(lv_event_t *e)
     scr, 795, 214, 205, 174, 16, 0x34568F, 0x1F3150, LV_GRAD_DIR_VER, 0, 225, LV_OPA_100);
     create_text_label(scr, "dev_info", &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 810, 323, LV_OPA_100);
     //lv_obj_t *dev_info_img = create_image_obj(scr, "H:dev_info.png", 109, 1028);
-    lv_obj_t *dev_info_img = create_container_circle(scr, 849, 53, 65,
+    lv_obj_t *dev_info_img = create_container_circle(scr, 865, 240, 65,
     true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
     lv_obj_set_style_bg_opa(dev_info_img, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(dev_info_con, LV_OBJ_FLAG_CLICKABLE);
@@ -535,25 +535,25 @@ static void homepage_scr_load_cb(lv_event_t *e)
     lv_obj_add_event_cb(dev_info_con, dev_info_btn_click_cb, LV_EVENT_CLICKED, scr);
 
     // 文件缓存
-    lv_obj_t *file_cache_con = create_custom_gradient_container(
-    scr,
-    290, 972, 220, 247,       
-    16, 0x34568F, 0x1F3150, LV_GRAD_DIR_VER,
-    0, 225, LV_OPA_100);
-    lv_obj_t *file_cache_lable = create_text_label(scr, "file_cache", &lv_font_montserrat_20, lv_color_hex(0xFFFFFF), 332, 1119, LV_OPA_100);
-    lv_obj_t *file_cache_img = create_image_obj(scr, "H:file_cache.png", 356, 1028);
+    lv_obj_t *file_cache_con = create_custom_gradient_container
+    (scr, 573, 404, 205, 174, 16, 0x34568F, 0x1F3150, LV_GRAD_DIR_VER, 0, 225, LV_OPA_100);
+    create_text_label(scr, "file_cache", &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 810, 518, LV_OPA_100);
+    //lv_obj_t *file_cache_img = create_image_obj(scr, "H:file_cache.png", 356, 1028);
+    lv_obj_t *file_cache_img = create_container_circle(scr, 643, 439, 65,
+    true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
+    lv_obj_set_style_bg_opa(file_cache_img, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(file_cache_con, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_bg_opa(file_cache_con, LV_OPA_70, LV_STATE_PRESSED);
     lv_obj_add_event_cb(file_cache_con, file_cache_btn_click_cb, LV_EVENT_CLICKED, scr);
 
     // 系统设置
     lv_obj_t *sys_settings_con = create_custom_gradient_container(
-    scr,
-    533, 972, 220, 247,       
-    16, 0x34568F, 0x1F3150, LV_GRAD_DIR_VER,
-    0, 225, LV_OPA_100);
-    lv_obj_t *sys_settings_lable = create_text_label(scr, "sys_settings", &lv_font_montserrat_20, lv_color_hex(0xFFFFFF), 571, 1119, LV_OPA_100);
-    lv_obj_t *sys_settings_img = create_image_obj(scr, "H:sys_settings.png", 602, 1028);
+    scr, 795, 404, 205, 174, 16, 0x34568F, 0x1F3150, LV_GRAD_DIR_VER, 0, 225, LV_OPA_100);
+    create_text_label(scr, "sys_settings", &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 600, 518, LV_OPA_100);
+    //lv_obj_t *sys_settings_img = create_image_obj(scr, "H:sys_settings.png", 602, 1028);
+    lv_obj_t *sys_settings_img = create_container_circle(scr, 810, 439, 65,
+    true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
+    lv_obj_set_style_bg_opa(sys_settings_img, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(sys_settings_con, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_bg_opa(sys_settings_con, LV_OPA_70, LV_STATE_PRESSED);
     lv_obj_add_event_cb(sys_settings_con, sys_settings_btn_click_cb, LV_EVENT_CLICKED, scr);
