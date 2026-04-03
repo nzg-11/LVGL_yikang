@@ -221,7 +221,9 @@ void dev_info_btn_click_cb(lv_event_t *e)
     ui_dev_info_create(homepage_scr);
 }
 
+#endif
 
+#endif
 
 
 

@@ -439,3 +439,7 @@ static void factory_reset_click_cb(lv_event_t *e) {
     lv_obj_set_style_shadow_width(cancel_btn, 0, LV_STATE_DEFAULT);
     lv_obj_add_event_cb(cancel_btn, reset_popup_close_cb, LV_EVENT_CLICKED, NULL);
 }
+
+#endif
+
+#endif
