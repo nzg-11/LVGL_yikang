@@ -61,6 +61,8 @@ bool is_lv_obj_valid(lv_obj_t *obj);
  **********************/
 #define LV_EQUES_VER 0
 
+#define LV_DEMO_EQUES 1
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif

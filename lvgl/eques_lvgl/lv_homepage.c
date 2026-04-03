@@ -423,8 +423,7 @@ static bool scr_grad_style_inited = false;
 //屏幕上创建状态栏
 static void init_global_styles(void);
 static void status_bar_update_cb(lv_timer_t *timer);
-static void create_status_bar(void);
-
+static void create_status_bar_ex(bool is_homepage); // 正确声明
 // ====================== 原有全局变量 ======================
 static lv_obj_t *homepage_scr = NULL;    
   
@@ -435,7 +434,7 @@ static lv_obj_t *time_label = NULL;
 static lv_obj_t *battery_used_con = NULL;  
 static lv_obj_t *battery_label = NULL;     
 static lv_timer_t *status_bar_timer = NULL;
-
+static bool status_bar_is_homepage = false;
 
 
 // ====================== 屏幕加载回调 ======================
@@ -460,10 +459,7 @@ static void homepage_scr_load_cb(lv_event_t *e)
     lv_obj_add_style(scr, &scr_grad_style, LV_STATE_DEFAULT);
 
     // 重建状态栏
-    // destroy_status_bar();
-    // create_status_bar();
     update_status_bar_parent(scr);
-
     // 重建所有控件
     //lv_obj_t *weather_img = create_image_obj(scr, "H:weather.png", 276, 158);
     //云朵替代
@@ -478,30 +474,40 @@ static void homepage_scr_load_cb(lv_event_t *e)
     (scr, 48, 470, 239, 82, lv_color_hex(0x00BDBD), LV_OPA_100, 0, lv_color_hex(0x2E4B7D), 0, LV_OPA_0);
     lv_obj_t *locking_con = create_container
     (scr, 287, 470, 239, 82, lv_color_hex(0x2E4B7D), LV_OPA_100, 0, lv_color_hex(0x2E4B7D), 0, LV_OPA_0);
-
+    //开关锁文本
     lv_obj_t *unlocking_lable = create_text_label(scr, "unlocking", &lv_font_montserrat_28, lv_color_hex(0xFFFFFF), 130, 495, LV_OPA_100);
     lv_obj_t *locking_lable = create_text_label(scr, "locking", &lv_font_montserrat_28, lv_color_hex(0xFFFFFF), 367, 495, LV_OPA_100);
     lv_obj_set_style_bg_opa(unlocking_con, LV_OPA_70, LV_STATE_PRESSED);
     lv_obj_add_flag(unlocking_con, LV_OBJ_FLAG_CLICKABLE);      
     lv_obj_set_style_bg_opa(locking_con, LV_OPA_70, LV_STATE_PRESSED);
     lv_obj_add_flag(locking_con, LV_OBJ_FLAG_CLICKABLE);
+
     // 消息中心
     lv_obj_t *msg_center_con = create_custom_gradient_container
     (scr, 573, 24, 205, 174, 16, 0x34568F, 0x1F3150, LV_GRAD_DIR_VER, 0, 225, LV_OPA_100);
+    lv_obj_set_style_pad_all(msg_center_con, 0, LV_STATE_DEFAULT);
     lv_obj_add_flag(msg_center_con, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_bg_opa(msg_center_con, LV_OPA_70, LV_STATE_PRESSED);
-    create_text_label(scr, "msg_center", &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 600, 135, LV_OPA_100);
+    // 消息中心文本
+    lv_obj_t *msg_center_lable = create_text_label
+    (msg_center_con, "msg_center", &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 600, 111, LV_OPA_100);
+    lv_obj_align_to(msg_center_lable, msg_center_con, LV_ALIGN_TOP_MID, 0, 111);
+    // 消息中心图标
     lv_obj_t *msg_cen_img = create_container_circle(scr, 643, 53, 65,
     true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
     lv_obj_set_style_bg_opa(msg_cen_img, LV_OPA_0, LV_STATE_DEFAULT);
-    //lv_obj_t *msg_center_img = create_image_obj(scr, "H:msg_center.png", 121, 754);
     lv_obj_add_event_cb(msg_center_con, msg_center_btn_click_cb, LV_EVENT_CLICKED, scr);
 
     // 监控视频
     lv_obj_t *monitor_video_con = create_custom_gradient_container(
     scr, 795, 24, 205, 174, 16, 0x34568F, 0x1F3150, LV_GRAD_DIR_VER, 0, 225, LV_OPA_100);
-    create_text_label(scr, "monitor_video", &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 810, 135, LV_OPA_100);
+    lv_obj_set_style_pad_all(monitor_video_con, 0, LV_STATE_DEFAULT);
+    // 监控视频文本
+    lv_obj_t *monitor_video_lable = create_text_label
+    (monitor_video_con, "monitor_video", &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 810, 111, LV_OPA_100);
+    lv_obj_align_to(monitor_video_lable, monitor_video_con, LV_ALIGN_TOP_MID, 0, 111);
     //lv_obj_t *monitor_video_img = create_image_obj(scr, "H:monitor_video.png", 351, 754);
+    // 监控视频图标
     lv_obj_t *monitor_video_img = create_container_circle(scr, 865, 50, 65,
     true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
     lv_obj_set_style_bg_opa(monitor_video_img, LV_OPA_0, LV_STATE_DEFAULT);
@@ -512,9 +518,13 @@ static void homepage_scr_load_cb(lv_event_t *e)
     // 用户管理
     lv_obj_t *user_manage_con = create_custom_gradient_container(
     scr, 573, 214, 205, 174, 16, 0x34568F, 0x1F3150, LV_GRAD_DIR_VER, 0, 225, LV_OPA_100);
-    create_text_label(scr, "user_manage", &lv_font_montserrat_20, lv_color_hex(0xFFFFFF), 600, 323, LV_OPA_100);
-    
+    lv_obj_set_style_pad_all(user_manage_con, 0, LV_STATE_DEFAULT);
+    // 用户管理文本
+    lv_obj_t *user_manage_lable = create_text_label
+    (user_manage_con, "user_manage", &lv_font_montserrat_20, lv_color_hex(0xFFFFFF), 600, 111, LV_OPA_100);
+    lv_obj_align_to(user_manage_lable, user_manage_con, LV_ALIGN_TOP_MID, 0, 111);
     //lv_obj_t *user_manage_img = create_image_obj(scr, "H:user_manage.png", 602, 756);
+    // 用户管理图标
     lv_obj_t *user_manage_img = create_container_circle(scr, 643, 244, 65,
     true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
     lv_obj_set_style_bg_opa(user_manage_img, LV_OPA_0, LV_STATE_DEFAULT);
@@ -525,8 +535,13 @@ static void homepage_scr_load_cb(lv_event_t *e)
     // 设备信息
     lv_obj_t *dev_info_con = create_custom_gradient_container(
     scr, 795, 214, 205, 174, 16, 0x34568F, 0x1F3150, LV_GRAD_DIR_VER, 0, 225, LV_OPA_100);
-    create_text_label(scr, "dev_info", &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 810, 323, LV_OPA_100);
+    lv_obj_set_style_pad_all(dev_info_con, 0, LV_STATE_DEFAULT);
+    // 设备信息文本
+    lv_obj_t *dev_info_lable = create_text_label
+    (dev_info_con, "dev_info", &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 810, 111, LV_OPA_100);
+    lv_obj_align_to(dev_info_lable, dev_info_con, LV_ALIGN_TOP_MID, 0, 111);
     //lv_obj_t *dev_info_img = create_image_obj(scr, "H:dev_info.png", 109, 1028);
+    // 设备信息图标
     lv_obj_t *dev_info_img = create_container_circle(scr, 865, 240, 65,
     true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
     lv_obj_set_style_bg_opa(dev_info_img, LV_OPA_0, LV_STATE_DEFAULT);
@@ -537,8 +552,13 @@ static void homepage_scr_load_cb(lv_event_t *e)
     // 文件缓存
     lv_obj_t *file_cache_con = create_custom_gradient_container
     (scr, 573, 404, 205, 174, 16, 0x34568F, 0x1F3150, LV_GRAD_DIR_VER, 0, 225, LV_OPA_100);
-    create_text_label(scr, "file_cache", &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 810, 518, LV_OPA_100);
+    lv_obj_set_style_pad_all(file_cache_con, 0, LV_STATE_DEFAULT);
+    // 文件缓存文本
+    lv_obj_t *file_cache_lable = create_text_label
+    (file_cache_con, "file_cache", &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 600, 111, LV_OPA_100);
+    lv_obj_align_to(file_cache_lable, file_cache_con, LV_ALIGN_TOP_MID, 0, 111);
     //lv_obj_t *file_cache_img = create_image_obj(scr, "H:file_cache.png", 356, 1028);
+    // 文件缓存图标
     lv_obj_t *file_cache_img = create_container_circle(scr, 643, 439, 65,
     true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
     lv_obj_set_style_bg_opa(file_cache_img, LV_OPA_0, LV_STATE_DEFAULT);
@@ -549,9 +569,14 @@ static void homepage_scr_load_cb(lv_event_t *e)
     // 系统设置
     lv_obj_t *sys_settings_con = create_custom_gradient_container(
     scr, 795, 404, 205, 174, 16, 0x34568F, 0x1F3150, LV_GRAD_DIR_VER, 0, 225, LV_OPA_100);
-    create_text_label(scr, "sys_settings", &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 600, 518, LV_OPA_100);
+    lv_obj_set_style_pad_all(sys_settings_con, 0, LV_STATE_DEFAULT);
+    // 系统设置文本
+    lv_obj_t *sys_settings_lable = create_text_label
+    (sys_settings_con, "sys_settings", &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 810, 111, LV_OPA_100);
+    lv_obj_align_to(sys_settings_lable, sys_settings_con, LV_ALIGN_TOP_MID, 0, 111);
     //lv_obj_t *sys_settings_img = create_image_obj(scr, "H:sys_settings.png", 602, 1028);
-    lv_obj_t *sys_settings_img = create_container_circle(scr, 810, 439, 65,
+    // 系统设置图标
+    lv_obj_t *sys_settings_img = create_container_circle(scr, 865, 439, 65,
     true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
     lv_obj_set_style_bg_opa(sys_settings_img, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(sys_settings_con, LV_OBJ_FLAG_CLICKABLE);
@@ -572,28 +597,6 @@ void lv_homepage_create(void)
         lv_obj_clean(homepage_scr);
     }
 
-    // 重置样式
-    // lv_style_reset(&scr_grad_style);
-    // lv_style_set_bg_color(&scr_grad_style, lv_color_hex(0x010715));
-    // lv_style_set_bg_grad_color(&scr_grad_style, lv_color_hex(0x0E1D37));
-    // lv_style_set_bg_grad_dir(&scr_grad_style, LV_GRAD_DIR_VER);
-    // lv_style_set_bg_main_stop(&scr_grad_style, 0);
-    // lv_style_set_bg_grad_stop(&scr_grad_style, 255);
-    // lv_obj_add_style(homepage_scr, &scr_grad_style, LV_STATE_DEFAULT);
-
-    // 创建状态栏
-    // destroy_status_bar();
-    // create_status_bar();
-    //update_status_bar_parent(homepage_scr);
-
-    // 首次创建控件
-    // lv_obj_t *weather_img = create_image_obj(homepage_scr, "H:weather.png", 276, 158);
-    // lv_obj_t *temp_lable = create_text_label(homepage_scr, "25.0 C", &lv_font_montserrat_48, lv_color_hex(0xFFFFFF), 311, 367, LV_OPA_100);
-
-    // lv_obj_t *unlocking_con = create_container(homepage_scr, 78, 518, 644, 118, lv_color_hex(0x2E4B7D), LV_OPA_100, 16, lv_color_hex(0x2E4B7D), 0, LV_OPA_0);
-    // lv_obj_t *unlocking_lable = create_text_label(homepage_scr, "unlocking", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 199, 551, LV_OPA_100);
-    // lv_obj_t *locking_lable = create_text_label(homepage_scr, "locking", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 533, 551, LV_OPA_100);
-    // lv_obj_add_flag(unlocking_con, LV_OBJ_FLAG_CLICKABLE);      
 }
 
 void lv_homepage(void)
@@ -642,107 +645,118 @@ void destroy_status_bar(void)
 }
 
 
-
-/**
- * @brief 创建状态栏（包含日期、时间、WiFi图标、电池电量显示）
- * @note 1. 创建前会先销毁旧状态栏，保证每次创建都是全新的
- *       2. 状态栏会置顶显示，宽度适配当前屏幕，高度固定80px
- */
-static void create_status_bar(void)
+//主页单独状态栏创建
+// 合并后的唯一状态栏创建函数
+// 标志位：is_homepage = true 用首页坐标，false 用其他页坐标
+// 合并后的唯一状态栏创建函数
+// 标志位：is_homepage = true 用首页坐标，false 用其他页坐标
+static void create_status_bar_ex(bool is_homepage)
 {
-    // 前置操作：销毁旧状态栏，避免重复创建导致内存泄漏
-    if(status_bar != NULL) destroy_status_bar();
+    // 保存当前模式
+    status_bar_is_homepage = is_homepage;
 
-    // 1. 获取当前活动屏幕（作为状态栏的父容器）
+    // 销毁旧的
+    if(status_bar != NULL)
+        destroy_status_bar();
+
     lv_obj_t *current_scr = lv_scr_act();
-    // 安全校验：当前屏幕无效则直接返回
-    if(!is_lv_obj_valid(current_scr)) return;
+    if(!is_lv_obj_valid(current_scr))
+        return;
 
-    // 2. 创建状态栏根容器
+    // 创建状态栏根容器
     status_bar = lv_obj_create(current_scr);
-    lv_obj_clear_flag(status_bar, LV_OBJ_FLAG_SCROLLABLE); // 禁止状态栏滚动
-    lv_obj_set_size(status_bar, lv_obj_get_width(current_scr), 90); // 宽度适配屏幕，高度80px
-    lv_obj_set_pos(status_bar, 0, 0); // 状态栏固定在屏幕顶部
-    lv_obj_set_style_bg_opa(status_bar, LV_OPA_0, LV_STATE_DEFAULT); // 背景透明
-    lv_obj_set_style_border_opa(status_bar, LV_OPA_0, LV_STATE_DEFAULT); // 无边框
-    lv_obj_move_foreground(status_bar); // 状态栏置顶显示（避免被其他控件遮挡）
+    lv_obj_clear_flag(status_bar, LV_OBJ_FLAG_SCROLLABLE);
+    lv_obj_set_size(status_bar, lv_obj_get_width(current_scr), 90);
+    lv_obj_set_style_bg_opa(status_bar, LV_OPA_0, LV_STATE_DEFAULT);
+    lv_obj_set_style_border_opa(status_bar, LV_OPA_0, LV_STATE_DEFAULT);
+    lv_obj_move_foreground(status_bar);
 
-    // 3. 创建状态栏子控件：日期标签
-    date_label = create_text_label(
-        status_bar,                // 父容器
-        "2023-01-01",              // 默认文本
-        &lv_font_montserrat_36,    // 字体（40号蒙哥马利字体）
-        lv_color_hex(0xFFFFFF),    // 白色文本
-        48, 24,                    // 坐标(x:48, y:24)
-        LV_OPA_100                 // 完全不透明
-    );    
-    
-    // 4. 创建状态栏子控件：时间标签
-    time_label = create_text_label(
-        status_bar, 
-        "12:00", 
-        &lv_font_montserrat_36, 
-        lv_color_hex(0xFFFFFF), 
-        280, 25,  // 坐标(x:280, y:25)
-        LV_OPA_100
-    );
-    
-    // 5. 创建状态栏子控件：WiFi图标
-    // lv_obj_t *wifi_img = create_image_obj(
-    //     status_bar,     
-    //     "H:wifi.png",  // 图片路径
-    //     400, 33        // 坐标(x:400, y:33)
-    // );
-    create_container_circle(
-    status_bar, 400, 33, 28,
-    true, lv_color_hex(0xFFFFFF), lv_color_hex(0x808080), 0, LV_OPA_0);
+    lv_obj_t *battery_con = NULL; // 把变量提到外面，修复作用域问题
 
-    // 6. 创建状态栏子控件：电池外框容器
-    lv_obj_t *battery_con = create_container(
-        status_bar,                // 父容器
-        444, 31,                   // 坐标(x:444, y:31)
-        65, 30,                    // 尺寸(w:65, h:30)
-        lv_color_hex(0x2E4B7D),    // 背景色（深蓝色）
-        LV_OPA_0,                  // 背景透明
-        0,                         // 圆角半径
-        lv_color_hex(0xFFFFFF),    // 边框色（白色）
-        3,                         // 边框宽度
-        LV_OPA_100                 // 边框不透明
-    );
+    // ====================== 自动切换布局 ======================
+    if(is_homepage)
+    {
+        // ====================== 首页：靠左布局 ======================
+        lv_obj_align(status_bar, LV_ALIGN_TOP_LEFT, 0, 0);
 
-    // 7. 创建状态栏子控件：电池电量进度条（初始宽度0）
-    battery_used_con = create_container(
-        status_bar,                // 父容器
-        447, 34,                   // 坐标(x:447, y:30)
-        0, 24,                     // 尺寸(w:0, h:30)
-        lv_color_hex(0x00ac11),    // 进度条颜色（绿色）
-        LV_OPA_100,                // 完全不透明
-        0,                         // 圆角半径
-        lv_color_hex(0xFFFFFF),    // 边框色（白色）
-        3,                         // 边框宽度
-        LV_OPA_0                   // 边框透明
-    );
-    
-    // 8. 创建状态栏子控件：电池百分比标签
-    char battery_text[4] = {0};   // 缓冲区：存储0-100的百分比字符串
-    snprintf(battery_text, sizeof(battery_text), "%d", BATTERY_CAPACITY); // 格式化电量值
-    battery_label = create_text_label(
-        status_bar, 
-        battery_text, 
-        &lv_font_montserrat_24,    // 字体（24号蒙哥马利字体）
-        lv_color_hex(0xFFFFFF),    // 白色文本
-        0, 0,                      // 初始坐标（后续居中对齐）
-        LV_OPA_100
-    );
-    lv_obj_align_to(battery_label, battery_con, LV_ALIGN_CENTER, 0, 0); // 相对于电池外框居中
-    lv_obj_set_style_bg_opa(battery_label, LV_OPA_0, LV_STATE_DEFAULT); // 标签背景透明
+        // 日期
+        date_label = create_text_label(
+            status_bar, "2023-01-01",
+            &lv_font_montserrat_36, lv_color_hex(0xFFFFFF),
+            48, 24, LV_OPA_100);
 
-    // 9. 创建状态栏刷新定时器（每秒刷新一次，仅创建一次）
-    if(status_bar_timer == NULL) {
-        status_bar_timer = lv_timer_create(status_bar_update_cb, 1000, NULL); // 1000ms = 1秒
+        // 时间
+        time_label = create_text_label(
+            status_bar, "12:00",
+            &lv_font_montserrat_36, lv_color_hex(0xFFFFFF),
+            280, 25, LV_OPA_100);
+
+        // WiFi
+        create_container_circle(
+            status_bar, 400, 33, 28,
+            true, lv_color_hex(0xFFFFFF), lv_color_hex(0x808080), 0, LV_OPA_0);
+
+        // 电池外框
+        battery_con = create_container(
+            status_bar, 444, 31, 65, 30,
+            lv_color_hex(0x2E4B7D), LV_OPA_0, 0,
+            lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
+
+        // 电池进度
+        battery_used_con = create_container(
+            status_bar, 447, 34, 0, 24,
+            lv_color_hex(0x00ac11), LV_OPA_100, 0,
+            lv_color_hex(0xFFFFFF), 3, LV_OPA_0);
     }
-    
-    // 立即执行一次刷新（避免初始显示默认值）
+    else
+    {
+        // ====================== 其他页面：靠右布局 ======================
+        lv_obj_align(status_bar, LV_ALIGN_TOP_RIGHT, 0, 0);
+
+        // 日期
+        date_label = create_text_label(
+            status_bar, "2023-01-01",
+            &lv_font_montserrat_36, lv_color_hex(0xFFFFFF),
+            514, 24, LV_OPA_100);
+
+        // 时间
+        time_label = create_text_label(
+            status_bar, "12:00",
+            &lv_font_montserrat_36, lv_color_hex(0xFFFFFF),
+            744, 25, LV_OPA_100);
+
+        // WiFi
+        create_container_circle(
+            status_bar, 866, 33, 28,
+            true, lv_color_hex(0xFFFFFF), lv_color_hex(0x808080), 0, LV_OPA_0);
+
+        // 电池外框
+        battery_con = create_container(
+            status_bar, 910, 31, 65, 30,
+            lv_color_hex(0x2E4B7D), LV_OPA_0, 0,
+            lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
+
+        // 电池进度
+        battery_used_con = create_container(
+            status_bar, 913, 34, 0, 24,
+            lv_color_hex(0x00ac11), LV_OPA_100, 0,
+            lv_color_hex(0xFFFFFF), 3, LV_OPA_0);
+    }
+
+    // 电池百分比（共用）
+    char battery_text[4] = {0};
+    snprintf(battery_text, sizeof(battery_text), "%d", BATTERY_CAPACITY);
+    battery_label = create_text_label(
+        status_bar, battery_text,
+        &lv_font_montserrat_24, lv_color_hex(0xFFFFFF),
+        0, 0, LV_OPA_100);
+    lv_obj_align_to(battery_label, battery_con, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_set_style_bg_opa(battery_label, LV_OPA_0, LV_STATE_DEFAULT);
+
+    // 定时器
+    if(status_bar_timer == NULL)
+        status_bar_timer = lv_timer_create(status_bar_update_cb, 1000, NULL);
+
     status_bar_update_cb(NULL);
 }
 
@@ -753,29 +767,25 @@ static void create_status_bar(void)
  */
 void update_status_bar_parent(lv_obj_t *new_scr)
 {
-    // 第一步：校验新屏幕对象有效性（安全防护）
     if(!is_lv_obj_valid(new_scr)) {
-        LV_LOG_WARN("update_status_bar_parent: new_scr is invalid!"); // 打印警告日志
+        LV_LOG_WARN("update_status_bar_parent: new_scr is invalid!");
         return;
     }
 
-    // 第二步：状态栏无效则重建，再挂载到新屏幕
-    if(!is_lv_obj_valid(status_bar)) {
-        create_status_bar(); // 重建状态栏
-        
-        // 重建成功后，设置父容器为新屏幕
-        if(is_lv_obj_valid(status_bar)) {
-            lv_obj_set_parent(status_bar, new_scr);
-        }
-    } else {
-        // 第三步：状态栏有效，直接切换父容器到新屏幕
-        lv_obj_set_parent(status_bar, new_scr);
-    }
-    
-    // 第四步：确保状态栏置顶且位置正确（防止切换后被遮挡/位置偏移）
+    bool is_homepage = (new_scr == homepage_scr);
+
+    // ====================== 修复点：每次都强制重建，确保布局刷新 ======================
+    destroy_status_bar();      // 销毁旧的
+    create_status_bar_ex(is_homepage); // 重建新的
+
     if(is_lv_obj_valid(status_bar)) {
-        lv_obj_move_foreground(status_bar); // 置顶
-        lv_obj_set_pos(status_bar, 0, 0);   // 回到屏幕顶部
+        lv_obj_set_parent(status_bar, new_scr);
+        lv_obj_move_foreground(status_bar);
+
+        if(is_homepage)
+            lv_obj_align(status_bar, LV_ALIGN_TOP_LEFT, 0, 0);
+        else
+            lv_obj_align(status_bar, LV_ALIGN_TOP_RIGHT, 0, 0);
     }
 }
 
