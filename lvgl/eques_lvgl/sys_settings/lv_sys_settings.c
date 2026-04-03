@@ -18,7 +18,7 @@ static void factory_reset_confirm_action(void);
 static void factory_reset_click_cb(lv_event_t *e);
 
 // 系统设置主屏幕全局变量
-static lv_obj_t *sys_settings_scr = NULL; 
+// static lv_obj_t *sys_settings_scr = NULL; 
 lv_style_t sys_settings_grad_style;
 static bool sys_settings_style_inited = false;
 static lv_obj_t *g_time_view_label = NULL;
@@ -163,6 +163,7 @@ static void init_sys_settings_styles(void) {
 
 // ==================== 主页面创建 ====================
 void ui_sys_settings_create(lv_obj_t *homepage_scr) {
+    lv_obj_t *sys_settings_scr = NULL; 
     init_sys_settings_styles();
     notification_init();
     biometrics_init();
