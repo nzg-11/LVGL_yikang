@@ -6,7 +6,7 @@
 
 
 #else    //横屏
-// static lv_obj_t *dev_info_scr = NULL; 
+static lv_obj_t *dev_info_scr = NULL; 
 static lv_obj_t *dev_name_label = NULL; // 保存设备昵称标签，用于更新
 
 // 全局样式
@@ -136,18 +136,18 @@ void dev_info_name_edit_cb(lv_event_t *e)
 
 void ui_dev_info_create(lv_obj_t *homepage_scr)
 {
-    lv_obj_t *dev_info_scr = NULL; 
     init_msg_center_styles();
     if(homepage_scr == NULL) {
         LV_LOG_WARN("ui_dev_info_create: homepage_scr is NULL!");
         return;
     }
 
-    if(dev_info_scr == NULL) {
-        dev_info_scr = lv_obj_create(NULL);
-    } else {
-        lv_obj_clean(dev_info_scr);
+    // 1. 关键：如果旧设置页存在，先销毁！释放所有内存
+    if(is_lv_obj_valid(dev_info_scr)) {
+        lv_obj_del(dev_info_scr);
+        dev_info_scr = NULL;
     }
+    dev_info_scr = lv_obj_create(NULL); 
     
     // 重置渐变样式
     lv_style_reset(&dev_info_grad_style);

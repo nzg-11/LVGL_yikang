@@ -2,6 +2,7 @@
 #include "../lv_sys_settings.h"  // 引用上级主模块头文件
 
 // 子模块内部全局变量（static隐藏，仅本文件可见）
+static lv_obj_t *light_time_scr = NULL; 
 static screen_off_time_t g_screen_off_time = SCREEN_OFF_15S; // 默认15s
 static const char *g_time_strs[] = {"10s", "15s", "30s", "1min", "5min", "10min"};
 static lv_obj_t *g_time_view_label = NULL; // 主页面的显示标签
@@ -80,7 +81,7 @@ static void light_time_checkbox_cb(lv_event_t *e)
 static void time_container_click_cb(lv_event_t *e)
 {
     if(e == NULL) return;
-    int idx = (int)(long)lv_event_get_user_data(e);
+    int idx = (int)lv_event_get_user_data(e);
     
     if(idx >= 0 && idx < SCREEN_OFF_MAX && g_time_checkboxes[idx] != NULL) {
         // 模拟点击复选框
@@ -92,7 +93,13 @@ static void time_container_click_cb(lv_event_t *e)
 void ui_screen_time_settings_create(lv_obj_t *homepage_scr)
 {
     // 1. 创建子页面对象
-    lv_obj_t *light_time_scr = lv_obj_create(NULL);
+    // lv_obj_t *light_time_scr = lv_obj_create(NULL);
+    // 1. 关键：如果旧设置页存在，先销毁！释放所有内存
+    if(is_lv_obj_valid(light_time_scr)) {
+        lv_obj_del(light_time_scr);
+        light_time_scr = NULL;
+    }
+    light_time_scr = lv_obj_create(NULL);  
     
     // 2. 应用背景样式（复用主模块的渐变样式）
     lv_style_reset(&sys_settings_grad_style);
@@ -102,19 +109,11 @@ void ui_screen_time_settings_create(lv_obj_t *homepage_scr)
     lv_obj_add_style(light_time_scr, &sys_settings_grad_style, LV_STATE_DEFAULT);
 
     // 3. 添加标题（"亮屏时间"）
-    create_text_label(light_time_scr, "light_time_title", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 328, 115, LV_OPA_100);
-    
-    // 4. 添加左上角返回按钮
-    lv_obj_t *back_btn = create_image_obj(light_time_scr, "D:back.png", 52, 123);
-    if(back_btn) {
-        lv_obj_add_flag(back_btn, LV_OBJ_FLAG_CLICKABLE);
-        lv_obj_set_style_opa(back_btn, LV_OPA_80, LV_STATE_PRESSED);
-        lv_obj_add_event_cb(back_btn, back_btn_click_cb, LV_EVENT_CLICKED, homepage_scr);
-    }
+    create_text_label(light_time_scr, "light_time_title", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 83, 80, LV_OPA_100);
 
     // 系统时间设置容器1
     lv_obj_t *sys_time_con1 = create_container
-    (light_time_scr, 47, 195, 710, 83, lv_color_hex(0x192A46), LV_OPA_100, 6, lv_color_hex(0x2E4B7D), 0, LV_OPA_0);
+    (light_time_scr, 48, 150, 928, 83, lv_color_hex(0x192A46), LV_OPA_100, 6, lv_color_hex(0x2E4B7D), 0, LV_OPA_0);
     if(sys_time_con1) {
         lv_obj_add_flag(sys_time_con1, LV_OBJ_FLAG_CLICKABLE);
         lv_obj_set_style_bg_opa(sys_time_con1, LV_OPA_70, LV_STATE_PRESSED);
@@ -122,7 +121,7 @@ void ui_screen_time_settings_create(lv_obj_t *homepage_scr)
 
     // 系统时间设置容器2
     lv_obj_t *sys_time_con2 = create_container
-    (light_time_scr, 47, 282, 710, 83, lv_color_hex(0x192A46), LV_OPA_100, 6, lv_color_hex(0x2E4B7D), 0, LV_OPA_0);
+    (light_time_scr, 48, 237, 928, 83, lv_color_hex(0x192A46), LV_OPA_100, 6, lv_color_hex(0x2E4B7D), 0, LV_OPA_0);
     if(sys_time_con2) {
         lv_obj_add_flag(sys_time_con2, LV_OBJ_FLAG_CLICKABLE);
         lv_obj_set_style_bg_opa(sys_time_con2, LV_OPA_70, LV_STATE_PRESSED);
@@ -130,7 +129,7 @@ void ui_screen_time_settings_create(lv_obj_t *homepage_scr)
 
     // 系统时间设置容器3
     lv_obj_t *sys_time_con3 = create_container
-    (light_time_scr, 47, 369, 710, 83, lv_color_hex(0x192A46), LV_OPA_100, 6, lv_color_hex(0x2E4B7D), 0, LV_OPA_0);
+    (light_time_scr, 48, 324, 928, 83, lv_color_hex(0x192A46), LV_OPA_100, 6, lv_color_hex(0x2E4B7D), 0, LV_OPA_0);
     if(sys_time_con3) {
         lv_obj_add_flag(sys_time_con3, LV_OBJ_FLAG_CLICKABLE);
         lv_obj_set_style_bg_opa(sys_time_con3, LV_OPA_70, LV_STATE_PRESSED);
@@ -138,7 +137,7 @@ void ui_screen_time_settings_create(lv_obj_t *homepage_scr)
 
     // 系统时间设置容器4
     lv_obj_t *sys_time_con4 = create_container
-    (light_time_scr, 47, 456, 710, 83, lv_color_hex(0x192A46), LV_OPA_100, 6, lv_color_hex(0x2E4B7D), 0, LV_OPA_0);
+    (light_time_scr, 48, 411, 928, 83, lv_color_hex(0x192A46), LV_OPA_100, 6, lv_color_hex(0x2E4B7D), 0, LV_OPA_0);
     if(sys_time_con4) {
         lv_obj_add_flag(sys_time_con4, LV_OBJ_FLAG_CLICKABLE);
         lv_obj_set_style_bg_opa(sys_time_con4, LV_OPA_70, LV_STATE_PRESSED);
@@ -146,7 +145,7 @@ void ui_screen_time_settings_create(lv_obj_t *homepage_scr)
 
     // 系统时间设置容器5
     lv_obj_t *sys_time_con5 = create_container
-    (light_time_scr, 47, 543, 710, 83, lv_color_hex(0x192A46), LV_OPA_100, 6, lv_color_hex(0x2E4B7D), 0, LV_OPA_0);
+    (light_time_scr, 48, 498, 928, 83, lv_color_hex(0x192A46), LV_OPA_100, 6, lv_color_hex(0x2E4B7D), 0, LV_OPA_0);
     if(sys_time_con5) {
         lv_obj_add_flag(sys_time_con5, LV_OBJ_FLAG_CLICKABLE);
         lv_obj_set_style_bg_opa(sys_time_con5, LV_OPA_70, LV_STATE_PRESSED);
@@ -154,7 +153,7 @@ void ui_screen_time_settings_create(lv_obj_t *homepage_scr)
 
     // 系统时间设置容器6
     lv_obj_t *sys_time_con6 = create_container
-    (light_time_scr, 47, 630, 710, 83, lv_color_hex(0x192A46), LV_OPA_100, 6, lv_color_hex(0x2E4B7D), 0, LV_OPA_0);
+    (light_time_scr, 48, 585, 928, 83, lv_color_hex(0x192A46), LV_OPA_100, 6, lv_color_hex(0x2E4B7D), 0, LV_OPA_0);
     if(sys_time_con6) {
         lv_obj_add_flag(sys_time_con6, LV_OBJ_FLAG_CLICKABLE);
         lv_obj_set_style_bg_opa(sys_time_con6, LV_OPA_70, LV_STATE_PRESSED);
@@ -168,7 +167,7 @@ void ui_screen_time_settings_create(lv_obj_t *homepage_scr)
     lv_obj_add_event_cb(sys_time_con5, time_container_click_cb, LV_EVENT_CLICKED, (void *)(long)4);
     lv_obj_add_event_cb(sys_time_con6, time_container_click_cb, LV_EVENT_CLICKED, (void *)(long)5);
 
-    // 5. 创建多个复选框（模拟单选按钮）
+    // 4. 创建多个复选框（模拟单选按钮）
     for(int i = 0; i < SCREEN_OFF_MAX; i++) {
         // 1. 先获取对应的容器（sys_time_con1 ~ sys_time_con6）
         lv_obj_t *parent_con;
@@ -211,6 +210,23 @@ void ui_screen_time_settings_create(lv_obj_t *homepage_scr)
         // 绑定复选框点击事件
         lv_obj_add_event_cb(g_time_checkboxes[i], light_time_checkbox_cb, LV_EVENT_VALUE_CHANGED, (void *)(intptr_t)i);
     }
+
+    // // 5. 添加左上角返回按钮
+    // lv_obj_t *back_btn = create_image_obj(light_time_scr, "D:back.png", 52, 123);
+    // if(back_btn) {
+    //     lv_obj_add_flag(back_btn, LV_OBJ_FLAG_CLICKABLE);
+    //     lv_obj_set_style_opa(back_btn, LV_OPA_80, LV_STATE_PRESSED);
+    //     lv_obj_add_event_cb(back_btn, back_btn_click_cb, LV_EVENT_CLICKED, homepage_scr);
+    // }
+    
+    // 返回
+    lv_obj_t *back_btn = create_container_circle(light_time_scr, 52, 90, 30,
+    true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
+    lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
+    lv_obj_add_flag(back_btn,LV_OBJ_FLAG_CLICKABLE);
+    lv_obj_set_style_opa(back_btn,LV_OPA_80,LV_STATE_PRESSED);
+    lv_obj_add_event_cb(back_btn,back_btn_click_cb,LV_EVENT_CLICKED,homepage_scr);
+
     //更新状态条父对象
     update_status_bar_parent(light_time_scr);
     // 切换到子页面

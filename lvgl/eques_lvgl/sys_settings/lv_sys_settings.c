@@ -18,7 +18,7 @@ static void factory_reset_confirm_action(void);
 static void factory_reset_click_cb(lv_event_t *e);
 
 // 系统设置主屏幕全局变量
-// static lv_obj_t *sys_settings_scr = NULL; 
+static lv_obj_t *sys_settings_scr = NULL; 
 lv_style_t sys_settings_grad_style;
 static bool sys_settings_style_inited = false;
 static lv_obj_t *g_time_view_label = NULL;
@@ -163,7 +163,6 @@ static void init_sys_settings_styles(void) {
 
 // ==================== 主页面创建 ====================
 void ui_sys_settings_create(lv_obj_t *homepage_scr) {
-    lv_obj_t *sys_settings_scr = NULL; 
     init_sys_settings_styles();
     notification_init();
     biometrics_init();
@@ -173,11 +172,12 @@ void ui_sys_settings_create(lv_obj_t *homepage_scr) {
         return;
     }
 
-    if(sys_settings_scr == NULL) {
-        sys_settings_scr = lv_obj_create(NULL);
-    } else {
-        lv_obj_clean(sys_settings_scr);
+    // 1. 关键：如果旧设置页存在，先销毁！释放所有内存
+    if(is_lv_obj_valid(sys_settings_scr)) {
+        lv_obj_del(sys_settings_scr);
+        sys_settings_scr = NULL;
     }
+    sys_settings_scr = lv_obj_create(NULL);  
     
     lv_style_reset(&sys_settings_grad_style);
     lv_style_set_bg_color(&sys_settings_grad_style, lv_color_hex(0x010715));
