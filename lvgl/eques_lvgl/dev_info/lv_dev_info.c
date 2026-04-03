@@ -6,7 +6,7 @@
 
 
 #else    //横屏
-static lv_obj_t *dev_info_scr = NULL; 
+// static lv_obj_t *dev_info_scr = NULL; 
 static lv_obj_t *dev_name_label = NULL; // 保存设备昵称标签，用于更新
 
 // 全局样式
@@ -136,6 +136,7 @@ void dev_info_name_edit_cb(lv_event_t *e)
 
 void ui_dev_info_create(lv_obj_t *homepage_scr)
 {
+    lv_obj_t *dev_info_scr = NULL; 
     init_msg_center_styles();
     if(homepage_scr == NULL) {
         LV_LOG_WARN("ui_dev_info_create: homepage_scr is NULL!");
@@ -194,13 +195,20 @@ void ui_dev_info_create(lv_obj_t *homepage_scr)
     // lv_obj_t *wifi_img = create_image_obj(dev_info_scr, "D:wifi.png", 671, 398);
     // if(!wifi_img) LV_LOG_WARN("wifi.png load failed!");
 
-    // 左上角返回按钮
-    lv_obj_t *back_btn = create_image_obj(dev_info_scr, "D:back.png", 52, 123);
-    if(back_btn) {
-        lv_obj_add_flag(back_btn, LV_OBJ_FLAG_CLICKABLE);
-        lv_obj_set_style_opa(back_btn, LV_OPA_80, LV_STATE_PRESSED);
-        lv_obj_add_event_cb(back_btn, back_btn_click_cb, LV_EVENT_CLICKED, homepage_scr);
-    }
+    // // 左上角返回按钮
+    // lv_obj_t *back_btn = create_image_obj(dev_info_scr, "D:back.png", 52, 123);
+    // if(back_btn) {
+    //     lv_obj_add_flag(back_btn, LV_OBJ_FLAG_CLICKABLE);
+    //     lv_obj_set_style_opa(back_btn, LV_OPA_80, LV_STATE_PRESSED);
+    //     lv_obj_add_event_cb(back_btn, back_btn_click_cb, LV_EVENT_CLICKED, homepage_scr);
+    // }
+    // 返回
+    lv_obj_t *back_btn = create_container_circle(dev_info_scr, 52, 90, 30,
+    true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
+    lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
+    lv_obj_add_flag(back_btn,LV_OBJ_FLAG_CLICKABLE);
+    lv_obj_set_style_opa(back_btn,LV_OPA_80,LV_STATE_PRESSED);
+    lv_obj_add_event_cb(back_btn,back_btn_click_cb,LV_EVENT_CLICKED,homepage_scr);
 
     //更新状态条父对象
     update_status_bar_parent(dev_info_scr);
