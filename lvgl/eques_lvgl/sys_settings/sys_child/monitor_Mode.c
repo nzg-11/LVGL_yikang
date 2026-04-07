@@ -10,6 +10,7 @@ static const char *g_slot_strs[] = {
     "22:00-6:00"    // 自定义（默认）
 };
 // 内部状态变量（静态隐藏，仅本文件可见）
+static lv_obj_t *monitor_scr = NULL; 
 static monitor_mode_state_t g_monitor_state = MONITOR_MODE_ON; // 默认开启
 static const char *g_monitor_state_str[] = {"stop", "start"};
 // static const char *g_time_slot_str = "8:00-18:00"; // 默认时间段
@@ -79,11 +80,6 @@ static void monitor_switch_cb(lv_event_t *e) {
     lv_obj_t *sw = lv_event_get_target(e);
     monitor_mode_set_state(lv_obj_has_state(sw, LV_STATE_CHECKED) ? MONITOR_MODE_ON : MONITOR_MODE_OFF);
 }
-
-
-
-
-
 
 // 获取当前时间段类型
 monitor_slot_t monitor_mode_get_slot_type(void) {
@@ -167,10 +163,6 @@ static void monitor_time_confirm_cb(lv_event_t *e) {
         g_slot_strs[MONITOR_SLOT_CUSTOM] = new_slot;
         monitor_mode_set_slot_type(MONITOR_SLOT_CUSTOM);
     }
-
-    // 更新主页面的时间段文本（如果需要）
-    // ...
-
     // 关闭弹窗
     monitor_popup_close_cb(e);
 }
@@ -391,12 +383,17 @@ static void time_slot_click_cb(lv_event_t *e) {
     lv_obj_set_style_bg_opa(end_min_roller, LV_OPA_TRANSP, LV_STATE_DEFAULT);
 }
 
+
 // 创建监控模式子页面
 void ui_monitor_mode_settings_create(lv_obj_t *homepage_scr) {
-    // 1. 创建子页面对象
-    lv_obj_t *monitor_scr = lv_obj_create(NULL);
+    // lv_obj_t *monitor_scr = lv_obj_create(NULL);
+    if(is_lv_obj_valid(monitor_scr)) {
+        lv_obj_del(monitor_scr);
+        monitor_scr = NULL;
+    }
+    monitor_scr = lv_obj_create(NULL);  
     
-    // 2. 复用主模块渐变样式
+    // 复用主模块渐变样式
     extern lv_style_t sys_settings_grad_style;
     lv_style_reset(&sys_settings_grad_style);
     lv_style_set_bg_color(&sys_settings_grad_style, lv_color_hex(0x010715));
@@ -404,21 +401,13 @@ void ui_monitor_mode_settings_create(lv_obj_t *homepage_scr) {
     lv_style_set_bg_grad_dir(&sys_settings_grad_style, LV_GRAD_DIR_VER);
     lv_obj_add_style(monitor_scr, &sys_settings_grad_style, LV_STATE_DEFAULT);
 
-    // 3. 添加标题“监控模式”
+    // 添加标题“监控模式”
     create_text_label(monitor_scr, "monitor_title", &lv_font_montserrat_36, 
-                     lv_color_hex(0xFFFFFF), 328, 115, LV_OPA_100);
-    
-    // 4. 添加返回按钮
-    lv_obj_t *back_btn = create_image_obj(monitor_scr, "D:back.png", 52, 123);
-    if (back_btn) {
-        lv_obj_add_flag(back_btn, LV_OBJ_FLAG_CLICKABLE);
-        lv_obj_set_style_opa(back_btn, LV_OPA_80, LV_STATE_PRESSED);
-        lv_obj_add_event_cb(back_btn, back_btn_click_cb, LV_EVENT_CLICKED, homepage_scr);
-    }
+                     lv_color_hex(0xFFFFFF), 83, 80, LV_OPA_100);
 
-    // 5. 创建“监控模式开关”容器
+    // 创建“监控模式开关”容器
     lv_obj_t *switch_con = create_container(
-        monitor_scr, 47, 195, 710, 83, 
+        monitor_scr, 48, 150, 928, 83, 
         lv_color_hex(0x192A46), LV_OPA_100, 6, 
         lv_color_hex(0x2E4B7D), 0, LV_OPA_0
     );
@@ -430,13 +419,13 @@ void ui_monitor_mode_settings_create(lv_obj_t *homepage_scr) {
     // 开关左侧状态文本
     g_state_label = create_text_label(monitor_scr, "monitor_state", 
                                      &lv_font_montserrat_32, lv_color_hex(0xFFFFFF), 
-                                     78, 209, LV_OPA_100);
+                                     73, 169, LV_OPA_100);
     lv_label_set_text(g_state_label, g_monitor_state_str[g_monitor_state]);
 
     // 创建开关（右侧对齐）
     g_switch = lv_switch_create(monitor_scr);
     lv_obj_set_size(g_switch, 60, 37);
-    lv_obj_set_pos(g_switch, 640, 209);
+    lv_obj_set_pos(g_switch, 884, 170);
     // 开关样式
     lv_obj_set_style_bg_color(g_switch, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_color(g_switch, lv_color_hex(0x00BDBD), LV_PART_INDICATOR | LV_STATE_CHECKED);
@@ -448,7 +437,7 @@ void ui_monitor_mode_settings_create(lv_obj_t *homepage_scr) {
 
     // 6. 创建“时间段设置”容器
     g_time_con = create_container(
-        monitor_scr, 47, 282, 710, 83, 
+        monitor_scr, 48, 237, 928, 83, 
         lv_color_hex(0x192A46), LV_OPA_100, 6, 
         lv_color_hex(0x2E4B7D), 0, LV_OPA_0
     );
@@ -458,14 +447,28 @@ void ui_monitor_mode_settings_create(lv_obj_t *homepage_scr) {
         lv_obj_add_event_cb(g_time_con, time_slot_click_cb, LV_EVENT_CLICKED, NULL);
     }
 
-    g_time_slot_label = create_text_label(g_time_con, "time_slot", &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 500, 8, LV_OPA_70);
+    g_time_slot_label = create_text_label(g_time_con, "time_slot", &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 720, 8, LV_OPA_70);
     lv_label_set_text(g_time_slot_label, monitor_mode_get_slot_str()); // 动态获取初始值
 
-    // 右侧箭头图标
-    lv_obj_t *arrow_img = create_image_obj(monitor_scr, "D:Vector.png", 712, 308);
+    // // 右侧箭头图标
+    // lv_obj_t *arrow_img = create_image_obj(monitor_scr, "D:Vector.png", 712, 308);
     //每天监控时间
-    lv_obj_t *time_label = create_text_label(monitor_scr, "monitor_time", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 78, 297, LV_OPA_100);
+    lv_obj_t *time_label = create_text_label(monitor_scr, "monitor_time", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 73, 256, LV_OPA_100);
 
+    // // 4. 添加返回按钮
+    // lv_obj_t *back_btn = create_image_obj(monitor_scr, "D:back.png", 52, 123);
+    // if (back_btn) {
+    //     lv_obj_add_flag(back_btn, LV_OBJ_FLAG_CLICKABLE);
+    //     lv_obj_set_style_opa(back_btn, LV_OPA_80, LV_STATE_PRESSED);
+    //     lv_obj_add_event_cb(back_btn, back_btn_click_cb, LV_EVENT_CLICKED, homepage_scr);
+    // }
+    // 返回
+    lv_obj_t *back_btn = create_container_circle(monitor_scr, 52, 90, 30,
+    true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
+    lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
+    lv_obj_add_flag(back_btn,LV_OBJ_FLAG_CLICKABLE);
+    lv_obj_set_style_opa(back_btn,LV_OPA_80,LV_STATE_PRESSED);
+    lv_obj_add_event_cb(back_btn,back_btn_click_cb,LV_EVENT_CLICKED,homepage_scr);
 
     // 7. 更新状态栏父对象
     update_status_bar_parent(monitor_scr);
