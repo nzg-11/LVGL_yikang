@@ -385,13 +385,14 @@ static void reset_confirm_cb(lv_event_t *e) {
     reset_popup_close_cb(e);
 }
 
+// 恢复出厂设置
 static void factory_reset_click_cb(lv_event_t *e) {
     if (e == NULL) return;
     LV_LOG_USER("Factory reset clicked");
 
     // 创建全屏遮罩层
     reset_popup = lv_obj_create(lv_scr_act());
-    lv_obj_set_size(reset_popup, LV_HOR_RES, 1280);
+    lv_obj_set_size(reset_popup, LV_HOR_RES, 1000);
     lv_obj_set_pos(reset_popup, 0, 0);
     lv_obj_set_style_bg_color(reset_popup, lv_color_hex(0x000000), LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(reset_popup, LV_OPA_50, LV_STATE_DEFAULT);
@@ -399,10 +400,12 @@ static void factory_reset_click_cb(lv_event_t *e) {
     lv_obj_add_event_cb(reset_popup, reset_popup_close_cb, LV_EVENT_CLICKED, NULL);
     lv_obj_set_style_border_width(reset_popup, 0, LV_STATE_DEFAULT);
 
+
     // 创建确认对话框容器
     lv_obj_t *confirm_dialog = lv_obj_create(reset_popup);
     lv_obj_set_size(confirm_dialog, 600, 250);
-    lv_obj_set_pos(confirm_dialog, 100, 455);
+    lv_obj_set_pos(confirm_dialog, 212, 560);
+    // lv_obj_set_align(confirm_dialog, LV_ALIGN_CENTER);
     lv_obj_set_style_bg_color(confirm_dialog, lv_color_hex(0xFFFFFF), LV_STATE_DEFAULT);
     lv_obj_set_style_radius(confirm_dialog, 16, LV_STATE_DEFAULT);
     lv_obj_clear_flag(confirm_dialog, LV_OBJ_FLAG_CLICKABLE);
