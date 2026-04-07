@@ -11,7 +11,7 @@ extern "C" {
 #endif
 #include "com.h"
 
-#define MAX_FAMILY_MEMBER_COUNT 6  // 最多6个成员
+#define MAX_FAMILY_MEMBER_COUNT 8  // 最多6个成员
 
 extern uint8_t g_selected_member_idx;
 // 成员信息结构体

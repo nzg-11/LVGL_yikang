@@ -273,15 +273,14 @@ void ui_finger_add_create(lv_obj_t *enroll_scr)
     }
 
     // 2. 创建/复用设置屏幕对象
-    if(finger_add_scr == NULL) {
-        finger_add_scr = lv_obj_create(NULL);  // 创建独立屏幕
-    } else {
-        lv_obj_clean(finger_add_scr);          // 清空原有内容
-        // 关键  4：只重置进度，不重置计数
-        finger_add_step = 0;
-        // 复用界面时关闭弹窗
-        close_finger_popup();
+    //关闭弹窗
+    close_finger_popup();
+    if(is_lv_obj_valid(finger_add_scr)) {
+        lv_obj_del(finger_add_scr);  // 自动销毁屏幕+所有子控件，资源彻底释放
+        finger_add_scr = NULL;       // 指针置空，杜绝野指针
     }
+    finger_add_scr = lv_obj_create(NULL);
+    finger_add_step = 0;//仅重置进度，不重置计数
 
     // 设置屏幕渐变样式（移到控件创建前，避免样式覆盖）
     lv_style_reset(&finger_add_grad_style);

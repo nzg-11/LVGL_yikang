@@ -156,13 +156,19 @@ void ui_user_manage_create(lv_obj_t *homepage_scr)
     }
 
     // 2. 创建/复用设置屏幕对象
-    if(user_manage_scr == NULL) {
-        user_manage_scr = lv_obj_create(NULL);  // 创建独立屏幕
-        lv_obj_add_event_cb(user_manage_scr, user_manage_scr_load_cb, LV_EVENT_SCREEN_LOAD_START, NULL);
-    } else {
-        lv_obj_clean(user_manage_scr);          // 清空原有内容
+    // if(user_manage_scr == NULL) {
+    //     user_manage_scr = lv_obj_create(NULL);  // 创建独立屏幕
+    //     lv_obj_add_event_cb(user_manage_scr, user_manage_scr_load_cb, LV_EVENT_SCREEN_LOAD_START, NULL);
+    // } else {
+    //     lv_obj_clean(user_manage_scr);          // 清空原有内容
+    // }
+
+    if(is_lv_obj_valid(user_manage_scr)) {
+        lv_obj_del(user_manage_scr);
+        user_manage_scr = NULL;
     }
-    
+    user_manage_scr = lv_obj_create(NULL);
+
     lv_style_reset(&user_manage_grad_style);
     lv_style_set_bg_color(&user_manage_grad_style, lv_color_hex(0x010715));// 渐变主色：#010715（0%）
     lv_style_set_bg_grad_color(&user_manage_grad_style, lv_color_hex(0x0E1D37));// 渐变副色：#0E1D37（100%）
@@ -176,10 +182,10 @@ void ui_user_manage_create(lv_obj_t *homepage_scr)
     lv_obj_t *user_manage_family_con = create_container(user_manage_scr,
     49,150,927,83,
     lv_color_hex(0x192A46), LV_OPA_100, 6,lv_color_hex(0x1F3150), 0, LV_OPA_90);
-    lv_obj_t *family_member_img = create_image_obj(user_manage_scr, "H:family_member.png", 71, 221);
-    lv_obj_t *right_img1 = create_image_obj(user_manage_scr, "H:right.png", 712, 221);
+    lv_obj_t *family_member_img = create_image_obj(user_manage_scr, "H:family_member.png", 73, 176);
+    lv_obj_t *right_img1 = create_image_obj(user_manage_scr, "H:right.png", 932, 176);
     lv_obj_t *family_member_label = create_text_label
-    (user_manage_scr, "family menber", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 132, 214, LV_OPA_100);
+    (user_manage_scr, "family menber", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 130, 169, LV_OPA_100);
     lv_obj_add_flag(user_manage_family_con, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(user_manage_family_con, LV_OPA_80,LV_STATE_PRESSED);
     lv_obj_add_event_cb(user_manage_family_con, family_menber_btn_click_cb, LV_EVENT_CLICKED, user_manage_scr);
@@ -187,10 +193,10 @@ void ui_user_manage_create(lv_obj_t *homepage_scr)
     lv_obj_t *user_manage_other_con = create_container(user_manage_scr,
     49,241,927,83,
     lv_color_hex(0x192A46), LV_OPA_100, 6,lv_color_hex(0x1F3150), 0, LV_OPA_90);
-    lv_obj_t *other_member_img = create_image_obj(user_manage_scr, "H:other_member.png", 71, 308);
-    lv_obj_t *right_img2 = create_image_obj(user_manage_scr, "H:right.png", 712, 308);
+    lv_obj_t *other_member_img = create_image_obj(user_manage_scr, "H:other_member.png", 74, 263);
+    lv_obj_t *right_img2 = create_image_obj(user_manage_scr, "H:right.png", 932, 263);
     lv_obj_t *other_member_label = create_text_label
-    (user_manage_scr, "other menber", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 132, 301, LV_OPA_100);
+    (user_manage_scr, "other menber", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 130, 261, LV_OPA_100);
     lv_obj_add_flag(user_manage_other_con, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(user_manage_other_con, LV_OPA_80,LV_STATE_PRESSED);
     lv_obj_add_event_cb(user_manage_other_con, other_member_btn_click_cb, LV_EVENT_CLICKED, user_manage_scr);
@@ -198,10 +204,10 @@ void ui_user_manage_create(lv_obj_t *homepage_scr)
     lv_obj_t *user_manage_permission_con = create_container(user_manage_scr,
     49,332,927,83,
     lv_color_hex(0x192A46), LV_OPA_100, 6,lv_color_hex(0x1F3150), 0, LV_OPA_90);
-    lv_obj_t *permission_img = create_image_obj(user_manage_scr, "H:user_permission.png", 71, 391);
-    lv_obj_t *right_img3 = create_image_obj(user_manage_scr, "H:right.png", 712, 391);
+    lv_obj_t *permission_img = create_image_obj(user_manage_scr, "H:user_permission.png", 73, 353);
+    lv_obj_t *right_img3 = create_image_obj(user_manage_scr, "H:right.png", 932, 353);
     lv_obj_t *permission_label = create_text_label
-    (user_manage_scr, "user permission", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 132, 388, LV_OPA_100);
+    (user_manage_scr, "user permission", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 130, 350, LV_OPA_100);
     lv_obj_add_flag(user_manage_permission_con, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(user_manage_permission_con, LV_OPA_80,LV_STATE_PRESSED);
     lv_obj_add_event_cb(user_manage_permission_con, user_permission_btn_click_cb, LV_EVENT_CLICKED, user_manage_scr);

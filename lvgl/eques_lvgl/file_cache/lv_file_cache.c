@@ -26,11 +26,11 @@ void ui_file_cache_create(lv_obj_t *homepage_scr)
     }
 
     // 2. 创建/复用设置屏幕对象
-    if(file_cache_scr == NULL) {
-        file_cache_scr = lv_obj_create(NULL);  // 创建独立屏幕
-    } else {
-        lv_obj_clean(file_cache_scr);          // 清空原有内容
-    }
+    if(is_lv_obj_valid(file_cache_scr)) {
+            lv_obj_del(file_cache_scr);
+            file_cache_scr = NULL;
+        }
+    file_cache_scr = lv_obj_create(NULL);
     
     
     lv_style_reset(&file_cache_grad_style);
@@ -42,10 +42,12 @@ void ui_file_cache_create(lv_obj_t *homepage_scr)
     lv_obj_add_style(file_cache_scr, &file_cache_grad_style, LV_STATE_DEFAULT);// 应用渐变样式到屏幕
 
     // 左上角返回按钮
-    lv_obj_t *back_btn = create_image_obj(file_cache_scr, "H:back.png", 52, 123);
-    lv_obj_add_flag(back_btn, LV_OBJ_FLAG_CLICKABLE);
-    lv_obj_set_style_opa(back_btn, LV_OPA_80, LV_STATE_PRESSED);
-    lv_obj_add_event_cb(back_btn, back_btn_click_cb, LV_EVENT_CLICKED, homepage_scr);
+    lv_obj_t *back_btn = create_container_circle(file_cache_scr, 52, 90, 30,
+    true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
+    lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
+    lv_obj_add_flag(back_btn,LV_OBJ_FLAG_CLICKABLE);
+    lv_obj_set_style_opa(back_btn,LV_OPA_80,LV_STATE_PRESSED);
+    lv_obj_add_event_cb(back_btn,back_btn_click_cb,LV_EVENT_CLICKED,homepage_scr);
 
     //更新状态条父对象
     update_status_bar_parent(file_cache_scr);

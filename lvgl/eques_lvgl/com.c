@@ -213,40 +213,33 @@ lv_obj_t *create_custom_gradient_container(
     uint8_t grad_stop,
     lv_opa_t bg_opa
 ) {
-    // 1. 基础参数校验（避免非法参数导致异常）
     if(parent == NULL) return NULL;
     if(grad_dir != LV_GRAD_DIR_VER && grad_dir != LV_GRAD_DIR_HOR) {
-        grad_dir = LV_GRAD_DIR_VER; // 默认垂直渐变
+        grad_dir = LV_GRAD_DIR_VER;
     }
-    if(main_stop > grad_stop) { // 保证起始位置 ≤ 结束位置
+    if(main_stop > grad_stop) {
         uint8_t temp = main_stop;
         main_stop = grad_stop;
         grad_stop = temp;
     }
 
-    // 2. 创建容器并设置基础属性
+    // 1. 创建容器
     lv_obj_t *grad_con = lv_obj_create(parent);
-    lv_obj_set_pos(grad_con, x, y);                // 坐标
-    lv_obj_set_size(grad_con, w, h);               // 尺寸
-    lv_obj_set_style_radius(grad_con, radius, LV_STATE_DEFAULT); // 圆角
-    lv_obj_set_style_bg_opa(grad_con, bg_opa, LV_STATE_DEFAULT); // 不透明度
-    lv_obj_clear_flag(grad_con, LV_OBJ_FLAG_SCROLLABLE); // 禁用滚动
+    lv_obj_set_pos(grad_con, x, y);
+    lv_obj_set_size(grad_con, w, h);
+    lv_obj_set_style_radius(grad_con, radius, LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(grad_con, bg_opa, LV_STATE_DEFAULT);
+    lv_obj_clear_flag(grad_con, LV_OBJ_FLAG_SCROLLABLE);
     lv_obj_set_style_border_width(grad_con, 0, LV_STATE_DEFAULT);
-    // 3. 初始化并配置渐变样式
-    static lv_style_t grad_style; // static避免函数结束后样式释放
-    lv_style_init(&grad_style);
 
-    // 设置渐变颜色（主色/副色）
-    lv_style_set_bg_color(&grad_style, lv_color_hex(main_color));
-    lv_style_set_bg_grad_color(&grad_style, lv_color_hex(grad_color));
-    // 设置渐变方向（仅VER/HOR）
-    lv_style_set_bg_grad_dir(&grad_style, grad_dir);
-    // 设置渐变起始/结束位置
-    lv_style_set_bg_main_stop(&grad_style, main_stop);
-    lv_style_set_bg_grad_stop(&grad_style, grad_stop);
+    // ====================== 核心修复 ======================
+    // ✅ 直接给控件设置样式，不使用 static 共享样式！
+    // ✅ 每个控件独立颜色，永远不会互相污染
+    lv_obj_set_style_bg_color(grad_con, lv_color_hex(main_color), LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_grad_color(grad_con, lv_color_hex(grad_color), LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_grad_dir(grad_con, grad_dir, LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_main_stop(grad_con, main_stop, LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_grad_stop(grad_con, grad_stop, LV_STATE_DEFAULT);
 
-    // 4. 将渐变样式应用到容器
-    lv_obj_add_style(grad_con, &grad_style, LV_STATE_DEFAULT);
-
-    return grad_con; // 返回创建的容器对象，方便后续操作（如添加子控件）
+    return grad_con;
 }

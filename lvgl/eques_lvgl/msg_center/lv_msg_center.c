@@ -494,11 +494,11 @@ void ui_msg_center_create(lv_obj_t *homepage_scr)
     clear_all_doorbell_records();
     clear_all_alarm_records();
 
-    if(!msg_center_scr) {
-        msg_center_scr = lv_obj_create(NULL);
-    } else {
-        lv_obj_clean(msg_center_scr);
+    if(is_lv_obj_valid(msg_center_scr)) {
+        lv_obj_del(msg_center_scr);
+        msg_center_scr = NULL;
     }
+    msg_center_scr = lv_obj_create(NULL);
 
     lv_style_reset(&msg_center_grad_style);
     lv_style_set_bg_color(&msg_center_grad_style, lv_color_hex(0x010715));
@@ -507,9 +507,7 @@ void ui_msg_center_create(lv_obj_t *homepage_scr)
     lv_obj_add_style(msg_center_scr, &msg_center_grad_style, 0);
 
     // 标题
-    lv_obj_t *title = create_text_label(msg_center_scr,
-        "message center", &lv_font_montserrat_36,
-        lv_color_hex(0xFFFFFF), 83, 80, LV_OPA_100);
+    create_text_label(msg_center_scr, "message center", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 83, 80, LV_OPA_100);
 
     // 模式容器
     lv_obj_t *mode_con = create_container(msg_center_scr,
@@ -520,13 +518,11 @@ void ui_msg_center_create(lv_obj_t *homepage_scr)
 
     // 访客
     visitor_rec_con = create_custom_gradient_container(mode_con,
-        0,0,150,46, 31, 0x006BDC,0x00BDBD,LV_GRAD_DIR_HOR, 0,255,LV_OPA_100);
+    0,0,150,46, 31, 0x006BDC,0x00BDBD,LV_GRAD_DIR_HOR, 0,255,LV_OPA_100);
     lv_obj_set_style_pad_all(visitor_rec_con,0,0);
     lv_obj_add_flag(visitor_rec_con, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_add_event_cb(visitor_rec_con, rec_con_click_cb, LV_EVENT_CLICKED, NULL);
-    lv_obj_t *vt = create_text_label(visitor_rec_con,
-        "vis record", &lv_font_montserrat_20,
-        lv_color_hex(0xFFFFFF),27,10,LV_OPA_100);
+    create_text_label(visitor_rec_con, "vis record", &lv_font_montserrat_20, lv_color_hex(0xFFFFFF),27,10,LV_OPA_100);
 
     // 报警
     alarm_rec_con = lv_obj_create(mode_con);
@@ -541,9 +537,7 @@ void ui_msg_center_create(lv_obj_t *homepage_scr)
     lv_obj_set_style_pad_all(alarm_rec_con,0,0);
     lv_obj_add_flag(alarm_rec_con,LV_OBJ_FLAG_CLICKABLE);
     lv_obj_add_event_cb(alarm_rec_con,rec_con_click_cb,LV_EVENT_CLICKED,NULL);
-    lv_obj_t *at = create_text_label(alarm_rec_con,
-        "ala record",&lv_font_montserrat_20,
-        lv_color_hex(0xFFFFFF),27,10,LV_OPA_100);
+    create_text_label(alarm_rec_con,"ala record",&lv_font_montserrat_20, lv_color_hex(0xFFFFFF),27,10,LV_OPA_100);
 
     // 门铃
     doorbell_rec_con = lv_obj_create(mode_con);
@@ -558,9 +552,7 @@ void ui_msg_center_create(lv_obj_t *homepage_scr)
     lv_obj_set_style_pad_all(doorbell_rec_con,0,0);
     lv_obj_add_flag(doorbell_rec_con,LV_OBJ_FLAG_CLICKABLE);
     lv_obj_add_event_cb(doorbell_rec_con,rec_con_click_cb,LV_EVENT_CLICKED,NULL);
-    lv_obj_t *bt = create_text_label(doorbell_rec_con,
-        "bell record",&lv_font_montserrat_20,
-        lv_color_hex(0xFFFFFF),27,10,LV_OPA_100);
+    create_text_label(doorbell_rec_con, "bell record",&lv_font_montserrat_20, lv_color_hex(0xFFFFFF),27,10,LV_OPA_100);
 
     g_selected_rec_con = visitor_rec_con;
 

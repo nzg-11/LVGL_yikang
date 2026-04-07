@@ -505,11 +505,11 @@ void ui_monitor_video_create(lv_obj_t *homepage_scr)
     clear_lock_auto_close_timer();
 
     // 3. 创建/复用设置屏幕对象
-    if(monitor_video_scr == NULL) {
-        monitor_video_scr = lv_obj_create(NULL);  // 创建独立屏幕
-    } else {
-        lv_obj_clean(monitor_video_scr);          // 清空原有内容
-    }
+    if(is_lv_obj_valid(monitor_video_scr)) {
+            lv_obj_del(monitor_video_scr);
+            monitor_video_scr = NULL;
+        }
+    monitor_video_scr = lv_obj_create(NULL);
     
     lv_style_reset(&monitor_video_grad_style);
     lv_style_set_bg_color(&monitor_video_grad_style, lv_color_hex(0x010715));// 渐变主色：#010715（0%）
@@ -558,9 +558,10 @@ void ui_monitor_video_create(lv_obj_t *homepage_scr)
     // 监控视频锁开关
     monitor_lock_on_con = create_custom_gradient_container(
     monitor_video_mode_con,
-    308, 12, 99, 99,       
+    308, 12, 73, 73,       
     100, 0x006BDC, 0x00BDBD, LV_GRAD_DIR_VER,
     0, 225, LV_OPA_100);
+    lv_obj_center(monitor_lock_on_con);
     lv_obj_add_flag(monitor_lock_on_con, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(monitor_lock_on_con, LV_OPA_80,LV_STATE_PRESSED);
     // 给背景容器绑定锁回调（扩大点击区域，仅触发开锁）

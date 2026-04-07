@@ -330,18 +330,22 @@ void ui_pwd_add_create(lv_obj_t *enroll_scr)
     }
 
     // 创建/复用屏幕
-    if(pwd_add_scr == NULL) {
-        pwd_add_scr = lv_obj_create(NULL);
-    } else {
-        lv_obj_clean(pwd_add_scr);
-        // 重置密码状态
-        memset(g_pwd_first, 0, sizeof(g_pwd_first));
-        memset(g_pwd_second, 0, sizeof(g_pwd_second));
-        g_pwd_input_len = 0;
-        g_is_confirm_mode = false;
-        // 关闭旧弹窗
-        close_pwd_dialog();
+    // 关闭密码弹窗
+    close_pwd_dialog();
+
+    if(is_lv_obj_valid(pwd_add_scr)) {
+        lv_obj_del(pwd_add_scr);  // 自动销毁屏幕+所有子控件，无需手动清空
+        pwd_add_scr = NULL;       // 指针置空，杜绝野指针
     }
+
+    // 重新创建全新的屏幕对象
+    pwd_add_scr = lv_obj_create(NULL);
+
+    // 密码状态重置
+    memset(g_pwd_first, 0, sizeof(g_pwd_first));
+    memset(g_pwd_second, 0, sizeof(g_pwd_second));
+    g_pwd_input_len = 0;
+    g_is_confirm_mode = false;
 
     // 屏幕渐变样式（和指纹界面一致）
     lv_style_reset(&pwd_add_grad_style);

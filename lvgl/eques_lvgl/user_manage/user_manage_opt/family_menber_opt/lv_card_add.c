@@ -343,27 +343,44 @@ void ui_card_add_create(lv_obj_t *enroll_scr)
     }
 
     // 2. 创建/复用屏幕对象
-    if(card_add_scr == NULL) {
-        card_add_scr = lv_obj_create(NULL);
-    } else {
-        // 重置时先停止动画和定时器
-        stop_card_animation();
-        del_card_timeout_timer();
-        close_card_popup();
-        close_card_fail_popup();
-        if(lv_obj_is_valid(card_add_scr)) {
-            if(lv_scr_act() != card_add_scr) {
-                lv_obj_clean(card_add_scr);
-            } else {
-                lv_obj_t *child;
-                while((child = lv_obj_get_child(card_add_scr, 0)) != NULL) {
-                    lv_obj_del(child);
-                }
-            }
-        }
-        lv_obj_clear_flag(card_add_scr, LV_OBJ_FLAG_HIDDEN);
-    }
+    // if(card_add_scr == NULL) {
+    //     card_add_scr = lv_obj_create(NULL);
+    // } else {
+    //     // 重置时先停止动画和定时器
+    //     stop_card_animation();
+    //     del_card_timeout_timer();
+    //     close_card_popup();
+    //     close_card_fail_popup();
+    //     if(lv_obj_is_valid(card_add_scr)) {
+    //         if(lv_scr_act() != card_add_scr) {
+    //             lv_obj_clean(card_add_scr);
+    //         } else {
+    //             lv_obj_t *child;
+    //             while((child = lv_obj_get_child(card_add_scr, 0)) != NULL) {
+    //                 lv_obj_del(child);
+    //             }
+    //         }
+    //     }
+    //     lv_obj_clear_flag(card_add_scr, LV_OBJ_FLAG_HIDDEN);
+    // }
     
+    stop_card_animation();
+    del_card_timeout_timer();
+    close_card_popup();
+    close_card_fail_popup();
+
+    // 👇 【统一安全逻辑】销毁旧屏幕 + 释放所有资源（和user/family屏幕完全一致）
+    if(is_lv_obj_valid(card_add_scr)) {
+        lv_obj_del(card_add_scr);  // 销毁整个屏幕，自动释放所有子控件，无需手动清理
+        card_add_scr = NULL;       // 指针置空，杜绝野指针
+    }
+
+    // 👇 重新创建全新屏幕
+    card_add_scr = lv_obj_create(NULL);
+
+    // 👇 【核心保留】原有清除隐藏标志逻辑
+    lv_obj_clear_flag(card_add_scr, LV_OBJ_FLAG_HIDDEN);
+
     // 3. 设置屏幕渐变样式
     lv_style_reset(&card_add_grad_style);
     lv_style_set_bg_color(&card_add_grad_style, lv_color_hex(0x010715));

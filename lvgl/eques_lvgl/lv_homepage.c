@@ -425,7 +425,7 @@ static void init_global_styles(void);
 static void status_bar_update_cb(lv_timer_t *timer);
 static void create_status_bar_ex(bool is_homepage); // 正确声明
 // ====================== 原有全局变量 ======================
-static lv_obj_t *homepage_scr = NULL;    
+lv_obj_t *homepage_scr = NULL;    
   
 uint8_t BATTERY_CAPACITY = 100;//电池容量
 lv_obj_t *status_bar = NULL;   
@@ -442,9 +442,15 @@ static void homepage_scr_load_cb(lv_event_t *e)
 {
     if(e == NULL) return;
     lv_obj_t *scr = lv_event_get_target(e);
-    if(scr != homepage_scr || !is_lv_obj_valid(scr)) return;
 
-    lv_obj_clean(scr);
+    if(is_lv_obj_valid(homepage_scr)) {
+        lv_obj_del(homepage_scr);
+        homepage_scr = NULL;
+    }
+    homepage_scr = lv_obj_create(NULL);
+    // if(!is_lv_obj_valid(scr) || scr != homepage_scr) return;
+
+    // lv_obj_clean(scr);
 
     // 确保全局样式已初始化
     init_global_styles();
@@ -467,16 +473,18 @@ static void homepage_scr_load_cb(lv_event_t *e)
     true, lv_color_hex(0xFFCE50), lv_color_hex(0x808080), 0, LV_OPA_0);
     create_container_circle(scr, 181, 192, 107,
     true, lv_color_hex(0xFFFFFF), lv_color_hex(0x808080), 0, LV_OPA_0);
-    lv_obj_t *temp_lable = create_text_label(scr, "25.0 C", &lv_font_montserrat_48, lv_color_hex(0xFFFFFF), 212, 327, LV_OPA_100);
+    create_text_label(scr, "25.0 C", &lv_font_montserrat_48, lv_color_hex(0xFFFFFF), 212, 327, LV_OPA_100);
 
     //开关锁容器
-    lv_obj_t *unlocking_con = create_container
-    (scr, 48, 470, 239, 82, lv_color_hex(0x00BDBD), LV_OPA_100, 0, lv_color_hex(0x2E4B7D), 0, LV_OPA_0);
+    // lv_obj_t *unlocking_con = create_container
+    // (scr, 48, 470, 239, 82, lv_color_hex(0x00BDBD), LV_OPA_100, 0, lv_color_hex(0x2E4B7D), 0, LV_OPA_0);
+    lv_obj_t *unlocking_con = create_custom_gradient_container
+    (scr, 48, 470, 239, 82, 0, 0x006BDC, 0x00BDBD, LV_GRAD_DIR_VER, 0, 225, LV_OPA_100);
     lv_obj_t *locking_con = create_container
     (scr, 287, 470, 239, 82, lv_color_hex(0x2E4B7D), LV_OPA_100, 0, lv_color_hex(0x2E4B7D), 0, LV_OPA_0);
     //开关锁文本
-    lv_obj_t *unlocking_lable = create_text_label(scr, "unlocking", &lv_font_montserrat_28, lv_color_hex(0xFFFFFF), 130, 495, LV_OPA_100);
-    lv_obj_t *locking_lable = create_text_label(scr, "locking", &lv_font_montserrat_28, lv_color_hex(0xFFFFFF), 367, 495, LV_OPA_100);
+    create_text_label(scr, "unlocking", &lv_font_montserrat_28, lv_color_hex(0xFFFFFF), 130, 495, LV_OPA_100);
+    create_text_label(scr, "locking", &lv_font_montserrat_28, lv_color_hex(0xFFFFFF), 367, 495, LV_OPA_100);
     lv_obj_set_style_bg_opa(unlocking_con, LV_OPA_70, LV_STATE_PRESSED);
     lv_obj_add_flag(unlocking_con, LV_OBJ_FLAG_CLICKABLE);      
     lv_obj_set_style_bg_opa(locking_con, LV_OPA_70, LV_STATE_PRESSED);
@@ -659,14 +667,15 @@ static void create_status_bar_ex(bool is_homepage)
     if(status_bar != NULL)
         destroy_status_bar();
 
-    lv_obj_t *current_scr = lv_scr_act();
-    if(!is_lv_obj_valid(current_scr))
-        return;
+    //lv_obj_t *current_scr = lv_scr_act();
+    
+    // if(!is_lv_obj_valid(current_scr))
+    //     return;
 
     // 创建状态栏根容器
-    status_bar = lv_obj_create(current_scr);
+    status_bar = lv_obj_create(lv_scr_act()); // 临时父，后面会替换
     lv_obj_clear_flag(status_bar, LV_OBJ_FLAG_SCROLLABLE);
-    lv_obj_set_size(status_bar, lv_obj_get_width(current_scr), 90);
+    lv_obj_set_size(status_bar, lv_obj_get_width(lv_scr_act()), 90);
     lv_obj_set_style_bg_opa(status_bar, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_set_style_border_opa(status_bar, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_move_foreground(status_bar);
@@ -767,25 +776,21 @@ static void create_status_bar_ex(bool is_homepage)
  */
 void update_status_bar_parent(lv_obj_t *new_scr)
 {
-    if(!is_lv_obj_valid(new_scr)) {
-        LV_LOG_WARN("update_status_bar_parent: new_scr is invalid!");
-        return;
-    }
+    if(!is_lv_obj_valid(new_scr)) return;
 
     bool is_homepage = (new_scr == homepage_scr);
 
-    // ====================== 修复点：每次都强制重建，确保布局刷新 ======================
-    destroy_status_bar();      // 销毁旧的
-    create_status_bar_ex(is_homepage); // 重建新的
+    // 先销毁旧状态栏
+    destroy_status_bar();
 
-    if(is_lv_obj_valid(status_bar)) {
+    // 创建新状态栏
+    create_status_bar_ex(is_homepage);
+
+    // 挂载到新屏幕
+    if(is_lv_obj_valid(status_bar))
+    {
         lv_obj_set_parent(status_bar, new_scr);
         lv_obj_move_foreground(status_bar);
-
-        if(is_homepage)
-            lv_obj_align(status_bar, LV_ALIGN_TOP_LEFT, 0, 0);
-        else
-            lv_obj_align(status_bar, LV_ALIGN_TOP_RIGHT, 0, 0);
     }
 }
 

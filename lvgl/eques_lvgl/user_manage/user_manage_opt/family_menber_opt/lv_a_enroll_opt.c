@@ -710,11 +710,16 @@ void ui_enroll_create(common_member_info_t *member_info, lv_obj_t *parent_scr)
     strncpy(g_current_enroll_member.name, member_info->name, sizeof(g_current_enroll_member.name)-1);
     g_current_enroll_member.avatar_color = member_info->avatar_color;
 
-    if(enroll_scr == NULL) {
-        enroll_scr = lv_obj_create(NULL);
-    } else {
-        lv_obj_clean(enroll_scr);
+    // if(enroll_scr == NULL) {
+    //     enroll_scr = lv_obj_create(NULL);
+    // } else {
+    //     lv_obj_clean(enroll_scr);
+    // }
+    if(is_lv_obj_valid(enroll_scr)) {
+        lv_obj_del(enroll_scr);
+        enroll_scr = NULL;
     }
+    enroll_scr = lv_obj_create(NULL);
     
     lv_style_reset(&enroll_grad_style);
     lv_style_set_bg_color(&enroll_grad_style, lv_color_hex(0x010715));
