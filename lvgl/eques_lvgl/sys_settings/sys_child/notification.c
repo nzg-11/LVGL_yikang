@@ -12,6 +12,7 @@ static lv_obj_t *end_min_roller = NULL;
 static lv_obj_t *time_label = NULL; // 用于更新主页面时间段文本
 
 // 内部状态变量（静态隐藏，仅本文件可见）
+static lv_obj_t *notify_scr = NULL;
 static notify_mode_t g_notify_mode = NOTIFY_ALL;
 bool g_dnd_state = false;
 const char *g_dnd_time_slot = "22:00-6:00";
@@ -140,6 +141,7 @@ static void dnd_time_click_cb(lv_event_t *e) {
     lv_obj_set_pos(dnd_popup, 0, 0);
     lv_obj_set_style_bg_color(dnd_popup, lv_color_hex(0x000000), LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(dnd_popup, LV_OPA_50, LV_STATE_DEFAULT); // 半透明黑色
+    lv_obj_set_style_border_opa(dnd_popup, 0, LV_STATE_DEFAULT);
     lv_obj_add_flag(dnd_popup, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_add_event_cb(dnd_popup, dnd_popup_close_cb, LV_EVENT_CLICKED, NULL); // 点击遮罩关闭
 
@@ -370,7 +372,12 @@ static void dnd_time_confirm_cb(lv_event_t *e) {
 // 创建消息通知子页面
 void ui_notification_settings_create(lv_obj_t *homepage_scr) {
     // 1. 创建子页面对象
-    lv_obj_t *notify_scr = lv_obj_create(NULL);
+    // lv_obj_t *notify_scr = lv_obj_create(NULL);
+    if(is_lv_obj_valid(notify_scr)) {
+        lv_obj_del(notify_scr);
+        notify_scr = NULL;
+    }
+    notify_scr = lv_obj_create(NULL);  
     
     // 2. 复用主模块渐变样式
     extern lv_style_t sys_settings_grad_style;
@@ -382,24 +389,15 @@ void ui_notification_settings_create(lv_obj_t *homepage_scr) {
 
     // 3. 添加标题“消息通知”
     create_text_label(notify_scr, "Message_Notification", &lv_font_montserrat_36, 
-                     lv_color_hex(0xFFFFFF), 328, 115, LV_OPA_100);
-    
-    // 4. 添加返回按钮
-    lv_obj_t *back_btn = create_image_obj(notify_scr, "D:back.png", 52, 123);
-    if (back_btn) {
-        lv_obj_add_flag(back_btn, LV_OBJ_FLAG_CLICKABLE);
-        lv_obj_set_style_opa(back_btn, LV_OPA_80, LV_STATE_PRESSED);
-        lv_obj_add_event_cb(back_btn, back_btn_click_cb, LV_EVENT_CLICKED, homepage_scr);
-    }
+                     lv_color_hex(0xFFFFFF), 83, 80, LV_OPA_100);
 
-    int y_pos = 195;
-
-    // --- 1. 通知模式：创建两个容器（和亮屏时间的6个容器对应） ---
+    int y_pos = 150;
+    // --- 1. 通知模式：创建两个容器
     lv_obj_t *notify_con[NOTIFY_MODE_MAX]; // 存储两个模式的容器
     for (int i = 0; i < NOTIFY_MODE_MAX; i++) {
         // 创建容器
         notify_con[i] = create_container(
-            notify_scr, 47, y_pos, 710, 83, 
+            notify_scr, 48, y_pos, 928, 83, 
             lv_color_hex(0x192A46), LV_OPA_100, 6, 
             lv_color_hex(0x2E4B7D), 0, LV_OPA_0
         );
@@ -410,7 +408,6 @@ void ui_notification_settings_create(lv_obj_t *homepage_scr) {
         lv_obj_set_style_bg_opa(notify_con[i], LV_OPA_70, LV_STATE_PRESSED);
         // 绑定容器点击回调（传递当前索引）
         lv_obj_add_event_cb(notify_con[i], notify_container_click_cb, LV_EVENT_CLICKED, (void *)(long)i);
-
         y_pos += 87; // 和亮屏时间的间距一致
     }
     // --- 2. 创建互斥复选框
@@ -460,12 +457,12 @@ void ui_notification_settings_create(lv_obj_t *homepage_scr) {
     // 提示文本
     lv_obj_t *hint_label = create_text_label(notify_scr, "choose_notify_time", 
                                            &lv_font_montserrat_16, lv_color_hex(0xFFFFFF), 
-                                           75, y_pos + 10, LV_OPA_70);
+                                           81, y_pos + 10, LV_OPA_70);
     y_pos += 40;
 
     // --- 2. 消息免打扰开关 ---
     lv_obj_t *dnd_con = create_container(
-        notify_scr, 47, y_pos, 710, 83, 
+        notify_scr, 48, y_pos, 928, 83, 
         lv_color_hex(0x192A46), LV_OPA_100, 6, 
         lv_color_hex(0x2E4B7D), 0, LV_OPA_0
     );
@@ -473,7 +470,7 @@ void ui_notification_settings_create(lv_obj_t *homepage_scr) {
         // 免打扰文本
         lv_obj_t *dnd_label = create_text_label(notify_scr, "Do_Not_Disturb", 
                                                &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 
-                                               80, 430, LV_OPA_100);
+                                               80, 390, LV_OPA_100);
 
         // 免打扰开关
         g_dnd_switch = lv_switch_create(dnd_con);
@@ -493,7 +490,7 @@ void ui_notification_settings_create(lv_obj_t *homepage_scr) {
 
     // --- 3. 免打扰时间段 ---
     lv_obj_t *time_con = create_container(
-        notify_scr, 47, y_pos, 710, 83, 
+        notify_scr, 48, y_pos, 928, 83, 
         lv_color_hex(0x192A46), LV_OPA_100, 6, 
         lv_color_hex(0x2E4B7D), 0, LV_OPA_0
     );
@@ -505,17 +502,31 @@ void ui_notification_settings_create(lv_obj_t *homepage_scr) {
         // 时间段文本
         time_label = create_text_label(notify_scr, "dnd_time", 
                                                 &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 
-                                                540, 525, LV_OPA_70);
+                                                777, 485, LV_OPA_70);
         char time_text[64];
         lv_obj_t *time_label1 = create_text_label(notify_scr, "DND_Time_Slot", 
                                                 &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 
-                                                80, 517, LV_OPA_100);
+                                                80, 477, LV_OPA_100);
         snprintf(time_text, sizeof(time_text), "       %s", notification_get_dnd_time_slot());
         lv_label_set_text(time_label, time_text);
 
-        // 右侧箭头图标
-        lv_obj_t *arrow_img = create_image_obj(notify_scr, "D:Vector.png", 720, 520);
+        // // 右侧箭头图标
+        // lv_obj_t *arrow_img = create_image_obj(notify_scr, "D:Vector.png", 720, 520);
     }
+    // // 4. 添加返回按钮
+    // lv_obj_t *back_btn = create_image_obj(notify_scr, "D:back.png", 52, 123);
+    // if (back_btn) {
+    //     lv_obj_add_flag(back_btn, LV_OBJ_FLAG_CLICKABLE);
+    //     lv_obj_set_style_opa(back_btn, LV_OPA_80, LV_STATE_PRESSED);
+    //     lv_obj_add_event_cb(back_btn, back_btn_click_cb, LV_EVENT_CLICKED, homepage_scr);
+    // }
+    // 返回
+    lv_obj_t *back_btn = create_container_circle(notify_scr, 52, 90, 30,
+    true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
+    lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
+    lv_obj_add_flag(back_btn,LV_OBJ_FLAG_CLICKABLE);
+    lv_obj_set_style_opa(back_btn,LV_OPA_80,LV_STATE_PRESSED);
+    lv_obj_add_event_cb(back_btn,back_btn_click_cb,LV_EVENT_CLICKED,homepage_scr);
 
     // 7. 更新状态栏父对象
     update_status_bar_parent(notify_scr);
