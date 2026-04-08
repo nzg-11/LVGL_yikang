@@ -12,6 +12,7 @@ extern "C" {
 #include "com.h"
 #include "lv_family_menber.h"
 #include "lv_other_member.h"
+#include "lv_edit_record.h"
 
 #define MAX_FINGER_COUNT        2       // 指纹最大数量
 #define MAX_PWD_COUNT           1       // 密码最大数量
@@ -23,7 +24,7 @@ typedef enum {
     MEMBER_TYPE_OTHER     // 其他成员
 } member_type_e;
 
-// 通用成员信息结构体（抽象核心字段，兼容两种成员）
+// 通用成员信息结构体
 typedef struct {
     member_type_e type;          // 成员类型
     char name[16];               // 名称（通用）
@@ -67,6 +68,12 @@ void finger_enroll_complete(const char *finger_name);
 void pwd_enroll_complete(const char *pwd_name);
 void card_enroll_complete(const char *card_name); //  卡片录入完成回调
 void face_enroll_complete(const char *face_name); //  人脸录入完成回调
+void edit_update_name(edit_type_e type, const char *new_name);
+void edit_delete_item(edit_type_e type);
+pwd_enroll_info_t *get_current_pwd_info(void);
+card_enroll_info_t *get_current_card_info(void);
+finger_enroll_info_t *get_current_finger_info(void);
+face_enroll_info_t *get_current_face_info(void);
 
 extern finger_enroll_info_t g_family_finger_info[MAX_FAMILY_MEMBER_COUNT];
 extern finger_enroll_info_t g_other_finger_info[MAX_OTHER_MEMBER_COUNT];

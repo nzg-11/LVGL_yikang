@@ -1254,7 +1254,7 @@ static bool g_member_selected[MAX_FAMILY_MEMBER_COUNT] = {false};
 static lv_obj_t *g_member_cards[MAX_FAMILY_MEMBER_COUNT] = {NULL};
 lv_obj_t *delete_img = NULL;
 lv_obj_t *back_btn = NULL;
-
+lv_obj_t *family_menber_label = NULL;
 // 全局变量
 static lv_obj_t *bg_mask_layer = NULL;  
 static lv_obj_t *custom_popup = NULL;
@@ -1334,17 +1334,6 @@ void ui_family_menber_create(lv_obj_t *user_manage_scr)
         return;
     }
 
-    // if(family_menber_scr == NULL) {
-    //         family_menber_scr = lv_obj_create(NULL);
-    //         lv_obj_add_event_cb(family_menber_scr, family_menber_scr_load_cb, LV_EVENT_SCREEN_LOAD_START, NULL);
-    //     } else {
-    //         lv_obj_clean(family_menber_scr);
-    //         // 重置临时状态，但保留成员数据数组
-    //         bg_mask_layer = NULL;
-    //         name_keyboard = NULL;
-    //         selected_avatar_color = lv_color_hex(0xEDF4FF);
-    //     }
-
     // 安全创建/重置家庭成员屏幕（修复资源无法释放，保留原有状态重置）
     if(is_lv_obj_valid(family_menber_scr)) {
         lv_obj_del(family_menber_scr);  // 销毁整个旧屏幕，释放所有子控件/资源
@@ -1368,157 +1357,8 @@ void ui_family_menber_create(lv_obj_t *user_manage_scr)
     lv_style_set_bg_grad_stop(&family_menber_grad_style, 255);
     lv_obj_add_style(family_menber_scr, &family_menber_grad_style, LV_STATE_DEFAULT);
 
-    create_text_label(family_menber_scr, "family menber", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 83, 80, LV_OPA_100);
+    family_menber_label = create_text_label(family_menber_scr, "family menber", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 83, 80, LV_OPA_100);
     //lv_obj_align(family_menber_label, LV_ALIGN_TOP_MID, 0, 115);
-/*****************************************************************************************************************/
-    //横屏添加家庭成员容器位置示例
-//     lv_obj_t *family_menber_add_con_test = create_container
-//     (family_menber_scr,677,150,300,200,lv_color_hex(0x192A46), LV_OPA_100, 6,lv_color_hex(0x1F3150), 0, LV_OPA_90);
-//     lv_obj_add_flag(family_menber_add_con_test, LV_OBJ_FLAG_CLICKABLE);
-//     lv_obj_set_style_opa(family_menber_add_con_test, LV_OPA_80, LV_STATE_PRESSED);
-//     lv_obj_set_style_pad_all(family_menber_add_con_test, 0, LV_STATE_DEFAULT);
-    
-//     lv_obj_t *avatar_con = create_container
-//     (family_menber_add_con_test, 122, 15, 60, 60, lv_color_hex(0xFFFFFF), LV_OPA_100, 100, lv_color_hex(0xFFFFFF), 0, LV_OPA_90);
-
-//     // 5. 成员名称标签
-//     lv_obj_t *name_label = create_text_label
-//     (family_menber_add_con_test, "001", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
-//     lv_obj_align(name_label, LV_ALIGN_TOP_MID, 0, 87);
-
-
-//     // 6. 指纹相关（动态显示计数和图标）
-//     char finger_text[8] = {0};
-//     //snprintf(finger_text, sizeof(finger_text), "%d/2", finger_count);
-//     // 选择图标：有记录显示已录入，无记录显示未录入
-//     //const char *finger_img_path = (finger_count > 0) ? "H:finger_has_record.png" : "H:finger_no_record.png";
-//     lv_obj_t *finger_imgs = create_image_obj(family_menber_add_con_test, "H:finger_has_record.png", 18, 157);
-//     lv_obj_t *finger_labels = create_text_label
-//     (family_menber_add_con_test, "0", &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 55, 157, LV_OPA_100);
-
-//     // // 7. 密码相关（动态显示计数和图标）
-//     // char pwd_text[8] = {0};
-//     // snprintf(pwd_text, sizeof(pwd_text), "%d/1", pwd_count);
-//     // const char *pwd_img_path = (pwd_count > 0) ? "H:pwd_has_record.png" : "H:pwd_no_record.png";
-//     lv_obj_t *lvg_pwd_imgs = create_image_obj(family_menber_add_con_test, "H:pwd_has_record.png", 88, 157);
-//     lv_obj_t *lvg_pwd_labels = create_text_label
-//     (family_menber_add_con_test, "0", &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 124, 157, LV_OPA_100);
-
-//     // // 8. 卡片相关（动态显示计数和图标）
-//     // char card_text[8] = {0};
-//     // snprintf(card_text, sizeof(card_text), "%d/1", card_count);
-//     // const char *card_img_path = (card_count > 0) ? "H:card_has_record.png" : "H:card_no_record.png";
-//     lv_obj_t *lvg_card_imgs = create_image_obj(family_menber_add_con_test, "H:card_has_record.png", 152, 146);
-//     lv_obj_t *lvg_card_labels = create_text_label
-//     (family_menber_add_con_test, "0", &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 202, 157, LV_OPA_100);
-
-//     // // 9. 人脸相关（动态显示计数和图标）
-//     // char face_text[8] = {0};
-//     // snprintf(face_text, sizeof(face_text), "%d/1", face_count);
-//     // const char *face_img_path = (face_count > 0) ? "H:face_has_record.png" : "H:face_no_record.png";
-//     lv_obj_t *lvg_face_imgs = create_image_obj(family_menber_add_con_test, "H:face_has_record.png", 230, 150);
-//     lv_obj_t *lvg_face_labels = create_text_label
-//     (family_menber_add_con_test, "0", &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 271, 157, LV_OPA_100);
-// /*****************************************************************************************************************/
-//     //横屏添加家庭成员容器位置示例
-//     lv_obj_t *family_menber_add_con_test01 = create_container
-//     (family_menber_scr,363,150,300,200,lv_color_hex(0x192A46), LV_OPA_100, 6,lv_color_hex(0x1F3150), 0, LV_OPA_90);
-//     lv_obj_add_flag(family_menber_add_con_test01, LV_OBJ_FLAG_CLICKABLE);
-//     lv_obj_set_style_opa(family_menber_add_con_test01, LV_OPA_80, LV_STATE_PRESSED);
-//     lv_obj_set_style_pad_all(family_menber_add_con_test01, 0, LV_STATE_DEFAULT);
-    
-//     lv_obj_t *avatar_con01 = create_container
-//     (family_menber_add_con_test01, 122, 15, 60, 60, lv_color_hex(0xFFFFFF), LV_OPA_100, 100, lv_color_hex(0xFFFFFF), 0, LV_OPA_90);
-
-//     // 5. 成员名称标签
-//     lv_obj_t *name_label01 = create_text_label
-//     (family_menber_add_con_test01, "001", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
-//     lv_obj_align(name_label01, LV_ALIGN_TOP_MID, 0, 87);
-
-
-//     // 6. 指纹相关（动态显示计数和图标）
-//     //char finger_text[8] = {0};
-//     //snprintf(finger_text, sizeof(finger_text), "%d/2", finger_count);
-//     // 选择图标：有记录显示已录入，无记录显示未录入
-//     //const char *finger_img_path = (finger_count > 0) ? "H:finger_has_record.png" : "H:finger_no_record.png";
-//     lv_obj_t *finger_imgs01 = create_image_obj(family_menber_add_con_test01, "H:finger_has_record.png", 18, 157);
-//     lv_obj_t *finger_labels01 = create_text_label
-//     (family_menber_add_con_test01, "0", &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 55, 157, LV_OPA_100);
-
-//     // // 7. 密码相关（动态显示计数和图标）
-//     // char pwd_text[8] = {0};
-//     // snprintf(pwd_text, sizeof(pwd_text), "%d/1", pwd_count);
-//     // const char *pwd_img_path = (pwd_count > 0) ? "H:pwd_has_record.png" : "H:pwd_no_record.png";
-//     lv_obj_t *lvg_pwd_imgs01 = create_image_obj(family_menber_add_con_test01, "H:pwd_has_record.png", 88, 157);
-//     lv_obj_t *lvg_pwd_labels01 = create_text_label
-//     (family_menber_add_con_test01, "0", &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 124, 157, LV_OPA_100);
-
-//     // // 8. 卡片相关（动态显示计数和图标）
-//     // char card_text[8] = {0};
-//     // snprintf(card_text, sizeof(card_text), "%d/1", card_count);
-//     // const char *card_img_path = (card_count > 0) ? "H:card_has_record.png" : "H:card_no_record.png";
-//     lv_obj_t *lvg_card_imgs01 = create_image_obj(family_menber_add_con_test01, "H:card_has_record.png", 152, 146);
-//     lv_obj_t *lvg_card_labels01 = create_text_label
-//     (family_menber_add_con_test01, "0", &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 202, 157, LV_OPA_100);
-
-//     // // 9. 人脸相关（动态显示计数和图标）
-//     // char face_text[8] = {0};
-//     // snprintf(face_text, sizeof(face_text), "%d/1", face_count);
-//     // const char *face_img_path = (face_count > 0) ? "H:face_has_record.png" : "H:face_no_record.png";
-//     lv_obj_t *lvg_face_imgs01 = create_image_obj(family_menber_add_con_test01, "H:face_has_record.png", 230, 150);
-//     lv_obj_t *lvg_face_labels01 = create_text_label
-//     (family_menber_add_con_test01, "0", &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 271, 157, LV_OPA_100);
-
-// /*****************************************************************************************************************/
-//     //横屏添加家庭成员容器位置示例
-//     lv_obj_t *family_menber_add_con_test02 = create_container
-//     (family_menber_scr,48,376,300,200,lv_color_hex(0x192A46), LV_OPA_100, 6,lv_color_hex(0x1F3150), 0, LV_OPA_90);
-//     lv_obj_add_flag(family_menber_add_con_test02, LV_OBJ_FLAG_CLICKABLE);
-//     lv_obj_set_style_opa(family_menber_add_con_test02, LV_OPA_80, LV_STATE_PRESSED);
-//     lv_obj_set_style_pad_all(family_menber_add_con_test02, 0, LV_STATE_DEFAULT);
-    
-//     lv_obj_t *avatar_con02 = create_container
-//     (family_menber_add_con_test02, 122, 15, 60, 60, lv_color_hex(0xFFFFFF), LV_OPA_100, 100, lv_color_hex(0xFFFFFF), 0, LV_OPA_90);
-
-//     // 5. 成员名称标签
-//     lv_obj_t *name_label02 = create_text_label
-//     (family_menber_add_con_test02, "002", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
-//     lv_obj_align(name_label02, LV_ALIGN_TOP_MID, 0, 87);
-
-
-//     // 6. 指纹相关（动态显示计数和图标）
-//     //char finger_text[8] = {0};
-//     //snprintf(finger_text, sizeof(finger_text), "%d/2", finger_count);
-//     // 选择图标：有记录显示已录入，无记录显示未录入
-//     //const char *finger_img_path = (finger_count > 0) ? "H:finger_has_record.png" : "H:finger_no_record.png";
-//     lv_obj_t *finger_imgs02 = create_image_obj(family_menber_add_con_test02, "H:finger_has_record.png", 18, 157);
-//     lv_obj_t *finger_labels02 = create_text_label
-//     (family_menber_add_con_test02, "0", &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 55, 157, LV_OPA_100);
-
-//     // // 7. 密码相关（动态显示计数和图标）
-//     // char pwd_text[8] = {0};
-//     // snprintf(pwd_text, sizeof(pwd_text), "%d/1", pwd_count);
-//     // const char *pwd_img_path = (pwd_count > 0) ? "H:pwd_has_record.png" : "H:pwd_no_record.png";
-//     lv_obj_t *lvg_pwd_imgs02 = create_image_obj(family_menber_add_con_test02, "H:pwd_has_record.png", 88, 157);
-//     lv_obj_t *lvg_pwd_labels02 = create_text_label
-//     (family_menber_add_con_test02, "0", &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 124, 157, LV_OPA_100);
-
-//     // // 8. 卡片相关（动态显示计数和图标）
-//     // char card_text[8] = {0};
-//     // snprintf(card_text, sizeof(card_text), "%d/1", card_count);
-//     // const char *card_img_path = (card_count > 0) ? "H:card_has_record.png" : "H:card_no_record.png";
-//     lv_obj_t *lvg_card_imgs02 = create_image_obj(family_menber_add_con_test02, "H:card_has_record.png", 152, 146);
-//     lv_obj_t *lvg_card_labels02 = create_text_label
-//     (family_menber_add_con_test02, "0", &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 202, 157, LV_OPA_100);
-
-//     // // 9. 人脸相关（动态显示计数和图标）
-//     // char face_text[8] = {0};
-//     // snprintf(face_text, sizeof(face_text), "%d/1", face_count);
-//     // const char *face_img_path = (face_count > 0) ? "H:face_has_record.png" : "H:face_no_record.png";
-//     lv_obj_t *lvg_face_imgs02 = create_image_obj(family_menber_add_con_test02, "H:face_has_record.png", 230, 150);
-//     lv_obj_t *lvg_face_labels02 = create_text_label
-//     (family_menber_add_con_test02, "0", &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 271, 157, LV_OPA_100);
-/*****************************************************************************************************************/
     // 添加家庭成员容器
     family_menber_add_con = create_container
     (family_menber_scr,47,150,300,200,lv_color_hex(0x192A46), LV_OPA_100, 6,lv_color_hex(0x1F3150), 0, LV_OPA_90);
@@ -1542,7 +1382,7 @@ void ui_family_menber_create(lv_obj_t *user_manage_scr)
     lv_obj_add_event_cb(family_menber_add, family_menber_add_click_cb, LV_EVENT_CLICKED, user_manage_scr);
 
     //右上角删除设置
-    delete_img = create_image_obj(family_menber_scr, "H:....png", 709, 132);
+    delete_img = create_image_obj(family_menber_scr, "H:....png", 928, 99);
     lv_obj_add_flag(delete_img, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(delete_img, LV_OPA_80, LV_STATE_PRESSED);
     lv_obj_add_event_cb(delete_img, delete_img_click_cb, LV_EVENT_CLICKED, NULL);
@@ -1552,7 +1392,7 @@ void ui_family_menber_create(lv_obj_t *user_manage_scr)
     // lv_obj_add_flag(back_btn, LV_OBJ_FLAG_CLICKABLE);
     // lv_obj_set_style_opa(back_btn, LV_OPA_80, LV_STATE_PRESSED);
     // lv_obj_add_event_cb(back_btn, back_btn_click_cb, LV_EVENT_CLICKED, user_manage_scr);
-    lv_obj_t *back_btn = create_container_circle(family_menber_scr, 52, 90, 30,
+    back_btn = create_container_circle(family_menber_scr, 52, 90, 30,
     true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
     lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(back_btn,LV_OBJ_FLAG_CLICKABLE);
@@ -1621,6 +1461,43 @@ static void delete_popup_cancel_cb(lv_event_t *e)
     }
 }
 
+/**
+ * @brief 紧凑化家庭成员数据（删除后自动前移补位，消除空位）
+ */
+static void compact_family_members(void)
+{
+    uint8_t valid_idx = 0; // 有效成员的目标位置
+    
+    // 遍历所有成员，将有效成员向前紧凑排列
+    for (uint8_t i = 0; i < MAX_FAMILY_MEMBER_COUNT; i++)
+    {
+        if (family_member_list[i].is_valid)
+        {
+            // 如果当前有效成员不在目标位置，才移动数据
+            if (valid_idx != i)
+            {
+                // 1. 移动主成员数据
+                family_member_list[valid_idx] = family_member_list[i];
+                // 2. 移动对应指纹/密码/卡片/人脸数据
+                g_family_finger_info[valid_idx] = g_family_finger_info[i];
+                g_family_pwd_info[valid_idx] = g_family_pwd_info[i];
+                g_family_card_info[valid_idx] = g_family_card_info[i];
+                g_family_face_info[valid_idx] = g_family_face_info[i];
+                
+                // 3. 清空原位置数据（避免残留）
+                memset(&family_member_list[i], 0, sizeof(family_member_info_t));
+                memset(&g_family_finger_info[i], 0, sizeof(finger_enroll_info_t));
+                memset(&g_family_pwd_info[i], 0, sizeof(pwd_enroll_info_t));
+                memset(&g_family_card_info[i], 0, sizeof(card_enroll_info_t));
+                memset(&g_family_face_info[i], 0, sizeof(face_enroll_info_t));
+            }
+            valid_idx++; // 目标位置后移
+        }
+    }
+    
+    // 重置总成员数量
+    member_count = valid_idx;
+}
 
 /**
  * @brief 删除确认按钮点击回调函数
@@ -1788,99 +1665,65 @@ static void member_delete_btn_click_cb(lv_event_t *e)
  * @brief 删除确认弹窗-确认回调函数
  * @param e 事件指针
  */
+/**
+ * @brief 删除确认弹窗-确认回调函数
+ * @param e 事件指针
+ */
 static void delete_popup_ok_cb(lv_event_t *e)
 {
     if(e == NULL) return;
     lv_obj_t *popup = (lv_obj_t *)lv_event_get_user_data(e);
     
-    // 1. 批量删除所有选中的成员 + 清理所有勾选视觉残留
+    // 1. 标记选中成员为无效
     bool has_delete = false;
     for(uint8_t i = 0; i < MAX_FAMILY_MEMBER_COUNT; i++) {
         if(g_member_selected[i]) {
-            // 清空成员数据
-            family_member_list[i].is_valid = false;
-            memset(family_member_list[i].name, 0, sizeof(family_member_list[i].name));
-                    family_member_list[i].finger_count = 0;
-                    family_member_list[i].pwd_count = 0;
-                    family_member_list[i].card_count = 0;  // 确保卡片计数重置
-                    family_member_list[i].face_count = 0;  // 确保人脸计数重置
-                        //  清空卡片信息
-                    memset(&g_family_card_info[i], 0, sizeof(card_enroll_info_t));
-                    //  清空指纹信息
-                    memset(&g_family_finger_info[i], 0, sizeof(finger_enroll_info_t));
-                    //  清空密码信息
-                    memset(&g_family_pwd_info[i], 0, sizeof(pwd_enroll_info_t));
-                    //  清空人脸信息
-                    memset(&g_family_face_info[i], 0, sizeof(face_enroll_info_t));
-            // 删除勾选相关的UI元素
-            if(g_delete_flag_imgs[i] != NULL && lv_obj_is_valid(g_delete_flag_imgs[i])) {
-                lv_obj_del(g_delete_flag_imgs[i]);
-                g_delete_flag_imgs[i] = NULL;
-            }
-            if(g_delete_hid_containers[i] != NULL && lv_obj_is_valid(g_delete_hid_containers[i])) {
-                lv_obj_del(g_delete_hid_containers[i]);
-                g_delete_hid_containers[i] = NULL;
-            }
-            
-            // 强制重置成员卡片样式
-            if(g_member_cards[i] != NULL && lv_obj_is_valid(g_member_cards[i])) {
-                lv_obj_set_style_opa(g_member_cards[i], LV_OPA_100, LV_STATE_DEFAULT); // 恢复透明度
-                lv_obj_add_flag(g_member_cards[i], LV_OBJ_FLAG_CLICKABLE); // 恢复点击
-                lv_obj_del(g_member_cards[i]); // 删除卡片控件
-                g_member_cards[i] = NULL;      // 清空引用
-            }
-            
-            // 核心修复3：重置选中状态标记
-            g_member_selected[i] = false;
-            
+            // 标记为无效
+            memset(&family_member_list[i], 0, sizeof(family_member_info_t));
             has_delete = true;
-            LV_LOG_USER("成功删除成员：%d", i);
         }
     }
     
-    // 2. 刷新界面（彻底重置所有样式+重建卡片）
-    if(has_delete && family_menber_scr != NULL && lv_obj_is_valid(family_menber_scr)) {
-        // 步骤1：清空所有残留的样式/状态（关键！）
-        for(uint8_t i = 0; i < MAX_FAMILY_MEMBER_COUNT; i++) {
-            // 即使是未选中的成员，也重置样式（防止批量删除时的样式污染）
-            if(g_member_cards[i] != NULL && lv_obj_is_valid(g_member_cards[i])) {
-                lv_obj_set_style_opa(g_member_cards[i], LV_OPA_100, LV_STATE_DEFAULT);
-                lv_obj_add_flag(g_member_cards[i], LV_OBJ_FLAG_CLICKABLE);
-            }
+    // 2. 🔥 核心：数据紧凑化
+    if(has_delete) {
+        compact_family_members();
+    }
+    
+    // 3. 清空所有旧UI + 重置全局状态
+    for(uint8_t i = 0; i < MAX_FAMILY_MEMBER_COUNT; i++) {
+        // 删除所有UI元素
+        if(g_delete_flag_imgs[i] != NULL && lv_obj_is_valid(g_delete_flag_imgs[i])) {
+            lv_obj_del(g_delete_flag_imgs[i]);
+            g_delete_flag_imgs[i] = NULL;
         }
-        
-        // 步骤2：删除所有旧卡片，重建剩余成员
-        for(uint8_t i = 0; i < MAX_FAMILY_MEMBER_COUNT; i++) {
-            if(g_member_cards[i] != NULL && lv_obj_is_valid(g_member_cards[i])) {
-                lv_obj_del(g_member_cards[i]);
-                g_member_cards[i] = NULL;
-            }
+        if(g_delete_hid_containers[i] != NULL && lv_obj_is_valid(g_delete_hid_containers[i])) {
+            lv_obj_del(g_delete_hid_containers[i]);
+            g_delete_hid_containers[i] = NULL;
         }
-        
-        // 步骤3：重置计数，重新创建剩余成员卡片
-        member_count = 0;
-        // next_member_y = 374;
+        if(g_member_cards[i] != NULL && lv_obj_is_valid(g_member_cards[i])) {
+            lv_obj_del(g_member_cards[i]);
+            g_member_cards[i] = NULL;
+        }
+        // 重置选中状态
+        g_member_selected[i] = false;
+    }
+    
+    // 4. 🔥 重新创建连续排列的卡片
+    if(family_menber_scr != NULL && lv_obj_is_valid(family_menber_scr)) {
         restore_family_members(family_menber_scr);
-        
-        // 步骤4：强制刷新屏幕（解决LVGL样式缓存问题）
         lv_obj_invalidate(family_menber_scr);
-        lv_refr_now(NULL); // 立即刷新显示，不等待LVGL刷新周期
-        
-        // 步骤5：恢复添加按钮状态
+        lv_refr_now(NULL);
         update_add_member_btn_state();
     }
     
-    // 3. 关闭弹窗
-    if(popup != NULL && lv_obj_is_valid(popup)) {
-        lv_obj_del(popup);
-    }
+    // 5. 关闭弹窗 + 退出删除模式
+    if(popup != NULL && lv_obj_is_valid(popup)) lv_obj_del(popup);
     if(bg_mask_layer != NULL && lv_obj_is_valid(bg_mask_layer)) {
         lv_obj_add_flag(bg_mask_layer, LV_OBJ_FLAG_HIDDEN);
     }
-    
-    // 4. 退出删除模式（确保所有删除模式的UI状态都被清除）
     switch_delete_mode(false);
 }
+    
 
 
 
@@ -1902,12 +1745,15 @@ static void switch_delete_mode(bool enter)
         if(delete_img != NULL && lv_obj_is_valid(delete_img)) {
             lv_obj_add_flag(delete_img, LV_OBJ_FLAG_HIDDEN);
         }
+        if(family_menber_label != NULL && lv_obj_is_valid(family_menber_label)) {
+            lv_obj_add_flag(family_menber_label, LV_OBJ_FLAG_HIDDEN);
+        }
         
         // 2. 创建取消按钮
         if(g_delete_cancel_btn == NULL || !lv_obj_is_valid(g_delete_cancel_btn)) {
             g_delete_cancel_btn = create_text_label(
                 family_menber_scr, "cancel", &lv_font_montserrat_24, 
-                lv_color_hex(0xFFFFFF), 52, 123, LV_OPA_100
+                lv_color_hex(0x00BDBD), 48, 90, LV_OPA_100
             );
             lv_obj_add_flag(g_delete_cancel_btn, LV_OBJ_FLAG_CLICKABLE);
             lv_obj_set_style_opa(g_delete_cancel_btn, LV_OPA_80, LV_STATE_PRESSED);
@@ -1920,7 +1766,7 @@ static void switch_delete_mode(bool enter)
         if(g_delete_confirm_btn == NULL || !lv_obj_is_valid(g_delete_confirm_btn)) {
             g_delete_confirm_btn = create_text_label(
                 family_menber_scr, "delete", &lv_font_montserrat_24, 
-                lv_color_hex(0xFF0000), 709, 132, LV_OPA_100
+                lv_color_hex(0xFF0000), 928, 90, LV_OPA_100
             );
             lv_obj_add_flag(g_delete_confirm_btn, LV_OBJ_FLAG_CLICKABLE);
             lv_obj_set_style_opa(g_delete_confirm_btn, LV_OPA_80, LV_STATE_PRESSED);
@@ -1960,6 +1806,9 @@ static void switch_delete_mode(bool enter)
         }
         if(delete_img != NULL && lv_obj_is_valid(delete_img)) {
             lv_obj_clear_flag(delete_img, LV_OBJ_FLAG_HIDDEN);
+        }
+        if(family_menber_label != NULL && lv_obj_is_valid(family_menber_label)) {
+            lv_obj_clear_flag(family_menber_label, LV_OBJ_FLAG_HIDDEN);
         }
         
         // 2. 隐藏取消和删除按钮
@@ -2291,7 +2140,7 @@ static void avatar_click_cb(lv_event_t *e)
             return;
         }
     
-    LV_LOG_USER("点击了第 %d 个头像，创建新成员", avatar_idx + 1);
+    LV_LOG_USER("%d", avatar_idx + 1);
     
     // 1. 获取选择的头像颜色
     selected_avatar_color = lv_obj_get_style_bg_color(avatar, LV_STATE_DEFAULT);
@@ -2516,7 +2365,7 @@ void family_menber_add_click_cb(lv_event_t *e)
 // 计算成员列表需要的最小遮罩层高度
 static lv_coord_t get_member_list_max_height(void)
 {
-    lv_coord_t max_bottom_y = 1000; // 默认最小高度1000
+    lv_coord_t max_bottom_y = 600; // 默认最小高度600
     lv_coord_t card_height = 175;   // 单个成员卡片的高度（和create_family_member_card中一致）
     
     // 遍历所有有效成员，找到最底部成员的Y坐标 + 卡片高度

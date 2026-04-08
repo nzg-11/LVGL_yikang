@@ -369,16 +369,16 @@ void ui_card_add_create(lv_obj_t *enroll_scr)
     close_card_popup();
     close_card_fail_popup();
 
-    // 👇 【统一安全逻辑】销毁旧屏幕 + 释放所有资源（和user/family屏幕完全一致）
+    // 销毁旧屏幕 + 释放所有资源
     if(is_lv_obj_valid(card_add_scr)) {
         lv_obj_del(card_add_scr);  // 销毁整个屏幕，自动释放所有子控件，无需手动清理
         card_add_scr = NULL;       // 指针置空，杜绝野指针
     }
 
-    // 👇 重新创建全新屏幕
+    // 重新创建全新屏幕
     card_add_scr = lv_obj_create(NULL);
 
-    // 👇 【核心保留】原有清除隐藏标志逻辑
+    // 原有清除隐藏标志逻辑
     lv_obj_clear_flag(card_add_scr, LV_OBJ_FLAG_HIDDEN);
 
     // 3. 设置屏幕渐变样式

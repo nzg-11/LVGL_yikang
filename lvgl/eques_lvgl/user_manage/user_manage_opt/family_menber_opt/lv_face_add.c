@@ -376,16 +376,16 @@ void ui_face_add_create(lv_obj_t *enroll_scr)
     close_face_popup();
     close_face_fail_popup();
 
-    // 👇 【统一安全流程】销毁旧屏幕，释放全部资源
+    //销毁旧屏幕，释放全部资源
     if(is_lv_obj_valid(face_add_scr)) {
         lv_obj_del(face_add_scr);  // 自动销毁屏幕+所有子控件，无需手动清空
         face_add_scr = NULL;       // 指针置空，杜绝野指针
     }
 
-    // 👇 重新创建全新的屏幕对象
+    // 重新创建全新的屏幕对象
     face_add_scr = lv_obj_create(NULL);
 
-    // 👇 【完全保留】清除隐藏标志，保证屏幕正常显示
+    // 清除隐藏标志，保证屏幕正常显示
     lv_obj_clear_flag(face_add_scr, LV_OBJ_FLAG_HIDDEN);
 
     // 3. 设置屏幕渐变样式
