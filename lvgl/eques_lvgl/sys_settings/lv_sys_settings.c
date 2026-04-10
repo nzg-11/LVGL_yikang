@@ -7,31 +7,26 @@
 #ifdef LV_DEMO_EQUES
 #if LV_EQUES_VER    //竖屏
 
-
-
 #else    //横屏
+
 // 恢复出厂设置弹窗相关静态变量
 static lv_obj_t *reset_popup = NULL;
-static void reset_popup_close_cb(lv_event_t *e);
-static void reset_confirm_cb(lv_event_t *e);
-static void factory_reset_confirm_action(void);
-static void factory_reset_click_cb(lv_event_t *e);
-
 // 系统设置主屏幕全局变量
-static lv_obj_t *sys_settings_scr = NULL; 
+lv_obj_t *sys_settings_scr = NULL; 
 lv_style_t sys_settings_grad_style;
 static bool sys_settings_style_inited = false;
 static lv_obj_t *g_time_view_label = NULL;
-
-// ==================== 滑块相关全局变量与接口定义 ====================
-// 三个滑块对象指针（全局化，方便外部控制）
+// 三个滑块对象指针
 static lv_obj_t *light_slider = NULL;    // 屏幕亮度滑块
 static lv_obj_t *ring_slider = NULL;     // 铃声滑块
 static lv_obj_t *notify_slider = NULL;   // 通知音量滑块
 
 // 滑块默认值（50%）
 #define SLIDER_DEFAULT_VALUE 50
-
+static void reset_popup_close_cb(lv_event_t *e);
+static void reset_confirm_cb(lv_event_t *e);
+static void factory_reset_confirm_action(void);
+static void factory_reset_click_cb(lv_event_t *e);
 // 滑块值改变回调函数声明
 static void light_slider_value_changed_cb(lv_event_t *e);
 static void ring_slider_value_changed_cb(lv_event_t *e);
@@ -40,10 +35,13 @@ static void notify_slider_value_changed_cb(lv_event_t *e);
 // 外部控制接口函数声明
 void set_light_brightness(uint8_t brightness);  // 设置屏幕亮度（0-100）
 uint8_t get_light_brightness(void);             // 获取当前亮度
+
 void set_ring_volume(uint8_t volume);           // 设置铃声音量（0-100）
 uint8_t get_ring_volume(void);                  // 获取当前铃声音量
+
 void set_notify_volume(uint8_t volume);         // 设置通知音量（0-100）
 uint8_t get_notify_volume(void);                // 获取当前通知音量
+
 void slider_reset_to_default(void);             // 滑块恢复默认值（50%）
 
 // ==================== 滑块回调函数实现 ====================
@@ -137,6 +135,12 @@ static void light_time_click_cb(lv_event_t *e) {
 
 static void monitor_mode_click_cb(lv_event_t *e) {
     if(e == NULL) return;
+    //强制清空监控模式的残留弹窗，杜绝对象重叠
+    extern lv_obj_t *monitor_popup;
+    if(lv_obj_is_valid(monitor_popup)){
+        lv_obj_del(monitor_popup);
+        monitor_popup = NULL;
+    }
     lv_obj_t *homepage_scr = (lv_obj_t *)lv_event_get_user_data(e);
     ui_monitor_mode_settings_create(homepage_scr);
 }
@@ -172,11 +176,11 @@ void ui_sys_settings_create(lv_obj_t *homepage_scr) {
         return;
     }
 
-    // 1. 关键：如果旧设置页存在，先销毁！释放所有内存
-    if(is_lv_obj_valid(sys_settings_scr)) {
-        lv_obj_del(sys_settings_scr);
-        sys_settings_scr = NULL;
-    }
+    // // 1. 关键：如果旧设置页存在，先销毁！释放所有内存
+    // if(is_lv_obj_valid(sys_settings_scr)) {
+    //     lv_obj_del(sys_settings_scr);
+    //     sys_settings_scr = NULL;
+    // }
     sys_settings_scr = lv_obj_create(NULL);  
     
     lv_style_reset(&sys_settings_grad_style);
@@ -357,7 +361,7 @@ void sys_settings_btn_click_cb(lv_event_t *e) {
 
 // ==================== 弹窗相关函数 ====================
 static void reset_popup_close_cb(lv_event_t *e) {
-    if (reset_popup != NULL) {
+    if (lv_obj_is_valid(reset_popup)){
         lv_obj_del(reset_popup);
         reset_popup = NULL;
     }
@@ -396,10 +400,9 @@ static void factory_reset_click_cb(lv_event_t *e) {
     lv_obj_set_pos(reset_popup, 0, 0);
     lv_obj_set_style_bg_color(reset_popup, lv_color_hex(0x000000), LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(reset_popup, LV_OPA_50, LV_STATE_DEFAULT);
-    lv_obj_add_flag(reset_popup, LV_OBJ_FLAG_CLICKABLE);
-    lv_obj_add_event_cb(reset_popup, reset_popup_close_cb, LV_EVENT_CLICKED, NULL);
+    lv_obj_add_flag(reset_popup, LV_OBJ_FLAG_EVENT_BUBBLE);
+    // lv_obj_add_event_cb(reset_popup, reset_popup_close_cb, LV_EVENT_CLICKED, NULL);
     lv_obj_set_style_border_width(reset_popup, 0, LV_STATE_DEFAULT);
-
 
     // 创建确认对话框容器
     lv_obj_t *confirm_dialog = lv_obj_create(reset_popup);
@@ -408,7 +411,7 @@ static void factory_reset_click_cb(lv_event_t *e) {
     // lv_obj_set_align(confirm_dialog, LV_ALIGN_CENTER);
     lv_obj_set_style_bg_color(confirm_dialog, lv_color_hex(0xFFFFFF), LV_STATE_DEFAULT);
     lv_obj_set_style_radius(confirm_dialog, 16, LV_STATE_DEFAULT);
-    lv_obj_clear_flag(confirm_dialog, LV_OBJ_FLAG_CLICKABLE);
+    lv_obj_clear_flag(confirm_dialog, LV_OBJ_FLAG_EVENT_BUBBLE);
 
     // 添加标题
     lv_obj_t *title_label = create_text_label(confirm_dialog, "Factory_Reset", 

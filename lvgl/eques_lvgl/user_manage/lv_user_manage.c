@@ -122,7 +122,7 @@ void user_manage_btn_click_cb(lv_event_t *e)
 #include "lv_other_member.h"
 #include "lv_user_permission.h"
 
-static lv_obj_t *user_manage_scr = NULL; 
+lv_obj_t *user_manage_scr = NULL; 
 
 static lv_style_t user_manage_grad_style;
 static bool user_manage_style_inited = false;

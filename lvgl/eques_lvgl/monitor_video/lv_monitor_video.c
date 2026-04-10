@@ -357,7 +357,7 @@ void monitor_video_btn_click_cb(lv_event_t *e)
 #else
 #include "lv_monitor_video.h"
 
-static lv_obj_t *monitor_video_scr = NULL; 
+lv_obj_t *monitor_video_scr = NULL; 
 
 static lv_style_t monitor_video_grad_style;
 static bool monitor_video_style_inited = false;

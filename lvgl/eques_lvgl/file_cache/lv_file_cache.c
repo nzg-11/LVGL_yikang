@@ -1,7 +1,7 @@
 #include "lv_file_cache.h"
 
 
-static lv_obj_t *file_cache_scr = NULL; 
+ lv_obj_t *file_cache_scr = NULL; 
 
 static lv_style_t file_cache_grad_style;
 static bool file_cache_style_inited = false;
@@ -29,7 +29,7 @@ void ui_file_cache_create(lv_obj_t *homepage_scr)
     if(is_lv_obj_valid(file_cache_scr)) {
             lv_obj_del(file_cache_scr);
             file_cache_scr = NULL;
-        }
+    }
     file_cache_scr = lv_obj_create(NULL);
     
     

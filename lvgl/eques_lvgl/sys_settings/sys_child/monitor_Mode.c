@@ -4,25 +4,24 @@
 
 // 监控时间段相关静态变量
 static monitor_slot_t g_slot_type = MONITOR_SLOT_FULL_DAY; // 默认全天
-static const char *g_slot_strs[] = {
-    "0:00-24:00",   // 全天
-    "8:00-18:00",   // 工作时间
-    "22:00-6:00"    // 自定义（默认）
+static char g_slot_strs[MONITOR_SLOT_MAX][16] = {
+    "0:00-24:00",
+    "8:00-18:00",
+    "22:00-6:00"
 };
 // 内部状态变量（静态隐藏，仅本文件可见）
-static lv_obj_t *monitor_scr = NULL; 
+ lv_obj_t *monitor_scr = NULL; 
 static monitor_mode_state_t g_monitor_state = MONITOR_MODE_ON; // 默认开启
 static const char *g_monitor_state_str[] = {"stop", "start"};
 // static const char *g_time_slot_str = "8:00-18:00"; // 默认时间段
 static lv_obj_t *g_monitor_view_label = NULL; // 主页面状态显示标签
-static lv_obj_t *g_switch = NULL;             // 开关对象
-static lv_obj_t *g_state_label = NULL;        // 子页面中“已开启/关闭”文本标签
-
-static lv_obj_t *g_time_con = NULL;
-static lv_obj_t *g_time_slot_label = NULL; // 保存时间段文本标签，直接刷新
+ lv_obj_t *g_switch = NULL;             // 开关对象
+ lv_obj_t *g_state_label = NULL;        // 子页面中“已开启/关闭”文本标签
+ lv_obj_t *g_time_con = NULL;
+ lv_obj_t *g_time_slot_label = NULL; // 保存时间段文本标签，直接刷新
 
 // 弹窗相关静态变量
-static lv_obj_t *monitor_popup = NULL;
+ lv_obj_t *monitor_popup = NULL;
 static lv_obj_t *start_hour_roller = NULL;
 static lv_obj_t *start_min_roller = NULL;
 static lv_obj_t *end_hour_roller = NULL;
@@ -93,7 +92,7 @@ void monitor_mode_set_slot_type(monitor_slot_t type) {
 
     // 更新单选按钮选中状态（如果存在）
     for (int i = 0; i < MONITOR_SLOT_MAX; i++) {
-        if (g_slot_radios[i] != NULL) {
+        if (lv_obj_is_valid(g_slot_radios[i])) {
             if (i == type) {
                 lv_obj_add_state(g_slot_radios[i], LV_STATE_CHECKED);
             } else {
@@ -114,63 +113,106 @@ const char *monitor_mode_get_slot_str(void) {
 
 // 单选按钮回调（互斥选择时间段类型）
 static void slot_radio_cb(lv_event_t *e) {
-    if (e == NULL) return;
-    int idx = (int)(intptr_t)lv_event_get_user_data(e);
-    lv_obj_t *clicked_checkbox = lv_event_get_target(e);
-
-    // 仅在“选中”时处理（避免取消时误操作）
-    if (lv_obj_has_state(clicked_checkbox, LV_STATE_CHECKED)) {
-        // 互斥逻辑：取消其他所有复选框的选中状态
-        for (int i = 0; i < MONITOR_SLOT_MAX; i++) {
-            if (i != idx && g_slot_radios[i] != NULL) {
-                lv_obj_clear_state(g_slot_radios[i], LV_STATE_CHECKED);
-            }
-        }
-        // 设置当前选中的时间段类型
-        monitor_mode_set_slot_type((monitor_slot_t)idx);
+    // 1. 双重防护：空指针 + 弹窗无效 + 防止事件重入
+    if (e == NULL || !lv_obj_is_valid(monitor_popup) || !lv_event_get_target(e)) {
+        return;
     }
+    // 2. 只响应选中事件，过滤无效触发
+    lv_obj_t *checkbox = lv_event_get_target(e);
+    if (!lv_obj_has_state(checkbox, LV_STATE_CHECKED)) {
+        return;
+    }
+    // 3. 安全获取索引
+    int idx = (int)(intptr_t)lv_event_get_user_data(e);
+    if (idx < 0 || idx >= MONITOR_SLOT_MAX) {
+        return;
+    }
+    // 4. 安全互斥逻辑（只操作有效控件）
+    for (int i = 0; i < MONITOR_SLOT_MAX; i++) {
+        if (i != idx && lv_obj_is_valid(g_slot_radios[i])) {
+            lv_obj_clear_state(g_slot_radios[i], LV_STATE_CHECKED);
+        }
+    }
+    // 5. 最终更新状态
+    monitor_mode_set_slot_type((monitor_slot_t)idx);
 }
 
 // 弹窗关闭回调
 static void monitor_popup_close_cb(lv_event_t *e) {
-    if (monitor_popup != NULL) {
-        lv_obj_del(monitor_popup);
+    if (!lv_obj_is_valid(monitor_popup)) {
         monitor_popup = NULL;
-        start_hour_roller = NULL;
-        start_min_roller = NULL;
-        end_hour_roller = NULL;
-        end_min_roller = NULL;
-        for (int i = 0; i < MONITOR_SLOT_MAX; i++) {
-            g_slot_radios[i] = NULL;
-        }
+        return;
     }
+    lv_obj_del(monitor_popup);
+    monitor_popup = NULL;
+    start_hour_roller = NULL;
+    start_min_roller = NULL;
+    end_hour_roller = NULL;
+    end_min_roller = NULL;
+    memset(g_slot_radios, 0, sizeof(g_slot_radios));
 }
 
 // 确定按钮回调：更新自定义时间段并关闭弹窗
 static void monitor_time_confirm_cb(lv_event_t *e) {
-    if (g_slot_type == MONITOR_SLOT_CUSTOM) {
-        // 获取滚轮选择的时间
-        char start_hour[3], start_min[3], end_hour[3], end_min[3];
-        lv_roller_get_selected_str(start_hour_roller, start_hour, sizeof(start_hour));
-        lv_roller_get_selected_str(start_min_roller, start_min, sizeof(start_min));
-        lv_roller_get_selected_str(end_hour_roller, end_hour, sizeof(end_hour));
-        lv_roller_get_selected_str(end_min_roller, end_min, sizeof(end_min));
-
-        // 格式化新的自定义时间段字符串
-        static char new_slot[16];
-        snprintf(new_slot, sizeof(new_slot), "%s:%s-%s:%s",
-                 start_hour, start_min, end_hour, end_min);
-        g_slot_strs[MONITOR_SLOT_CUSTOM] = new_slot;
-        monitor_mode_set_slot_type(MONITOR_SLOT_CUSTOM);
+    // 安全判断：必须是自定义模式 + 弹窗有效
+    if (g_slot_type != MONITOR_SLOT_CUSTOM || !lv_obj_is_valid(monitor_popup)) {
+        monitor_popup_close_cb(NULL);
+        return;
     }
-    // 关闭弹窗
-    monitor_popup_close_cb(e);
+    // 所有滚轮必须有效，才执行操作（杜绝野指针）
+    if (!lv_obj_is_valid(start_hour_roller) || !lv_obj_is_valid(start_min_roller) ||
+        !lv_obj_is_valid(end_hour_roller) || !lv_obj_is_valid(end_min_roller)) {
+        monitor_popup_close_cb(NULL);
+        return;
+    }
+    // 固定数组大小，杜绝内存越界
+    char start_hour[4] = {0};
+    char start_min[4] = {0};
+    char end_hour[4] = {0};
+    char end_min[4] = {0};
+    // 安全获取滚轮值
+    lv_roller_get_selected_str(start_hour_roller, start_hour, sizeof(start_hour));
+    lv_roller_get_selected_str(start_min_roller, start_min, sizeof(start_min));
+    lv_roller_get_selected_str(end_hour_roller, end_hour, sizeof(end_hour));
+    lv_roller_get_selected_str(end_min_roller, end_min, sizeof(end_min));
+    // 严格限制格式化长度，防止数组越界（核心！）
+    snprintf(g_slot_strs[MONITOR_SLOT_CUSTOM],
+             sizeof(g_slot_strs[MONITOR_SLOT_CUSTOM]) - 1,  // 留结束符
+             "%s:%s-%s:%s",
+             start_hour, start_min, end_hour, end_min);
+    monitor_mode_set_slot_type(MONITOR_SLOT_CUSTOM);
+    monitor_popup_close_cb(NULL);
 }
+// static void monitor_time_confirm_cb(lv_event_t *e) {
+//     if (g_slot_type == MONITOR_SLOT_CUSTOM) {
+//         char start_hour[4] = {0}, start_min[4] = {0};
+//         char end_hour[4] = {0}, end_min[4] = {0};
+//         // 获取滚轮选择的时间
+//         // char start_hour[3], start_min[3], end_hour[3], end_min[3];
+//         if (lv_obj_is_valid(start_hour_roller) && lv_obj_is_valid(start_min_roller) && 
+//             lv_obj_is_valid(end_hour_roller) && lv_obj_is_valid(end_min_roller)) {
+//             lv_roller_get_selected_str(start_hour_roller, start_hour, sizeof(start_hour));
+//             lv_roller_get_selected_str(start_min_roller, start_min, sizeof(start_min));
+//             lv_roller_get_selected_str(end_hour_roller, end_hour, sizeof(end_hour));
+//             lv_roller_get_selected_str(end_min_roller, end_min, sizeof(end_min));
+
+//             snprintf(g_slot_strs[MONITOR_SLOT_CUSTOM], sizeof(g_slot_strs[MONITOR_SLOT_CUSTOM]), 
+//                      "%s:%s-%s:%s", start_hour, start_min, end_hour, end_min);
+//             monitor_mode_set_slot_type(MONITOR_SLOT_CUSTOM);
+//         }
+//     }
+//     // 关闭弹窗
+//     monitor_popup_close_cb(NULL);
+// }
 
 static void time_slot_click_cb(lv_event_t *e) {
     if (e == NULL) return;
     LV_LOG_USER("time_slot_click_cb");
-
+    if(lv_obj_is_valid(monitor_popup)) {
+        lv_obj_del(monitor_popup);
+        monitor_popup = NULL;
+    }
+    // if (monitor_popup != NULL) return; // 弹窗已存在，直接退出，不重复创建
     // 1. 创建全屏遮罩层（完全复用DND弹窗的遮罩样式）
     monitor_popup = lv_obj_create(lv_scr_act());
     lv_obj_set_size(monitor_popup, LV_HOR_RES, LV_VER_RES);
@@ -178,7 +220,7 @@ static void time_slot_click_cb(lv_event_t *e) {
     lv_obj_set_style_bg_color(monitor_popup, lv_color_hex(0x000000), LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(monitor_popup, LV_OPA_50, LV_STATE_DEFAULT); // 半透明黑色遮罩
     lv_obj_add_flag(monitor_popup, LV_OBJ_FLAG_CLICKABLE);
-    lv_obj_add_event_cb(monitor_popup, monitor_popup_close_cb, LV_EVENT_CLICKED, NULL);
+    // lv_obj_add_event_cb(monitor_popup, monitor_popup_close_cb, LV_EVENT_CLICKED, NULL);
 
     // 2. 创建底部时间选择器容器
     lv_obj_t *time_picker = lv_obj_create(monitor_popup);
@@ -187,7 +229,7 @@ static void time_slot_click_cb(lv_event_t *e) {
     lv_obj_set_style_bg_color(time_picker, lv_color_hex(0xE0EDFF), LV_STATE_DEFAULT);
     lv_obj_set_style_radius(time_picker, 36, LV_STATE_DEFAULT); // 顶部圆角
     lv_obj_set_style_pad_top(time_picker, 20, LV_STATE_DEFAULT);
-    lv_obj_clear_flag(time_picker, LV_OBJ_FLAG_CLICKABLE);
+    lv_obj_clear_flag(time_picker, LV_OBJ_FLAG_EVENT_BUBBLE);
 
     // 3. 创建标题栏
     lv_obj_t *header = lv_obj_create(time_picker);
@@ -211,14 +253,14 @@ static void time_slot_click_cb(lv_event_t *e) {
     lv_obj_set_style_border_width(cancel_btn, 0, LV_STATE_DEFAULT);
     lv_obj_set_style_shadow_width(cancel_btn, 0, LV_STATE_DEFAULT);
     lv_obj_t *cancel_label = create_text_label(cancel_btn, "cancel", 
-                                               &lv_font_montserrat_36, lv_color_hex(0xBDBDBD), 
+                                               &lv_font_montserrat_28, lv_color_hex(0xBDBDBD), 
                                                0, 0, LV_OPA_100);
     lv_obj_set_align(cancel_label, LV_ALIGN_CENTER);
     lv_obj_add_event_cb(cancel_btn, monitor_popup_close_cb, LV_EVENT_CLICKED, NULL);
 
     // 标题（改为“监控时间段”）
     lv_obj_t *title_label = create_text_label(header, "title_label", 
-                                             &lv_font_montserrat_36, lv_color_hex(0x192A46), 
+                                             &lv_font_montserrat_28, lv_color_hex(0x192A46), 
                                              0, 0, LV_OPA_100);
     lv_label_set_text(title_label, "monitor_time");
     lv_obj_set_align(title_label, LV_ALIGN_CENTER);
@@ -232,7 +274,7 @@ static void time_slot_click_cb(lv_event_t *e) {
     lv_obj_set_style_border_width(confirm_btn, 0, LV_STATE_DEFAULT);
     lv_obj_set_style_shadow_width(confirm_btn, 0, LV_STATE_DEFAULT);
     lv_obj_t *confirm_label = create_text_label(confirm_btn, "confirm", 
-                                               &lv_font_montserrat_36, lv_color_hex(0x00BDBD), 
+                                               &lv_font_montserrat_28, lv_color_hex(0x00BDBD), 
                                                0, 0, LV_OPA_100);
     lv_obj_set_align(confirm_label, LV_ALIGN_CENTER);
     lv_obj_add_event_cb(confirm_btn, monitor_time_confirm_cb, LV_EVENT_CLICKED, NULL);
@@ -250,7 +292,7 @@ static void time_slot_click_cb(lv_event_t *e) {
         // 设置复选框文本
         lv_checkbox_set_text(checkbox, slot_names[i]);
         // 适配样式（字体、颜色）
-        lv_obj_set_style_text_font(checkbox, &lv_font_montserrat_32, LV_STATE_DEFAULT);
+        lv_obj_set_style_text_font(checkbox, &lv_font_montserrat_28, LV_STATE_DEFAULT);
         lv_obj_set_style_text_color(checkbox, lv_color_hex(0x192A46), LV_STATE_DEFAULT);
 
         lv_obj_set_style_radius(checkbox, LV_RADIUS_CIRCLE, LV_PART_INDICATOR);
@@ -286,7 +328,11 @@ static void time_slot_click_cb(lv_event_t *e) {
 
     // 解析自定义时间段默认值
     int start_h, start_m, end_h, end_m;
-    sscanf(g_slot_strs[MONITOR_SLOT_CUSTOM], "%d:%d-%d:%d", &start_h, &start_m, &end_h, &end_m);
+    // sscanf(g_slot_strs[MONITOR_SLOT_CUSTOM], "%d:%d-%d:%d", &start_h, &start_m, &end_h, &end_m);
+    if(sscanf(g_slot_strs[MONITOR_SLOT_CUSTOM], "%d:%d-%d:%d", &start_h, &start_m, &end_h, &end_m) != 4){
+        // 解析失败，赋默认值，防止栈崩溃
+        start_h = 22; start_m = 0; end_h = 6; end_m = 0;
+    }
 
     // 开始时间容器
     lv_obj_t *start_time_cont = lv_obj_create(time_picker);
@@ -299,7 +345,7 @@ static void time_slot_click_cb(lv_event_t *e) {
 
     // 开始时间标签
     lv_obj_t *start_label = create_text_label(start_time_cont, "start_time", 
-                                             &lv_font_montserrat_36, lv_color_hex(0x9E9E9E), 
+                                             &lv_font_montserrat_28, lv_color_hex(0x9E9E9E), 
                                              0, 20, LV_OPA_100);
     lv_obj_set_align(start_label, LV_ALIGN_TOP_MID);
 
@@ -310,7 +356,7 @@ static void time_slot_click_cb(lv_event_t *e) {
     lv_obj_set_align(start_hour_roller, LV_ALIGN_LEFT_MID);
     lv_obj_set_pos(start_hour_roller, 75, 30);
     lv_roller_set_selected(start_hour_roller, start_h, LV_ANIM_OFF);
-    lv_obj_set_style_text_font(start_hour_roller, &lv_font_montserrat_22, LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(start_hour_roller, &lv_font_montserrat_24, LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(start_hour_roller, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_set_style_shadow_opa(start_hour_roller, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_set_style_border_width(start_hour_roller, 0, LV_STATE_DEFAULT);
@@ -326,7 +372,7 @@ static void time_slot_click_cb(lv_event_t *e) {
     lv_obj_set_align(start_min_roller, LV_ALIGN_RIGHT_MID);
     lv_obj_set_pos(start_min_roller, -75, 30);
     lv_roller_set_selected(start_min_roller, start_m, LV_ANIM_OFF); // 修复：去掉/10，适配完整分钟
-    lv_obj_set_style_text_font(start_min_roller, &lv_font_montserrat_22, LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(start_min_roller, &lv_font_montserrat_24, LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(start_min_roller, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_set_style_shadow_opa(start_min_roller, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_set_style_border_width(start_min_roller, 0, LV_STATE_DEFAULT);
@@ -346,7 +392,7 @@ static void time_slot_click_cb(lv_event_t *e) {
 
     // 结束时间标签（复用DND）
     lv_obj_t *end_label = create_text_label(end_time_cont, "end_time", 
-                                           &lv_font_montserrat_36, lv_color_hex(0x9E9E9E), 
+                                           &lv_font_montserrat_28, lv_color_hex(0x9E9E9E), 
                                            0, 20, LV_OPA_100);
     lv_obj_set_align(end_label, LV_ALIGN_TOP_MID);
 
@@ -357,7 +403,7 @@ static void time_slot_click_cb(lv_event_t *e) {
     lv_obj_set_align(end_hour_roller, LV_ALIGN_LEFT_MID);
     lv_obj_set_pos(end_hour_roller, 75, 30);
     lv_roller_set_selected(end_hour_roller, end_h, LV_ANIM_OFF);
-    lv_obj_set_style_text_font(end_hour_roller, &lv_font_montserrat_22, LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(end_hour_roller, &lv_font_montserrat_24, LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(end_hour_roller, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_set_style_shadow_opa(end_hour_roller, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_set_style_border_width(end_hour_roller, 0, LV_STATE_DEFAULT);
@@ -373,7 +419,7 @@ static void time_slot_click_cb(lv_event_t *e) {
     lv_obj_set_align(end_min_roller, LV_ALIGN_RIGHT_MID);
     lv_obj_set_pos(end_min_roller, -75, 30);
     lv_roller_set_selected(end_min_roller, end_m, LV_ANIM_OFF); // 修复：去掉/10
-    lv_obj_set_style_text_font(end_min_roller, &lv_font_montserrat_22, LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(end_min_roller, &lv_font_montserrat_24, LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(end_min_roller, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_set_style_shadow_opa(end_min_roller, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_set_style_border_width(end_min_roller, 0, LV_STATE_DEFAULT);
@@ -387,14 +433,18 @@ static void time_slot_click_cb(lv_event_t *e) {
 // 创建监控模式子页面
 void ui_monitor_mode_settings_create(lv_obj_t *homepage_scr) {
     // lv_obj_t *monitor_scr = lv_obj_create(NULL);
-    if(is_lv_obj_valid(monitor_scr)) {
-        lv_obj_del(monitor_scr);
-        monitor_scr = NULL;
-    }
+    // if(is_lv_obj_valid(monitor_scr)) {
+    //     lv_obj_del(monitor_scr);
+    //     monitor_scr = NULL;
+    //     // 新增下面4行，清空所有子页面UI指针，杜绝野指针
+    //     g_switch = NULL;
+    //     g_state_label = NULL;
+    //     g_time_con = NULL;
+    //     g_time_slot_label = NULL;
+    // }
     monitor_scr = lv_obj_create(NULL);  
-    
     // 复用主模块渐变样式
-    extern lv_style_t sys_settings_grad_style;
+    // extern lv_style_t sys_settings_grad_style;
     lv_style_reset(&sys_settings_grad_style);
     lv_style_set_bg_color(&sys_settings_grad_style, lv_color_hex(0x010715));
     lv_style_set_bg_grad_color(&sys_settings_grad_style, lv_color_hex(0x0E1D37));
@@ -402,7 +452,7 @@ void ui_monitor_mode_settings_create(lv_obj_t *homepage_scr) {
     lv_obj_add_style(monitor_scr, &sys_settings_grad_style, LV_STATE_DEFAULT);
 
     // 添加标题“监控模式”
-    create_text_label(monitor_scr, "monitor_title", &lv_font_montserrat_36, 
+    create_text_label(monitor_scr, "monitor_title", &lv_font_montserrat_28, 
                      lv_color_hex(0xFFFFFF), 83, 80, LV_OPA_100);
 
     // 创建“监控模式开关”容器
@@ -418,7 +468,7 @@ void ui_monitor_mode_settings_create(lv_obj_t *homepage_scr) {
 
     // 开关左侧状态文本
     g_state_label = create_text_label(monitor_scr, "monitor_state", 
-                                     &lv_font_montserrat_32, lv_color_hex(0xFFFFFF), 
+                                     &lv_font_montserrat_28, lv_color_hex(0xFFFFFF), 
                                      73, 169, LV_OPA_100);
     lv_label_set_text(g_state_label, g_monitor_state_str[g_monitor_state]);
 
@@ -453,7 +503,7 @@ void ui_monitor_mode_settings_create(lv_obj_t *homepage_scr) {
     // // 右侧箭头图标
     // lv_obj_t *arrow_img = create_image_obj(monitor_scr, "D:Vector.png", 712, 308);
     //每天监控时间
-    lv_obj_t *time_label = create_text_label(monitor_scr, "monitor_time", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 73, 256, LV_OPA_100);
+    create_text_label(monitor_scr, "monitor_time", &lv_font_montserrat_28, lv_color_hex(0xFFFFFF), 73, 256, LV_OPA_100);
 
     // // 4. 添加返回按钮
     // lv_obj_t *back_btn = create_image_obj(monitor_scr, "D:back.png", 52, 123);
@@ -486,7 +536,9 @@ void monitor_mode_reset_to_default(void) {
     monitor_mode_set_slot_type(MONITOR_SLOT_FULL_DAY);
 
     // 3. 重置自定义时间段为默认值 "22:00-6:00"
-    g_slot_strs[MONITOR_SLOT_CUSTOM] = "22:00-6:00";
+    // g_slot_strs[MONITOR_SLOT_CUSTOM] = "22:00-6:00";
+    strncpy(g_slot_strs[MONITOR_SLOT_CUSTOM], "22:00-6:00", sizeof(g_slot_strs[MONITOR_SLOT_CUSTOM]));
 
     LV_LOG_USER("Monitor mode reset to default: ON, slot=full day");
 }
+

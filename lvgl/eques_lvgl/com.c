@@ -1,19 +1,82 @@
 #include "com.h"
 
 extern void update_status_bar_parent(lv_obj_t *new_scr);
+extern lv_obj_t *sys_settings_scr;
+extern lv_obj_t *msg_center_scr;
+extern lv_obj_t *monitor_video_scr;
+extern lv_obj_t *user_manage_scr;
+extern lv_obj_t *dev_info_scr;
+extern lv_obj_t *file_cache_scr;
+extern lv_obj_t *monitor_scr;
+extern lv_obj_t *g_switch;
+extern lv_obj_t *g_state_label;
+extern lv_obj_t *g_time_con;
+extern lv_obj_t *g_time_slot_label;
 /**
  * back回调函数（修正空指针检查）
  */
+
 void back_btn_click_cb(lv_event_t *e)
 {
+    // 1. 基础校验
     if(e == NULL) return;
-    lv_obj_t *target_scr = (lv_obj_t *)lv_event_get_user_data(e);
-    if(target_scr == NULL) {
-        LV_LOG_WARN("Back btn callback: target screen is NULL");
+    lv_obj_t *parent_scr = (lv_obj_t *)lv_event_get_user_data(e);
+    if(!lv_obj_is_valid(parent_scr)) {
+        LV_LOG_ERROR("4444");
         return;
-    } 
-    update_status_bar_parent(target_scr);
-    lv_scr_load(target_scr);
+    }
+    // // 第一步：【先获取当前正在显示的页面】（这就是要删除的子页面！）
+    // lv_obj_t *del_scr = lv_disp_get_scr_act(NULL);
+
+    // 获取当前正在显示的页面（就是要销毁的子页面）
+    lv_obj_t *current_del_scr = lv_disp_get_scr_act(NULL);
+    if(!lv_obj_is_valid(current_del_scr)) return;
+
+    lv_scr_load(parent_scr);
+    update_status_bar_parent(parent_scr);
+
+    // 只销毁【当前子页面】，绝不乱删父页面！
+    if(current_del_scr == monitor_scr) {
+        // 销毁第二层子页：监控模式
+        lv_obj_del(current_del_scr);
+        monitor_scr = NULL;
+        // 清空子页内所有野指针（和你创建时的清空逻辑一致）
+        g_switch = NULL;
+        g_state_label = NULL;
+        g_time_con = NULL;
+        g_time_slot_label = NULL;
+    }
+    else if(current_del_scr == sys_settings_scr) {
+        // 销毁第一层子页：系统设置
+        lv_obj_del(current_del_scr);
+        sys_settings_scr = NULL;
+    }
+    else if(current_del_scr == msg_center_scr) {
+        lv_obj_del(current_del_scr);
+        msg_center_scr = NULL;
+    }
+    else if(current_del_scr == monitor_video_scr) {
+        lv_obj_del(current_del_scr);
+        monitor_video_scr = NULL;
+    }
+    else if(current_del_scr == user_manage_scr) {
+        lv_obj_del(current_del_scr);
+        user_manage_scr = NULL;
+    }
+    else if(current_del_scr == dev_info_scr) {
+        lv_obj_del(current_del_scr);
+        dev_info_scr = NULL;
+    }
+    else if(current_del_scr == file_cache_scr) {
+        lv_obj_del(current_del_scr);
+        file_cache_scr = NULL;
+    }
+    // // 第三步：删除刚才获取的页面（安全，已不是活跃屏）
+    // if(lv_obj_is_valid(del_scr)) {
+    //     LV_LOG_WARN("22222"); // 先打印，再删除
+    //     lv_obj_del(del_scr);
+    // }
+    LV_LOG_WARN("111");
 }
 
 /************************** 分割线相关函数实现 **************************/

@@ -6,7 +6,7 @@
 
 
 #else    //横屏
-static lv_obj_t *dev_info_scr = NULL; 
+ lv_obj_t *dev_info_scr = NULL; 
 static lv_obj_t *dev_name_label = NULL; // 保存设备昵称标签，用于更新
 
 // 全局样式
