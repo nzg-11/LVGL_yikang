@@ -12,6 +12,8 @@ extern lv_obj_t *g_switch;
 extern lv_obj_t *g_state_label;
 extern lv_obj_t *g_time_con;
 extern lv_obj_t *g_time_slot_label;
+extern lv_obj_t *enroll_scr;
+extern lv_obj_t *edit_record_scr; 
 /**
  * back回调函数（修正空指针检查）
  */
@@ -71,6 +73,15 @@ void back_btn_click_cb(lv_event_t *e)
         lv_obj_del(current_del_scr);
         file_cache_scr = NULL;
     }
+    else if(current_del_scr == enroll_scr) {
+        lv_obj_del(current_del_scr);
+        enroll_scr = NULL;
+    }
+    else if(current_del_scr == edit_record_scr) {
+        lv_obj_del(current_del_scr);
+        edit_record_scr = NULL;
+    }
+
     // // 第三步：删除刚才获取的页面（安全，已不是活跃屏）
     // if(lv_obj_is_valid(del_scr)) {
     //     LV_LOG_WARN("22222"); // 先打印，再删除

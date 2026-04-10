@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdio.h>
 
-static lv_obj_t *edit_record_scr = NULL; 
+lv_obj_t *edit_record_scr = NULL; 
 static lv_style_t edit_record_grad_style;
 static bool edit_record_style_inited = false;
 
@@ -16,6 +16,7 @@ static lv_obj_t *g_name_ta = NULL;
 static edit_type_e g_edit_type;
 static const char *g_edit_name = NULL;
 static lv_obj_t *g_parent_scr = NULL;
+static int g_edit_index = -1; // 编辑条目索引
 
 static void init_msg_center_styles(void);
 static void hide_keyboard(lv_event_t *e);
@@ -109,13 +110,20 @@ static void dialog_confirm_cb(lv_event_t *e)
     lv_obj_t *enroll_scr = lv_event_get_user_data(e);
     LV_LOG_INFO("dialog confirm, delete item");
     
-    // 执行通用删除
-    edit_delete_item(g_edit_type);
+    // 执行通用删除（原有代码，不动）
+    edit_delete_item(g_edit_type, g_edit_index);
     
     close_dialog();
-    // 删除键盘+返回上一级
-    hide_keyboard(NULL);
+
+    // 最后切换到录入界面（原有代码，不动）
     lv_scr_load(enroll_scr);
+    update_status_bar_parent(enroll_scr);
+    lv_obj_t *current_del_scr = lv_disp_get_scr_act(NULL);
+    if(current_del_scr == edit_record_scr && is_lv_obj_valid(current_del_scr)) {
+        lv_obj_del(edit_record_scr);  // 销毁编辑界面
+        edit_record_scr = NULL;       // 指针置空
+    }
+
 }
 
 static void dialog_cancel_cb(lv_event_t *e)
@@ -125,12 +133,13 @@ static void dialog_cancel_cb(lv_event_t *e)
     close_dialog();
 }
 
-// 【解耦核心】通用创建界面，只根据枚举渲染UI，无业务耦合
-void ui_edit_record_create(edit_type_e type, const char *cur_name, lv_obj_t *parent_scr)
+// 通用创建界面，只根据枚举渲染UI，无业务耦合
+void ui_edit_record_create(edit_type_e type, const char *cur_name, uint8_t index, lv_obj_t *parent_scr)
 {
     // 保存通用参数
     g_edit_type = type;
     g_edit_name = cur_name;
+    g_edit_index = index;
     g_parent_scr = parent_scr;
 
     LV_LOG_INFO("create edit record screen");
@@ -160,7 +169,15 @@ void ui_edit_record_create(edit_type_e type, const char *cur_name, lv_obj_t *par
         case EDIT_TYPE_CARD: 
             strcpy(title_buf, "Card Edit"); 
             strcpy(name_label_buf, "Card Name"); 
-        break;
+            break;
+        case EDIT_TYPE_FACE: 
+            strcpy(title_buf, "Face Edit"); 
+            strcpy(name_label_buf, "Face Name"); 
+            break;
+        case EDIT_TYPE_FINGER: 
+            strcpy(title_buf, "Finger Edit"); 
+            strcpy(name_label_buf, "Finger Name"); 
+            break;
         // 后续拓展直接加case，不用动其他代码
         default: 
             strcpy(title_buf, "Edit"); 
@@ -222,23 +239,41 @@ void ui_edit_record_create(edit_type_e type, const char *cur_name, lv_obj_t *par
     update_status_bar_parent(edit_record_scr);
     lv_scr_load(edit_record_scr);
 }
-// 🔥 新增：保存按钮回调 - 仅实现密码保存（你要的密码入手）
+// 保存按钮回调
 static void save_btn_click_cb(lv_event_t *e)
 {
     (void)e;
     const char *input_text = lv_textarea_get_text(g_name_ta);
+
     if(input_text == NULL || strlen(input_text) == 0) {
-        LV_LOG_WARN("保存失败：名称不能为空");
+        LV_LOG_WARN("Save failed: Name cannot be empty");
         return;
     }
-
-    // 🔥 核心：一行代码通用处理 密码/卡片
-    edit_update_name(g_edit_type, input_text);
-
-    // 保存完成：隐藏键盘 + 返回上一级
+    // 保存名称
+    edit_update_name(g_edit_type, input_text, g_edit_index);
+    // 隐藏键盘
     hide_keyboard(NULL);
-    if(g_parent_scr != NULL) {
-        lv_scr_load(g_parent_scr);
+
+    // ========================
+    // 🔥 完全复刻 back_btn_click_cb 逻辑（不调用、不修改原函数）
+    // ========================
+    lv_obj_t *target_scr = g_parent_scr;  // 目标屏幕=父界面
+    if(target_scr == NULL) {
+        LV_LOG_WARN("Save back: target screen is NULL");
+        return;
+    }
+    // 获取当前要删除的屏幕
+    lv_obj_t *current_del_scr = lv_disp_get_scr_act(NULL);
+    if(!is_lv_obj_valid(current_del_scr)) return;
+
+    // 执行返回逻辑
+    update_status_bar_parent(target_scr);
+    lv_scr_load(target_scr);
+
+    // 自动删除编辑界面（和返回按钮完全一样的逻辑）
+    if(current_del_scr == edit_record_scr) {
+        lv_obj_del(edit_record_scr);
+        edit_record_scr = NULL;
     }
 }
 
@@ -247,25 +282,67 @@ void edit_record_btn_click_cb(lv_event_t *e)
     if(e == NULL) return;
     
     lv_obj_t *enroll_scr = (lv_obj_t *)lv_event_get_user_data(e);
-    if(enroll_scr == NULL) {
-        LV_LOG_WARN("edit_record_btn_click_cb: enroll_scr is NULL!");
+    // 校验父界面有效性
+    if(!is_lv_obj_valid(enroll_scr)) {
+        LV_LOG_WARN("父界面无效，拦截点击");
         return;
     }
 
-    // 获取当前密码、卡片信息
-    pwd_enroll_info_t *pwd_info = get_current_pwd_info();
-    card_enroll_info_t *card_info = get_current_card_info();
-    lv_obj_t *target = lv_event_get_target(e); // 获取点击的控件
-
-    // ============== 判断：点击的是密码记录 ==============
-    if(pwd_info && pwd_info->pwd_record_con == target) {
-        LV_LOG_INFO("edit pwd record");
-        ui_edit_record_create(EDIT_TYPE_PWD, pwd_info->pwd_name, enroll_scr);
+    lv_obj_t *target = lv_event_get_target(e);
+    // 🔥 修复：校验点击对象是否有效（核心拦截野指针）
+    if(!is_lv_obj_valid(target)) {
+        LV_LOG_WARN("点击对象无效，拦截卡死");
+        return;
     }
-    // ============== 判断：点击的是卡片记录 ==============
-    else if(card_info && card_info->card_record_con == target) {
-        LV_LOG_INFO("edit card record");
-        ui_edit_record_create(EDIT_TYPE_CARD, card_info->card_name, enroll_scr);
+
+    // 基础信息（所有成员都有）
+    pwd_enroll_info_t *pwd_info = get_current_pwd_info();
+    finger_enroll_info_t *finger_info = get_current_finger_info();
+
+    // 1. 指纹（所有成员都有）
+    if(finger_info) {
+        for(int i=0; i<MAX_FINGER_COUNT; i++){
+            // 🔥 修复：先校验指针非空+有效，再对比
+            if(finger_info->finger_record_cons[i] == target && is_lv_obj_valid(finger_info->finger_record_cons[i])){
+                ui_edit_record_create(EDIT_TYPE_FINGER, finger_info->finger_names[i], i, enroll_scr);
+                return;
+            }
+        }
+    }
+
+    // 2. 密码（所有成员都有）
+    if(pwd_info) {
+        for(int i=0; i<MAX_PWD_COUNT; i++){
+            if(pwd_info->pwd_record_cons[i] == target && is_lv_obj_valid(pwd_info->pwd_record_cons[i])){
+                ui_edit_record_create(EDIT_TYPE_PWD, pwd_info->pwd_names[i], i, enroll_scr);
+                return;
+            }
+        }
+    }
+
+    // 仅家庭成员处理卡片+人脸
+    if(g_current_enroll_member.type == MEMBER_TYPE_FAMILY) {
+        card_enroll_info_t *card_info = get_current_card_info();
+        face_enroll_info_t *face_info = get_current_face_info();
+
+        // 3. 卡片
+        if(card_info) {
+            for(int i=0; i<MAX_CARD_COUNT; i++){
+                if(card_info->card_record_cons[i] == target && is_lv_obj_valid(card_info->card_record_cons[i])){
+                    ui_edit_record_create(EDIT_TYPE_CARD, card_info->card_names[i], i, enroll_scr);
+                    return;
+                }
+            }
+        }
+        // 4. 人脸
+        if(face_info) {
+            for(int i=0; i<MAX_FACE_COUNT; i++){
+                if(face_info->face_record_cons[i] == target && is_lv_obj_valid(face_info->face_record_cons[i])){
+                    ui_edit_record_create(EDIT_TYPE_FACE, face_info->face_names[i], i, enroll_scr);
+                    return;
+                }
+            }
+        }
     }
 
     LV_LOG_INFO("edit record btn click");

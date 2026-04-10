@@ -19,8 +19,7 @@ typedef enum {
 } edit_type_e;
 
 // 类型、当前名称、父界面，彻底解耦
-void ui_edit_record_create(edit_type_e type, const char *cur_name, lv_obj_t *parent_scr);
-
+void ui_edit_record_create(edit_type_e type, const char *cur_name, uint8_t index, lv_obj_t *parent_scr);
 void edit_record_btn_click_cb(lv_event_t *e);
 
 #ifdef __cplusplus

@@ -1547,24 +1547,21 @@ static void delete_popup_ok_cb(lv_event_t *e)
     if(e == NULL) return;
     lv_obj_t *popup = (lv_obj_t *)lv_event_get_user_data(e);
     
-    // 1. 标记选中成员为无效 + 清空指纹/密码计数
     bool has_delete = false;
     for(uint8_t i = 0; i < MAX_OTHER_MEMBER_COUNT; i++) {
         if(g_member_selected[i]) {
-            // 标记无效 + 清空所有数据（计数归零）
+            // 🔥 通用函数清空其他成员数据
+            clear_member_all_biometrics(i, MEMBER_TYPE_OTHER);
             memset(&other_member_list[i], 0, sizeof(other_member_info_t));
             has_delete = true;
         }
     }
     
-    // 2. 数据紧凑化
     if(has_delete) {
         compact_other_members();
     }
     
-    // 3. 清空所有旧UI + 重置全局状态
     for(uint8_t i = 0; i < MAX_OTHER_MEMBER_COUNT; i++) {
-        // 删除所有UI元素
         if(g_delete_flag_imgs[i] != NULL && lv_obj_is_valid(g_delete_flag_imgs[i])) {
             lv_obj_del(g_delete_flag_imgs[i]);
             g_delete_flag_imgs[i] = NULL;
@@ -1577,11 +1574,9 @@ static void delete_popup_ok_cb(lv_event_t *e)
             lv_obj_del(g_member_cards[i]);
             g_member_cards[i] = NULL;
         }
-        // 重置选中状态
         g_member_selected[i] = false;
     }
     
-    // 4. 🔥 重新创建连续排列的卡片
     if(other_member_scr != NULL && lv_obj_is_valid(other_member_scr)) {
         restore_other_members(other_member_scr);
         lv_obj_invalidate(other_member_scr);
@@ -1589,7 +1584,6 @@ static void delete_popup_ok_cb(lv_event_t *e)
         update_add_member_btn_state();
     }
     
-    // 5. 关闭弹窗 + 退出删除模式
     if(popup != NULL && lv_obj_is_valid(popup)) lv_obj_del(popup);
     if(bg_mask_layer != NULL && lv_obj_is_valid(bg_mask_layer)) {
         lv_obj_add_flag(bg_mask_layer, LV_OBJ_FLAG_HIDDEN);

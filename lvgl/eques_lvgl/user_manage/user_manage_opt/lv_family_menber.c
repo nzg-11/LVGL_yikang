@@ -1665,33 +1665,30 @@ static void member_delete_btn_click_cb(lv_event_t *e)
  * @brief 删除确认弹窗-确认回调函数
  * @param e 事件指针
  */
-/**
- * @brief 删除确认弹窗-确认回调函数
- * @param e 事件指针
- */
 static void delete_popup_ok_cb(lv_event_t *e)
 {
     if(e == NULL) return;
     lv_obj_t *popup = (lv_obj_t *)lv_event_get_user_data(e);
     
-    // 1. 标记选中成员为无效
+    // 1. 🔥 删除前：先清空选中成员的所有生物特征数据（指纹/密码/卡片/人脸）
     bool has_delete = false;
     for(uint8_t i = 0; i < MAX_FAMILY_MEMBER_COUNT; i++) {
         if(g_member_selected[i]) {
-            // 标记为无效
+            // 🔥 调用函数：一键清空该成员所有数据
+            clear_member_all_biometrics(i, MEMBER_TYPE_FAMILY);
+            // 标记成员为无效
             memset(&family_member_list[i], 0, sizeof(family_member_info_t));
             has_delete = true;
         }
     }
     
-    // 2. 🔥 核心：数据紧凑化
+    // 2. 数据紧凑化
     if(has_delete) {
         compact_family_members();
     }
     
     // 3. 清空所有旧UI + 重置全局状态
     for(uint8_t i = 0; i < MAX_FAMILY_MEMBER_COUNT; i++) {
-        // 删除所有UI元素
         if(g_delete_flag_imgs[i] != NULL && lv_obj_is_valid(g_delete_flag_imgs[i])) {
             lv_obj_del(g_delete_flag_imgs[i]);
             g_delete_flag_imgs[i] = NULL;
@@ -1704,11 +1701,10 @@ static void delete_popup_ok_cb(lv_event_t *e)
             lv_obj_del(g_member_cards[i]);
             g_member_cards[i] = NULL;
         }
-        // 重置选中状态
         g_member_selected[i] = false;
     }
     
-    // 4. 🔥 重新创建连续排列的卡片
+    // 4. 重新创建UI
     if(family_menber_scr != NULL && lv_obj_is_valid(family_menber_scr)) {
         restore_family_members(family_menber_scr);
         lv_obj_invalidate(family_menber_scr);
@@ -1723,9 +1719,6 @@ static void delete_popup_ok_cb(lv_event_t *e)
     }
     switch_delete_mode(false);
 }
-    
-
-
 
 
 /**

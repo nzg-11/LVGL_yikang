@@ -53,7 +53,12 @@ static void finger_confirm_click_cb(lv_event_t *e)
     update_status_bar_parent(enroll_scr);
     // 5. 返回录入界面（如果需要）
     lv_scr_load(enroll_scr);
-
+    lv_obj_t *current_del_scr = lv_disp_get_scr_act(NULL);
+    if(current_del_scr == finger_add_scr && is_lv_obj_valid(current_del_scr)) {
+        lv_obj_del(finger_add_scr);  // 销毁编辑界面
+        finger_add_scr = NULL;       // 指针置空
+        LV_LOG_USER("Add finger screen destroyed successfully");
+    }
     // 6. 重置指纹添加进度（原有逻辑）- 只重置进度，不重置计数
     finger_add_step = 0;
     lv_img_set_src(finger_percent_img, "H:finger_0.png");
@@ -119,14 +124,16 @@ static void finger_input_click_cb(lv_event_t *e)
 // 关闭指纹弹窗的通用函数
 static void close_finger_popup(void)
 {
-    // 隐藏键盘
+    // 销毁键盘
     if(finger_name_keyboard != NULL && lv_obj_is_valid(finger_name_keyboard)) {
-        lv_obj_add_flag(finger_name_keyboard, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_del(finger_name_keyboard);
+        finger_name_keyboard = NULL;
     }
     
-    // 隐藏遮罩层
+    // 销毁遮罩层
     if(finger_bg_mask_layer != NULL && lv_obj_is_valid(finger_bg_mask_layer)) {
-        lv_obj_add_flag(finger_bg_mask_layer, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_del(finger_bg_mask_layer);
+        finger_bg_mask_layer = NULL;
     }
     
     // 销毁弹窗主体
@@ -254,7 +261,7 @@ static void finger_add_click_cb(lv_event_t *e)
             lv_obj_t *enroll_scr = (lv_obj_t *)lv_event_get_user_data(e);
             create_finger_complete_popup(enroll_scr);
             // 禁用指纹图片点击（防止重复触发）
-            lv_obj_clear_flag(finger_percent_img, LV_OBJ_FLAG_CLICKABLE);
+            //lv_obj_clear_flag(finger_percent_img, LV_OBJ_FLAG_CLICKABLE);
             break;
         default: // 步骤0：初始状态（冗余，防止异常）
             lv_img_set_src(finger_percent_img, "H:finger_0.png");

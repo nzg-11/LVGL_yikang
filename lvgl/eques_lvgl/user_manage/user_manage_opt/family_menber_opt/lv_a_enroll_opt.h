@@ -14,10 +14,10 @@ extern "C" {
 #include "lv_other_member.h"
 #include "lv_edit_record.h"
 
-#define MAX_FINGER_COUNT        2       // 指纹最大数量
-#define MAX_PWD_COUNT           1       // 密码最大数量
-#define MAX_CARD_COUNT          1       // 卡片最大数量
-#define MAX_FACE_COUNT          1       // 人脸最大数量
+#define MAX_FINGER_COUNT        5       // 指纹最大数量
+#define MAX_PWD_COUNT           3       // 密码最大数量
+#define MAX_CARD_COUNT          3      // 卡片最大数量
+#define MAX_FACE_COUNT          3     // 人脸最大数量
 // 成员类型枚举（放在公共头文件如 com.h，或 lv_a_enroll_opt.h 中）
 typedef enum {
     MEMBER_TYPE_FAMILY,   // 家庭成员
@@ -36,40 +36,42 @@ typedef struct {
     uint8_t idx;                 // 成员索引
 } common_member_info_t;
 
-// ========== 指纹信息结构体 ==========
+// ========== 指纹 ==========
 typedef struct {
-    char finger_names[MAX_FINGER_COUNT][17]; // 该成员的指纹名称
-    lv_obj_t *finger_record_cons[MAX_FINGER_COUNT]; // 该成员的指纹记录容器
-    uint8_t enroll_count; // 该成员已录入指纹数量
+    char finger_names[MAX_FINGER_COUNT][17];
+    lv_obj_t *finger_record_cons[MAX_FINGER_COUNT];
+    uint8_t enroll_count; // 总录入数量
 } finger_enroll_info_t;
 
-// ========== 密码信息结构体 ==========
+// ========== 密码==========
 typedef struct {
-    char pwd_name[17];                    // 密码名称
-    lv_obj_t *pwd_record_con;             // 密码记录容器
-    uint8_t enroll_count;                 // 密码录入数量（0/1）
+    char pwd_names[MAX_PWD_COUNT][17];    // 数组 = 多条名称
+    lv_obj_t *pwd_record_cons[MAX_PWD_COUNT];  // 数组 = 多个容器
+    uint8_t enroll_count;                     // 总录入数量
 } pwd_enroll_info_t;
 
-// ========== 卡片信息结构体（新增） ==========
+// ========== 卡片==========
 typedef struct {
-    char card_name[17];                    // 卡片名称
-    lv_obj_t *card_record_con;             // 卡片记录容器
-    uint8_t enroll_count;                  // 卡片录入数量（0/1）
+    char card_names[MAX_CARD_COUNT][17];
+    lv_obj_t *card_record_cons[MAX_CARD_COUNT];
+    uint8_t enroll_count;
 } card_enroll_info_t;
 
-// ========== 人脸信息结构体（新增） ==========
+// ========== 人脸==========
 typedef struct {
-    char face_name[17];                    // 人脸名称
-    lv_obj_t *face_record_con;             // 人脸记录容器
-    uint8_t enroll_count;                  // 人脸录入数量（0/1）
+    char face_names[MAX_FACE_COUNT][17];  // 数组 = 多个人脸名称
+    lv_obj_t *face_record_cons[MAX_FACE_COUNT];// 数组 = 多个人脸容器
+    uint8_t enroll_count;                      // 总录入数量
 } face_enroll_info_t;
+
 
 void finger_enroll_complete(const char *finger_name);
 void pwd_enroll_complete(const char *pwd_name);
 void card_enroll_complete(const char *card_name); //  卡片录入完成回调
 void face_enroll_complete(const char *face_name); //  人脸录入完成回调
-void edit_update_name(edit_type_e type, const char *new_name);
-void edit_delete_item(edit_type_e type);
+void edit_update_name(edit_type_e type, const char *new_name, uint8_t index);
+void edit_delete_item(edit_type_e type, uint8_t index);
+void clear_member_all_biometrics(uint8_t member_idx, member_type_e type);
 pwd_enroll_info_t *get_current_pwd_info(void);
 card_enroll_info_t *get_current_card_info(void);
 finger_enroll_info_t *get_current_finger_info(void);

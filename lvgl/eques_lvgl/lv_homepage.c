@@ -10,7 +10,6 @@
 
 #ifdef LV_DEMO_EQUES
 #if LV_EQUES_VER
-
 // ====================== 全局样式） ======================
 // 1. 主页渐变样式
 static lv_style_t scr_grad_style;
@@ -414,7 +413,8 @@ static void init_global_styles(void)
         lv_style_init(&scr_grad_style);
         scr_grad_style_inited = true;
     }
-}#else
+}
+#else
 // ====================== 全局样式） ======================
 // 1. 主页渐变样式
 static lv_style_t scr_grad_style;
@@ -448,8 +448,13 @@ static void homepage_scr_load_cb(lv_event_t *e)
     //     homepage_scr = NULL;
     // }
     // homepage_scr = lv_obj_create(NULL);
+    // if(!is_lv_obj_valid(scr) || scr != homepage_scr) return;
+
+    // lv_obj_clean(scr);
+
     // 确保全局样式已初始化
     init_global_styles();
+
     // 重置背景样式
     lv_style_reset(&scr_grad_style);
     lv_style_set_bg_color(&scr_grad_style, lv_color_hex(0x010715));
@@ -461,14 +466,18 @@ static void homepage_scr_load_cb(lv_event_t *e)
 
     // 重建状态栏
     update_status_bar_parent(scr);
+    // 重建所有控件
+    //lv_obj_t *weather_img = create_image_obj(scr, "H:weather.png", 276, 158);
+    //云朵替代
     create_container_circle(scr, 217, 163, 89,
     true, lv_color_hex(0xFFCE50), lv_color_hex(0x808080), 0, LV_OPA_0);
-
     create_container_circle(scr, 181, 192, 107,
     true, lv_color_hex(0xFFFFFF), lv_color_hex(0x808080), 0, LV_OPA_0);
-
     create_text_label(scr, "25.0 C", &lv_font_montserrat_48, lv_color_hex(0xFFFFFF), 212, 327, LV_OPA_100);
 
+    //开关锁容器
+    // lv_obj_t *unlocking_con = create_container
+    // (scr, 48, 470, 239, 82, lv_color_hex(0x00BDBD), LV_OPA_100, 0, lv_color_hex(0x2E4B7D), 0, LV_OPA_0);
     lv_obj_t *unlocking_con = create_custom_gradient_container
     (scr, 48, 470, 239, 82, 0, 0x006BDC, 0x00BDBD, LV_GRAD_DIR_VER, 0, 225, LV_OPA_100);
     lv_obj_t *locking_con = create_container
@@ -586,13 +595,16 @@ static void homepage_scr_load_cb(lv_event_t *e)
 void lv_homepage_create(void)
 {
     init_global_styles();
+
     // 创建/复用主页屏幕
     if(homepage_scr == NULL) {
         homepage_scr = lv_obj_create(NULL);
+        //lv_obj_add_flag(homepage_scr, LV_OBJ_FLAG_SCROLLABLE);
         lv_obj_add_event_cb(homepage_scr, homepage_scr_load_cb, LV_EVENT_SCREEN_LOAD_START, NULL);
     } else {
         lv_obj_clean(homepage_scr);
     }
+
 }
 
 void lv_homepage(void)
