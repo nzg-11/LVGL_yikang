@@ -1246,8 +1246,8 @@ family_member_info_t family_member_list[MAX_FAMILY_MEMBER_COUNT] = {0};
 static bool g_is_delete_mode = false;
 static lv_obj_t *g_delete_cancel_btn = NULL;
 static lv_obj_t *g_delete_confirm_btn = NULL;
-static uint8_t g_selected_delete_idx = MAX_FAMILY_MEMBER_COUNT;
-static lv_obj_t *g_selected_delete_btn = NULL;
+//static uint8_t g_selected_delete_idx = MAX_FAMILY_MEMBER_COUNT;
+//static lv_obj_t *g_selected_delete_btn = NULL;
 static lv_obj_t *g_delete_flag_imgs[MAX_FAMILY_MEMBER_COUNT] = {NULL};
 static lv_obj_t *g_delete_hid_containers[MAX_FAMILY_MEMBER_COUNT] = {NULL};
 static bool g_member_selected[MAX_FAMILY_MEMBER_COUNT] = {false};
@@ -1258,7 +1258,7 @@ lv_obj_t *family_menber_label = NULL;
 // 全局变量
 static lv_obj_t *bg_mask_layer = NULL;  
 static lv_obj_t *custom_popup = NULL;
-static lv_obj_t *family_menber_scr = NULL; 
+lv_obj_t *family_menber_scr = NULL; 
 static lv_style_t family_menber_grad_style;
 static bool family_menber_style_inited = false;
 static lv_obj_t *name_keyboard = NULL;
@@ -1293,7 +1293,7 @@ static void delete_img_click_cb(lv_event_t *e);
 static void switch_delete_mode(bool enter);
 static void member_delete_btn_click_cb(lv_event_t *e);
 static void member_card_click_cb(lv_event_t *e);
-
+void family_menber_back_btn_click_cb(lv_event_t *e);
 // 遮罩层相关
 static void create_bg_mask_layer(lv_obj_t *target_container);
 
@@ -1382,7 +1382,9 @@ void ui_family_menber_create(lv_obj_t *user_manage_scr)
     lv_obj_add_event_cb(family_menber_add, family_menber_add_click_cb, LV_EVENT_CLICKED, user_manage_scr);
 
     //右上角删除设置
-    delete_img = create_image_obj(family_menber_scr, "H:....png", 928, 99);
+    //delete_img = create_image_obj(family_menber_scr, "H:....png", 928, 99);
+    delete_img = create_container_circle(family_menber_scr, 928, 99, 30,
+    true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
     lv_obj_add_flag(delete_img, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(delete_img, LV_OPA_80, LV_STATE_PRESSED);
     lv_obj_add_event_cb(delete_img, delete_img_click_cb, LV_EVENT_CLICKED, NULL);
@@ -1397,7 +1399,7 @@ void ui_family_menber_create(lv_obj_t *user_manage_scr)
     lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(back_btn,LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(back_btn,LV_OPA_80,LV_STATE_PRESSED);
-    lv_obj_add_event_cb(back_btn,back_btn_click_cb,LV_EVENT_CLICKED,user_manage_scr);
+    lv_obj_add_event_cb(back_btn,family_menber_back_btn_click_cb,LV_EVENT_CLICKED,user_manage_scr);
 
     // ====================== 恢复成员卡片 ======================
     restore_family_members(family_menber_scr);
@@ -1406,19 +1408,47 @@ void ui_family_menber_create(lv_obj_t *user_manage_scr)
     lv_scr_load(family_menber_scr);
 }
 
+extern void ui_user_manage_create(lv_obj_t *homepage_scr);
+extern void destroy_user_manage(void);
 // 家庭成员界面回调
 void family_menber_btn_click_cb(lv_event_t *e)
 {
     if(e == NULL) return;
-    
-    lv_obj_t *user_manage_scr = (lv_obj_t *)lv_event_get_user_data(e);
-    if(user_manage_scr == NULL) {
-        LV_LOG_WARN("family_menber_btn_click_cb: user_manage_scr is NULL!");
-        return;
-    }
-    ui_family_menber_create(user_manage_scr);
+    lv_obj_t *parent_scr = (lv_obj_t *)lv_event_get_user_data(e);
+    if(parent_scr == NULL) return;
+
+    // 1. 创建家庭成员界面
+    ui_family_menber_create(parent_scr);
+    // 2. 加载家庭成员
+    lv_scr_load(family_menber_scr);
+    update_status_bar_parent(family_menber_scr);
+    // 3. 销毁用户管理（全局！已切屏，安全）
+    destroy_user_manage();
+    LV_LOG_WARN("进入家庭成员，销毁用户管理");
 }
 
+// 家庭成员 → 返回用户管理（重建用户管理）
+// 完全参考你的写法！格式/逻辑/结构 一模一样
+void family_menber_back_btn_click_cb(lv_event_t *e)
+{
+    if(e == NULL) return;
+    lv_obj_t *parent_scr = (lv_obj_t *)lv_event_get_user_data(e);
+    
+    // 获取当前正在显示的页面（要删除的目标）
+    lv_obj_t *current_del_scr = lv_disp_get_scr_act(NULL);
+    if(!lv_obj_is_valid(current_del_scr)) return;
+
+    // ===================== 分支1：当前是【家庭成员界面】（用户管理已被删除，必须重建） =====================
+    if(current_del_scr == family_menber_scr) {
+        // 1. 【重建用户管理】（因为之前进家庭成员时把用户管理删了）
+        ui_user_manage_create(parent_scr);  
+        // 2. 【销毁家庭成员】（此时已经切到用户管理，删旧页100%安全）
+        lv_obj_del(current_del_scr);
+        family_menber_scr = NULL;
+        LV_LOG_WARN("Family member response: Rebuild the user manage and destroy the family member interface");
+        return;  // 结束，不走其他逻辑
+    }
+}
 /**********************************************************删除回调函数***************************************************** */
 /**
  * @brief 删除按钮点击回调函数
@@ -1531,10 +1561,7 @@ static void delete_confirm_click_cb(lv_event_t *e)
     );
     
     // 3. 提示文本
-    lv_obj_t *tip_label = create_text_label(
-        confirm_popup, "confirm_delete?", &lv_font_montserrat_32, 
-        lv_color_hex(0x000000), 156, 52, LV_OPA_100
-    );
+    create_text_label(confirm_popup, "confirm_delete?", &lv_font_montserrat_32, lv_color_hex(0x000000), 156, 52, LV_OPA_100);
     
     // 4. 确认按钮
     lv_obj_t *confirm_btn = create_custom_gradient_container
@@ -1941,6 +1968,7 @@ static void member_card_click_cb(lv_event_t *e)
     lv_obj_t *family_member_scr = lv_obj_get_parent(lv_event_get_target(e));
     // 直接调用录入创建函数（不再通过enroll_btn_click_cb中转）
     ui_enroll_create(&g_temp_member_info, family_member_scr);
+    destroy_family_member();
 }
 
 /**
@@ -1986,8 +2014,7 @@ static lv_obj_t *create_family_member_card(lv_obj_t *parent, const char *member_
     g_member_cards[member_idx] = member_con;
 
     // 2. 头像容器（和你的示例完全一致）
-    lv_obj_t *avatar_con = create_container
-    (member_con, 122, 15, 60, 60, avatar_color, LV_OPA_100, 100, avatar_color, 0, LV_OPA_90);
+    create_container(member_con, 122, 15, 60, 60, avatar_color, LV_OPA_100, 100, avatar_color, 0, LV_OPA_90);
 
     // 3. 成员名称标签（水平居中）
     lv_obj_t *name_label = create_text_label
@@ -2125,7 +2152,7 @@ static void avatar_click_cb(lv_event_t *e)
 {
     if(e == NULL) return;
     lv_obj_t *avatar = lv_event_get_target(e);
-    uint8_t avatar_idx = (uint8_t)(uintptr_t)lv_event_get_user_data(e);
+    //uint8_t avatar_idx = (uint8_t)(uintptr_t)lv_event_get_user_data(e);
     
     if(member_count >= MAX_FAMILY_MEMBER_COUNT) {
             LV_LOG_USER("成员数量已达上限（%d个),无法  ", MAX_FAMILY_MEMBER_COUNT);
@@ -2133,7 +2160,7 @@ static void avatar_click_cb(lv_event_t *e)
             return;
         }
     
-    LV_LOG_USER("%d", avatar_idx + 1);
+    //LV_LOG_USER("%d", avatar_idx + 1);
     
     // 1. 获取选择的头像颜色
     selected_avatar_color = lv_obj_get_style_bg_color(avatar, LV_STATE_DEFAULT);
@@ -2233,6 +2260,7 @@ static void close_custom_popup(void)
         lv_obj_del(custom_popup);
         custom_popup = NULL;
     }
+    
 }
 
 // 弹窗按钮点击回调（yes/no）
@@ -2240,21 +2268,8 @@ static void popup_btn_click_cb(lv_event_t *e)
 {
     if(e == NULL) return;
     lv_obj_t *btn = lv_event_get_target(e);
-    const char *btn_text = lv_label_get_text(lv_obj_get_child(btn, 0));
-    
-    // 处理yes/no逻辑
-    if(btn_text != NULL) {
-        if(strcmp(btn_text, "yes") == 0) {
-            LV_LOG_USER("点击yes,执行添加成员逻辑");
-            lv_obj_t *name_input = lv_obj_get_child(custom_popup, 2);
-            if(name_input != NULL && lv_obj_is_valid(name_input)) {
-                const char *input_name = lv_textarea_get_text(name_input);
-                LV_LOG_USER("输入的成员名称：%s", input_name);
-            }
-        } else if(strcmp(btn_text, "no") == 0) {
-            LV_LOG_USER("点击no,取消添加");
-        }
-    }
+    lv_label_get_text(lv_obj_get_child(btn, 0));
+
     close_custom_popup();
 }
 
@@ -2295,8 +2310,7 @@ void family_menber_add_click_cb(lv_event_t *e)
     lv_obj_set_style_pad_all(custom_popup, 0, LV_STATE_DEFAULT);
 
     // 4. 名称区域
-    lv_obj_t *name_label = create_text_label
-    (custom_popup, "name:", &lv_font_montserrat_24, lv_color_hex(0x7C7C7C), 51, 69, LV_OPA_100);
+    create_text_label(custom_popup, "name:", &lv_font_montserrat_24, lv_color_hex(0x7C7C7C), 51, 69, LV_OPA_100);
     
     // 创建可编辑的文本输入框
     lv_obj_t *name_input = lv_textarea_create(custom_popup);
@@ -2316,8 +2330,7 @@ void family_menber_add_click_cb(lv_event_t *e)
     lv_obj_add_event_cb(name_input, name_input_click_cb, LV_EVENT_CLICKED, NULL);
 
     // 5. 初始头像
-    lv_obj_t *avatar_title = create_text_label
-    (custom_popup, "Avatar:", &lv_font_montserrat_24, lv_color_hex(0x7C7C7C), 41, 124, LV_OPA_100);
+    create_text_label(custom_popup, "Avatar:", &lv_font_montserrat_24, lv_color_hex(0x7C7C7C), 41, 124, LV_OPA_100);
     lv_obj_t *avatar_con = create_container
     (custom_popup, 136, 171, 298, 192, lv_color_hex(0xFFFFFF), LV_OPA_100, 6, lv_color_hex(0x1F3150), 0, LV_OPA_90); 
     lv_obj_set_style_pad_all(avatar_con, 0, LV_STATE_DEFAULT);
@@ -2341,14 +2354,30 @@ void family_menber_add_click_cb(lv_event_t *e)
             lv_obj_add_event_cb(avatar, avatar_click_cb, LV_EVENT_CLICKED, (void*)(uintptr_t)avatar_idx);
         }
     }
-
-    // 关闭X按钮（右上角）
-    lv_obj_t *close_img = create_image_obj(custom_popup, "H:X.png", 540, 20);
     g_name_input = name_input;
-    lv_obj_add_flag(close_img, LV_OBJ_FLAG_CLICKABLE);
-    lv_obj_set_style_opa(close_img, LV_OPA_80, LV_STATE_PRESSED);
-    lv_obj_add_event_cb(close_img, popup_close_btn_cb, LV_EVENT_CLICKED, NULL);
-
+    // 关闭X按钮（右上角）
+    //lv_obj_t *close_img = create_image_obj(custom_popup, "H:X.png", 540, 20);
+    // lv_obj_add_flag(close_img, LV_OBJ_FLAG_CLICKABLE);
+    // lv_obj_set_style_opa(close_img, LV_OPA_80, LV_STATE_PRESSED);
+    // lv_obj_add_event_cb(close_img, popup_close_btn_cb, LV_EVENT_CLICKED, NULL);
+// 创建渐变容器（不变）
+    lv_obj_t *back_con = create_custom_gradient_container
+        (custom_popup, 540, 20, 40, 40, 200, 0xE0EDFF, 0xE0EDFF, LV_GRAD_DIR_VER, 0, 225, LV_OPA_100);
+    lv_obj_set_style_pad_all(back_con, 0, LV_STATE_DEFAULT);
+    // ===================== 绘制 X 号（核心修改）=====================
+    // 第一条斜线：左上角 → 右下角 (0,0) → (40,40)
+    lv_obj_t *x_line1 = lv_line_create(back_con);
+    static lv_point_t x_points1[] = {{5, 5}, {35, 35}};  // 留边，不贴边
+    config_divider_line_style(x_line1, x_points1, 2, 0x000000, 5, LV_OPA_100);
+    // 第二条斜线：右上角 → 左下角 (40,0) → (0,40)
+    lv_obj_t *x_line2 = lv_line_create(back_con);
+    static lv_point_t x_points2[] = {{35, 5}, {5, 35}};
+    config_divider_line_style(x_line2, x_points2, 2, 0x000000, 5, LV_OPA_100);
+    // ==============================================================
+    // 容器点击属性（不变）
+    lv_obj_add_flag(back_con, LV_OBJ_FLAG_CLICKABLE);
+    lv_obj_set_style_opa(back_con, LV_OPA_80, LV_STATE_PRESSED);
+    lv_obj_add_event_cb(back_con, popup_close_btn_cb, LV_EVENT_CLICKED, NULL);
     // 7. 确保弹窗在最上层
     lv_obj_move_foreground(custom_popup);
 }
@@ -2476,5 +2505,13 @@ static void update_add_member_btn_state(void)
             lv_obj_set_style_opa(family_menber_add, LV_OPA_100, LV_STATE_DEFAULT);
         }
     }
+}
+
+void destroy_family_member(void)
+{
+    if(family_menber_scr == NULL || !lv_obj_is_valid(family_menber_scr)) return;
+    lv_obj_del(family_menber_scr);
+    family_menber_scr = NULL;
+    LV_LOG_WARN("Family member response: Destroy the family member interface");
 }
 #endif

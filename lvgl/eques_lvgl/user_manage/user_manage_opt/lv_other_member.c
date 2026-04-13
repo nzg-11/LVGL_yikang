@@ -24,8 +24,8 @@ other_member_info_t other_member_list[MAX_OTHER_MEMBER_COUNT] = {0};
 static bool g_is_delete_mode = false;
 static lv_obj_t *g_delete_cancel_btn = NULL;
 static lv_obj_t *g_delete_confirm_btn = NULL;
-static uint8_t g_selected_delete_idx = MAX_OTHER_MEMBER_COUNT;
-static lv_obj_t *g_selected_delete_btn = NULL;
+// static uint8_t g_selected_delete_idx = MAX_OTHER_MEMBER_COUNT;
+// static lv_obj_t *g_selected_delete_btn = NULL;
 static lv_obj_t *g_delete_flag_imgs[MAX_OTHER_MEMBER_COUNT] = {NULL};
 static lv_obj_t *g_delete_hid_containers[MAX_OTHER_MEMBER_COUNT] = {NULL};
 static bool g_member_selected[MAX_OTHER_MEMBER_COUNT] = {false};
@@ -1160,8 +1160,8 @@ other_member_info_t other_member_list[MAX_OTHER_MEMBER_COUNT] = {0};
 static bool g_is_delete_mode = false;
 static lv_obj_t *g_delete_cancel_btn = NULL;
 static lv_obj_t *g_delete_confirm_btn = NULL;
-static uint8_t g_selected_delete_idx = MAX_OTHER_MEMBER_COUNT;
-static lv_obj_t *g_selected_delete_btn = NULL;
+// static uint8_t g_selected_delete_idx = MAX_OTHER_MEMBER_COUNT;
+// static lv_obj_t *g_selected_delete_btn = NULL;
 static lv_obj_t *g_delete_flag_imgs[MAX_OTHER_MEMBER_COUNT] = {NULL};
 static lv_obj_t *g_delete_hid_containers[MAX_OTHER_MEMBER_COUNT] = {NULL};
 static bool g_member_selected[MAX_OTHER_MEMBER_COUNT] = {false};
@@ -1207,7 +1207,7 @@ static void name_input_click_cb(lv_event_t *e);
 static void avatar_click_cb(lv_event_t *e);
 static lv_coord_t get_member_list_max_height(void);
 void update_other_member_count_ui(uint8_t member_idx);
-
+void other_member_back_btn_click_cb(lv_event_t *e);
 // 全局样式初始化
 static void init_other_member_styles(void)
 {
@@ -1290,24 +1290,52 @@ void ui_other_member_create(lv_obj_t *user_manage_scr)
     lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(back_btn,LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(back_btn,LV_OPA_80,LV_STATE_PRESSED);
-    lv_obj_add_event_cb(back_btn,back_btn_click_cb,LV_EVENT_CLICKED,user_manage_scr);
+    lv_obj_add_event_cb(back_btn,other_member_back_btn_click_cb,LV_EVENT_CLICKED,user_manage_scr);
 
     restore_other_members(other_member_scr);
     lv_scr_load(other_member_scr);
 }
 
+extern void ui_user_manage_create(lv_obj_t *homepage_scr);
+extern void destroy_user_manage(void);
 // 其他成员界面回调
 void other_member_btn_click_cb(lv_event_t *e)
 {
     if(e == NULL) return;
-    lv_obj_t *user_manage_scr = (lv_obj_t *)lv_event_get_user_data(e);
-    if(user_manage_scr == NULL) {
-        LV_LOG_WARN("other_member_btn_click_cb: user_manage_scr is NULL!");
-        return;
-    }
-    ui_other_member_create(user_manage_scr);
+    lv_obj_t *parent_scr = (lv_obj_t *)lv_event_get_user_data(e);
+    if(parent_scr == NULL) return;
+
+    // 1. 创建其他成员界面
+    ui_other_member_create(parent_scr);
+    // 2. 加载其他成员
+    lv_scr_load(other_member_scr);
+    update_status_bar_parent(other_member_scr);
+    // 3. 销毁用户管理（全局！已切屏，安全）
+    destroy_user_manage();
+    LV_LOG_WARN("进入家庭成员，销毁用户管理");
 }
 
+// 其他成员 → 返回用户管理（重建用户管理）
+void other_member_back_btn_click_cb(lv_event_t *e)
+{
+    if(e == NULL) return;
+    lv_obj_t *parent_scr = (lv_obj_t *)lv_event_get_user_data(e);
+    
+    // 获取当前正在显示的页面（要删除的目标）
+    lv_obj_t *current_del_scr = lv_disp_get_scr_act(NULL);
+    if(!lv_obj_is_valid(current_del_scr)) return;
+
+    // ===================== 分支1：当前是【其他成员界面】（用户管理已被删除，必须重建） =====================
+    if(current_del_scr == other_member_scr) {
+        // 1. 【重建用户管理】（因为之前进其他成员时把用户管理删了）
+        ui_user_manage_create(parent_scr);  
+        // 2. 【销毁其他成员】（此时已经切到用户管理，删旧页100%安全）
+        lv_obj_del(current_del_scr);
+        other_member_scr = NULL;
+        LV_LOG_WARN("Other member response: Rebuild the user manage and destroy the other member interface");
+        return;  // 结束，不走其他逻辑
+    }
+}
 /**********************************************************删除回调函数***************************************************** */
 /**
  * @brief 删除按钮点击回调函数
@@ -1410,10 +1438,7 @@ static void delete_confirm_click_cb(lv_event_t *e)
     );
     
     // 3. 提示文本
-    lv_obj_t *tip_label = create_text_label(
-        confirm_popup, "confirm_delete?", &lv_font_montserrat_32, 
-        lv_color_hex(0x000000), 156, 52, LV_OPA_100
-    );
+    create_text_label(confirm_popup, "confirm_delete?", &lv_font_montserrat_32, lv_color_hex(0x000000), 156, 52, LV_OPA_100);
     
     // 4. 确认按钮
     lv_obj_t *confirm_btn = create_custom_gradient_container
@@ -1726,8 +1751,7 @@ static lv_obj_t *create_other_member_card(lv_obj_t *parent, const char *member_n
     g_member_cards[member_idx] = member_con;
 
     // 头像
-    lv_obj_t *avatar_con = create_container
-    (member_con, 122, 15, 60, 60, avatar_color, LV_OPA_100, 100, avatar_color, 0, LV_OPA_90);
+    create_container(member_con, 122, 15, 60, 60, avatar_color, LV_OPA_100, 100, avatar_color, 0, LV_OPA_90);
 
     // 名称
     lv_obj_t *name_label = create_text_label
@@ -1835,7 +1859,7 @@ static void avatar_click_cb(lv_event_t *e)
 {
     if(e == NULL) return;
     lv_obj_t *avatar = lv_event_get_target(e);
-    uint8_t avatar_idx = (uint8_t)(uintptr_t)lv_event_get_user_data(e);
+    //uint8_t avatar_idx = (uint8_t)(uintptr_t)lv_event_get_user_data(e);
 
     if(member_count >= MAX_OTHER_MEMBER_COUNT) {
         LV_LOG_USER("成员数量已达上限");
@@ -1954,8 +1978,7 @@ void other_member_add_click_cb(lv_event_t *e)
     (other_member_scr, 212, 94, 600, 423, lv_color_hex(0xE0EDFF), LV_OPA_100, 16, lv_color_hex(0x1F3150), 0, LV_OPA_90);
     lv_obj_set_style_pad_all(custom_popup, 0, LV_STATE_DEFAULT);
 
-    lv_obj_t *name_label = create_text_label
-    (custom_popup, "name:", &lv_font_montserrat_24, lv_color_hex(0x7C7C7C), 51, 69, LV_OPA_100);
+    create_text_label(custom_popup, "name:", &lv_font_montserrat_24, lv_color_hex(0x7C7C7C), 51, 69, LV_OPA_100);
 
     lv_obj_t *name_input = lv_textarea_create(custom_popup);
     lv_obj_clear_flag(name_input, LV_OBJ_FLAG_SCROLLABLE);
@@ -1973,8 +1996,7 @@ void other_member_add_click_cb(lv_event_t *e)
     lv_obj_set_style_opa(name_input, LV_OPA_80, LV_STATE_PRESSED);
     lv_obj_add_event_cb(name_input, name_input_click_cb, LV_EVENT_CLICKED, NULL);
 
-    lv_obj_t *avatar_title = create_text_label
-    (custom_popup, "Avatar:", &lv_font_montserrat_24, lv_color_hex(0x7C7C7C), 41, 124, LV_OPA_100);
+    create_text_label(custom_popup, "Avatar:", &lv_font_montserrat_24, lv_color_hex(0x7C7C7C), 41, 124, LV_OPA_100);
     lv_obj_t *avatar_con = create_container
     (custom_popup, 136, 171, 298, 192, lv_color_hex(0xFFFFFF), LV_OPA_100, 6, lv_color_hex(0x1F3150), 0, LV_OPA_90);
     lv_obj_set_style_pad_all(avatar_con, 0, LV_STATE_DEFAULT);

@@ -94,10 +94,10 @@ void refresh_finger_count_label(void);
 void update_finger_count(uint8_t add_num);
 
 void re_render_enroll_ui(lv_obj_t *parent_scr);
-
+common_member_info_t *get_current_enroll_member(void);
 void enroll_btn_click_cb(lv_event_t *e);
 void ui_enroll_create(common_member_info_t *member_info, lv_obj_t *parent_scr);
-
+void destroy_enroll(void);
 #ifdef __cplusplus
 } /* extern "C" */
 #endif

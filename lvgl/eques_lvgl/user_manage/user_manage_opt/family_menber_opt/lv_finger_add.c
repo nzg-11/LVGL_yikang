@@ -26,56 +26,46 @@ static lv_obj_t *finger_custom_popup = NULL;   // 指纹弹窗主体
 static lv_obj_t *finger_name_keyboard = NULL;  // 指纹弹窗键盘
 static lv_obj_t *finger_input_textarea = NULL; // 指纹弹窗输入框
 static void close_finger_popup(void);
-
+void finger_add_back_btn_click_cb(lv_event_t *e);
+// 指纹确认按钮回调
 // 指纹确认按钮回调
 static void finger_confirm_click_cb(lv_event_t *e)
 {
     if(e == NULL) return;
-    
-    // 1. 获取录入界面指针
-    lv_obj_t *enroll_scr = (lv_obj_t *)lv_event_get_user_data(e);
-    if(enroll_scr == NULL || !lv_obj_is_valid(enroll_scr)) {
-        LV_LOG_WARN("finger_confirm_click_cb: enroll_scr invalid!");
-        return;
-    }
 
-    // 2. 获取输入的指纹名称
+    // 这里原来传的是旧的无效 enroll_scr，必须删掉！
+    // lv_obj_t *enroll_scr = (lv_obj_t *)lv_event_get_user_data(e);
+
+    // ===================== 正确写法 =====================
+    // 我们要返回的是：录入界面（需要用全局接口获取）
+    common_member_info_t *member = get_current_enroll_member();
+    lv_obj_t *parent_scr = (lv_obj_t *)lv_event_get_user_data(e); // 这个是有效父页面
+
+    // 重建录入界面 → 这才是有效的！
+    ui_enroll_create(member, parent_scr);
+
+    // 获取输入的指纹名称
     const char *finger_name = lv_textarea_get_text(finger_input_textarea);
     if(finger_name == NULL || strlen(finger_name) == 0) {
-        finger_name = "Unnamed finger"; // 默认名称
+        finger_name = "Unnamed finger";
     }
 
-    // 3. 调用录入完成回调，更新主界面
+    // 调用录入完成逻辑
     finger_enroll_complete(finger_name);
 
-    // 4. 关闭弹窗
+    // 关闭弹窗
     close_finger_popup();
-    update_status_bar_parent(enroll_scr);
-    // 5. 返回录入界面（如果需要）
-    lv_scr_load(enroll_scr);
-    lv_obj_t *current_del_scr = lv_disp_get_scr_act(NULL);
-    if(current_del_scr == finger_add_scr && is_lv_obj_valid(current_del_scr)) {
-        lv_obj_del(finger_add_scr);  // 销毁编辑界面
-        finger_add_scr = NULL;       // 指针置空
-        LV_LOG_USER("Add finger screen destroyed successfully");
-    }
-    // 6. 重置指纹添加进度（原有逻辑）- 只重置进度，不重置计数
-    finger_add_step = 0;
-    lv_img_set_src(finger_percent_img, "H:finger_0.png");
-    lv_label_set_text(precent_label, "0%");
-    lv_label_set_text(prompt_label, "Please place your finger on the sensor");
-    lv_obj_set_pos(finger_percent_img, 309, 415);
-    lv_obj_set_style_border_opa(add_finger_circel01, LV_OPA_100, LV_STATE_DEFAULT);
-    lv_obj_set_style_border_opa(add_finger_circel02, LV_OPA_100, LV_STATE_DEFAULT);
-    lv_obj_set_style_border_opa(add_finger_circel03, LV_OPA_100, LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_color(add_finger_circel03, lv_color_hex(0x061022), LV_STATE_DEFAULT);
-    lv_obj_clear_flag(prompt_label, LV_OBJ_FLAG_HIDDEN);
-    lv_obj_clear_flag(precent_label, LV_OBJ_FLAG_HIDDEN);
-    if(finger_success_label != NULL) {
-        lv_obj_add_flag(finger_success_label, LV_OBJ_FLAG_HIDDEN);
-    }
-}
 
+    // ===================== 销毁指纹添加页面 =====================
+    if(is_lv_obj_valid(finger_add_scr)) {
+        lv_obj_del(finger_add_scr);
+        finger_add_scr = NULL;
+    }
+
+    // 重置进度
+    finger_add_step = 0;
+    LV_LOG_USER("Finger add success, back to enroll screen");
+}
 // 全局样式初始化
 static void init_other_member_styles(void)
 {
@@ -215,7 +205,7 @@ static void finger_add_click_cb(lv_event_t *e)
     if(finger_add_step > 5) {
         finger_add_step = 0; // 测试阶段：完成后重置，正式场景可禁用点击
         // 重置所有进度状态（回到初始）- 不重置计数
-        lv_img_set_src(finger_percent_img, "H:finger_0.png");
+        //lv_img_set_src(finger_percent_img, "H:finger_0.png");
         lv_label_set_text(precent_label, "0%");
         lv_label_set_text(prompt_label, "Please place your finger on the sensor");
         lv_obj_set_pos(finger_percent_img, 309, 415); // 恢复初始位置
@@ -242,19 +232,19 @@ static void finger_add_click_cb(lv_event_t *e)
     // 按步骤切换图标、文本、样式
     switch(finger_add_step) {
         case 1: // 第一步：25%
-            lv_img_set_src(finger_percent_img, "H:finger_25.png"); // 替换为你的25%图片
+            //lv_img_set_src(finger_percent_img, "H:finger_25.png"); // 替换为你的25%图片
             lv_label_set_text(precent_label, "25%");
             break;
         case 2: // 第二步：50%
-            lv_img_set_src(finger_percent_img, "H:finger_50.png"); // 替换为你的50%图片
+            //lv_img_set_src(finger_percent_img, "H:finger_50.png"); // 替换为你的50%图片
             lv_label_set_text(precent_label, "50%");
             break;
         case 3: // 第三步：75%
-            lv_img_set_src(finger_percent_img, "H:finger_75.png"); // 替换为你的75%图片
+            //lv_img_set_src(finger_percent_img, "H:finger_75.png"); // 替换为你的75%图片
             lv_label_set_text(precent_label, "75%");
             break;
         case 4: // 第四步：100%/成功
-            lv_img_set_src(finger_percent_img, "H:finger_100.png"); // 替换为你的100%图片
+            //lv_img_set_src(finger_percent_img, "H:finger_100.png"); // 替换为你的100%图片
             lv_label_set_text(precent_label, "100%");
             break;
         case 5: // 第五步：成功
@@ -264,7 +254,7 @@ static void finger_add_click_cb(lv_event_t *e)
             //lv_obj_clear_flag(finger_percent_img, LV_OBJ_FLAG_CLICKABLE);
             break;
         default: // 步骤0：初始状态（冗余，防止异常）
-            lv_img_set_src(finger_percent_img, "H:finger_0.png");
+            //lv_img_set_src(finger_percent_img, "H:finger_0.png");
             lv_label_set_text(precent_label, "0%");
             break;
     }
@@ -299,8 +289,7 @@ void ui_finger_add_create(lv_obj_t *enroll_scr)
     lv_obj_add_style(finger_add_scr, &finger_add_grad_style, LV_STATE_DEFAULT);// 应用渐变样式到屏幕
 
     //添加指纹相关文本
-    lv_obj_t *add_finger_label = create_text_label
-    (finger_add_scr, "add finger", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 328, 115, LV_OPA_100);
+    create_text_label(finger_add_scr, "add finger", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 328, 115, LV_OPA_100);
     
     // 保存prompt_label到全局变量（方便回调修改）
     prompt_label = create_text_label
@@ -319,17 +308,25 @@ void ui_finger_add_create(lv_obj_t *enroll_scr)
     (finger_add_scr,269,373,265,265, lv_color_hex(0x061022), LV_OPA_100, 200,lv_color_hex(0x1D3861), 8, LV_OPA_100); 
 
     //指纹百分比图片 - 保存到全局变量 + 绑定回调
-    finger_percent_img = create_image_obj(finger_add_scr, "H:finger_0.png", 309, 415);
+    //finger_percent_img = create_image_obj(finger_add_scr, "H:finger_0.png", 309, 415);
+    finger_percent_img = create_container_circle(finger_add_scr, 309, 415, 90,
+    true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
     lv_obj_add_flag(finger_percent_img, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(finger_percent_img, LV_OPA_80, LV_STATE_PRESSED);
     // 绑定点击回调
     lv_obj_add_event_cb(finger_percent_img, finger_add_click_cb, LV_EVENT_CLICKED, enroll_scr);
 
     // 左上角返回按钮
-    lv_obj_t *back_btn = create_image_obj(finger_add_scr, "H:back.png", 52, 123);
-    lv_obj_add_flag(back_btn, LV_OBJ_FLAG_CLICKABLE);
-    lv_obj_set_style_opa(back_btn, LV_OPA_80, LV_STATE_PRESSED);
-    lv_obj_add_event_cb(back_btn, back_btn_click_cb, LV_EVENT_CLICKED, enroll_scr);
+    // lv_obj_t *back_btn = create_image_obj(finger_add_scr, "H:back.png", 52, 123);
+    // lv_obj_add_flag(back_btn, LV_OBJ_FLAG_CLICKABLE);
+    // lv_obj_set_style_opa(back_btn, LV_OPA_80, LV_STATE_PRESSED);
+    // lv_obj_add_event_cb(back_btn, finger_add_back_btn_click_cb, LV_EVENT_CLICKED, enroll_scr);
+    lv_obj_t *back_btn = create_container_circle(finger_add_scr, 52, 90, 30,
+    true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
+    lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
+    lv_obj_add_flag(back_btn,LV_OBJ_FLAG_CLICKABLE);
+    lv_obj_set_style_opa(back_btn,LV_OPA_80,LV_STATE_PRESSED);
+    lv_obj_add_event_cb(back_btn,finger_add_back_btn_click_cb,LV_EVENT_CLICKED, enroll_scr);
     
     update_status_bar_parent(finger_add_scr);
     // 切换到设置屏幕
@@ -340,11 +337,37 @@ void ui_finger_add_create(lv_obj_t *enroll_scr)
 void finger_add_btn_click_cb(lv_event_t *e)
 {
     if(e == NULL) return;
+    lv_obj_t *parent_scr = (lv_obj_t *)lv_event_get_user_data(e);
+    if(parent_scr == NULL) return;
+
+    // 1. 创建家庭成员界面
+    ui_finger_add_create(parent_scr);
+    // 2. 加载家庭成员
+    lv_scr_load(finger_add_scr);
+    update_status_bar_parent(finger_add_scr);
+    // 3. 销毁指纹添加界面
+    destroy_enroll();
+    LV_LOG_WARN("进入指纹添加界面，销毁指纹添加界面");
+}
+//返回按钮点击回调
+void finger_add_back_btn_click_cb(lv_event_t *e)
+{
+    if(e == NULL) return;
+    lv_obj_t *parent_scr = (lv_obj_t *)lv_event_get_user_data(e);
     
-    lv_obj_t *enroll_scr = (lv_obj_t *)lv_event_get_user_data(e);
-    if(enroll_scr == NULL) {
-        LV_LOG_WARN("finger_add_btn_click_cb: enroll_scr is NULL!");
+    lv_obj_t *current_del_scr = lv_disp_get_scr_act(NULL);
+    if(!lv_obj_is_valid(current_del_scr)) return;
+
+    if(current_del_scr == finger_add_scr) {
+        // ===================== 关键修复 =====================
+        // 跨文件获取当前成员信息
+        common_member_info_t *member = get_current_enroll_member();
+        
+        // 正确传 2 个参数！
+        ui_enroll_create(member, parent_scr);  
+
+        lv_obj_del(current_del_scr);
+        finger_add_scr = NULL;
         return;
     }
-    ui_finger_add_create(enroll_scr);
 }

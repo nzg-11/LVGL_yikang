@@ -743,7 +743,7 @@ void ui_enroll_create(common_member_info_t *member_info, lv_obj_t *parent_scr)
     
     char title_text[32] = {0};
     strcpy(title_text, g_current_enroll_member.type == MEMBER_TYPE_FAMILY ? "family member" : "other member");
-    lv_obj_t *title_label = create_text_label(enroll_scr, title_text, &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 0, 115, LV_OPA_100);
+    create_text_label(enroll_scr, title_text, &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 0, 115, LV_OPA_100);
     lv_obj_align(title_label, LV_ALIGN_TOP_MID, 0, 115);
 
     g_opt_con = create_container(enroll_scr,18,550,763,730, lv_color_hex(0xE0EDFF), LV_OPA_100, 31,lv_color_hex(0x1F3150), 0, LV_OPA_90);
@@ -993,6 +993,7 @@ static uint16_t update_pwd_opt_container(uint16_t finger_con_height);
 static uint16_t update_card_opt_container(uint16_t pwd_con_height, uint16_t finger_con_height);
 static uint16_t update_face_opt_container(uint16_t card_con_height, uint16_t pwd_con_height, uint16_t finger_con_height);
 static void destroy_all_enroll_containers(void);
+void enroll_opt_back_btn_click_cb(lv_event_t *e);
 // 全局样式初始化
 static void init_enroll_styles(void)
 {
@@ -1009,8 +1010,8 @@ static uint16_t update_finger_opt_container(void)
     const uint16_t BASE_HEIGHT      = 188;
     const uint16_t PER_ITEM_HEIGHT  = 87;
     const uint16_t LINE_TOP_Y       = 90;
-    const uint16_t ITEM_START_Y     = 91;
-    const uint16_t ADD_BTN_INIT_Y   = 104;
+    //const uint16_t ITEM_START_Y     = 91;
+    const uint16_t ADD_BTN_INIT_Y   = 122;
 
     static lv_point_t line_points_arr[MAX_FINGER_COUNT][2];
     uint16_t finger_con_height = BASE_HEIGHT;
@@ -1048,9 +1049,7 @@ static uint16_t update_finger_opt_container(void)
     lv_obj_t *finger_divider01 = lv_line_create(g_finger_opt_con);
     static lv_point_t divider_top_points[] = {{38, LINE_TOP_Y}, {881, LINE_TOP_Y}};
     config_divider_line_style(finger_divider01, divider_top_points, 2, 0xD4D4D4, 1, LV_OPA_100);
-    lv_obj_t *finger_label = create_text_label(g_finger_opt_con, "fingerprint",
-                                              &lv_font_montserrat_36, lv_color_hex(0x27394C),
-                                              90, 23, LV_OPA_100);
+    create_text_label(g_finger_opt_con, "fingerprint",&lv_font_montserrat_36, lv_color_hex(0x27394C), 90, 23, LV_OPA_100);
 
     // 创建条目
     for (uint8_t i = 0; i < finger_info->enroll_count && i < MAX_FINGER_COUNT; i++)
@@ -1078,9 +1077,7 @@ static uint16_t update_finger_opt_container(void)
         else
             strncpy(name_buf, finger_info->finger_names[i], sizeof(name_buf)-1);
 
-        lv_obj_t *label = create_text_label(finger_info->finger_record_cons[i], name_buf,
-                                           &lv_font_montserrat_32, lv_color_hex(0x000000),
-                                           62, 24, LV_OPA_100);
+        create_text_label(finger_info->finger_record_cons[i], name_buf,&lv_font_montserrat_32, lv_color_hex(0x000000), 62, 24, LV_OPA_100);
 
         lv_obj_add_flag(finger_info->finger_record_cons[i], LV_OBJ_FLAG_CLICKABLE);
         lv_obj_set_style_opa(finger_info->finger_record_cons[i], LV_OPA_90, LV_STATE_PRESSED);
@@ -1090,12 +1087,22 @@ static uint16_t update_finger_opt_container(void)
 
     // 添加按钮
     uint16_t add_btn_y = ADD_BTN_INIT_Y + (finger_info->enroll_count * 88);
-    uint16_t add_lbl_y = add_btn_y + 12;
+    uint16_t add_lbl_y = add_btn_y - 6;
 
-    lv_obj_t *finger_add_img = create_image_obj(g_finger_opt_con, "H:+.png", 307, add_btn_y);
-    lv_obj_t *finger_add_label = create_text_label(g_finger_opt_con, "add",
-                                                  &lv_font_montserrat_36, lv_color_hex(0x00BDBD),
-                                                  351, add_lbl_y, LV_OPA_100);
+    //lv_obj_t *finger_add_img = create_image_obj(g_finger_opt_con, "H:+.png", 307, add_btn_y);
+    lv_obj_t * finger_add_img = create_container(g_finger_opt_con,307,add_btn_y,34,34,lv_color_hex(0x00BDBD), LV_OPA_100, 100,lv_color_hex(0x1F3150), 0, LV_OPA_90);
+    lv_obj_set_style_pad_all(finger_add_img, 0, LV_STATE_DEFAULT);
+    // 横线
+    // 横线（延长4px）
+    lv_obj_t *divider_line1 = lv_line_create(finger_add_img);
+    static const lv_point_t divider_points1[] = {{7, 17}, {27, 17}}; 
+    config_divider_line_style(divider_line1, divider_points1, 2, 0xFFFFFF, 3, LV_OPA_100);
+    // 竖线（延长4px）
+    lv_obj_t *divider_line2 = lv_line_create(finger_add_img);
+    static const lv_point_t divider_points2[] = {{17, 7}, {17, 27}}; 
+    config_divider_line_style(divider_line2, divider_points2, 2, 0xFFFFFF, 3, LV_OPA_100);
+    
+    lv_obj_t *finger_add_label = create_text_label(g_finger_opt_con, "add",&lv_font_montserrat_36, lv_color_hex(0x00BDBD), 351, add_lbl_y, LV_OPA_100);
 
     if(finger_info->enroll_count >= MAX_FINGER_COUNT) {
         lv_obj_set_style_text_color(finger_add_label, lv_color_hex(0x888888), LV_STATE_DEFAULT);
@@ -1119,8 +1126,8 @@ static uint16_t update_pwd_opt_container(uint16_t finger_con_height)
     uint16_t BASE_HEIGHT      = 188;
     const uint16_t PER_ITEM_HEIGHT  = 87;
     const uint16_t LINE_TOP_Y       = 90;
-    const uint16_t ITEM_START_Y     = 91;
-    const uint16_t ADD_BTN_INIT_Y   = 104;
+    //const uint16_t ITEM_START_Y     = 91;
+    const uint16_t ADD_BTN_INIT_Y   = 122;
 
     static lv_point_t line_points_arr[MAX_PWD_COUNT][2];
     if(g_current_enroll_member.type == MEMBER_TYPE_FAMILY) {
@@ -1169,9 +1176,7 @@ static uint16_t update_pwd_opt_container(uint16_t finger_con_height)
     lv_obj_t *pwd_divider01 = lv_line_create(g_pwd_opt_con);
     static lv_point_t divider_top_points[] = {{38, LINE_TOP_Y}, {881, LINE_TOP_Y}};
     config_divider_line_style(pwd_divider01, divider_top_points, 2, 0xD4D4D4, 1, LV_OPA_100);
-    lv_obj_t *pwd_label = create_text_label(g_pwd_opt_con, "password",
-                                              &lv_font_montserrat_36, lv_color_hex(0x27394C),
-                                              90, 23, LV_OPA_100);
+    create_text_label(g_pwd_opt_con, "password",&lv_font_montserrat_36, lv_color_hex(0x27394C),90, 23, LV_OPA_100);
 
     // 创建条目：分割线、位置、逻辑和指纹完全一致
     for (uint8_t i = 0; i < pwd_info->enroll_count && i < MAX_PWD_COUNT; i++)
@@ -1200,9 +1205,7 @@ static uint16_t update_pwd_opt_container(uint16_t finger_con_height)
         else
             strncpy(name_buf, pwd_info->pwd_names[i], sizeof(name_buf)-1);
 
-        lv_obj_t *label = create_text_label(pwd_info->pwd_record_cons[i], name_buf,
-                                           &lv_font_montserrat_32, lv_color_hex(0x000000),
-                                           62, 24, LV_OPA_100);
+        create_text_label(pwd_info->pwd_record_cons[i], name_buf,&lv_font_montserrat_32, lv_color_hex(0x000000), 62, 24, LV_OPA_100);
 
         lv_obj_add_flag(pwd_info->pwd_record_cons[i], LV_OBJ_FLAG_CLICKABLE);
         lv_obj_set_style_opa(pwd_info->pwd_record_cons[i], LV_OPA_90, LV_STATE_PRESSED);
@@ -1212,12 +1215,21 @@ static uint16_t update_pwd_opt_container(uint16_t finger_con_height)
 
     // ADD按钮：位置、逻辑和指纹完全一致
     uint16_t add_btn_y = ADD_BTN_INIT_Y + (pwd_info->enroll_count * 88);
-    uint16_t add_lbl_y = add_btn_y + 12;
+    uint16_t add_lbl_y = add_btn_y -6;
 
-    lv_obj_t *pwd_add_img = create_image_obj(g_pwd_opt_con, "H:+.png", 307, add_btn_y);
-    lv_obj_t *pwd_add_label = create_text_label(g_pwd_opt_con, "add",
-                                                  &lv_font_montserrat_36, lv_color_hex(0x00BDBD),
-                                                  351, add_lbl_y, LV_OPA_100);
+    //lv_obj_t *pwd_add_img = create_image_obj(g_pwd_opt_con, "H:+.png", 307, add_btn_y);
+    lv_obj_t * pwd_add_img = create_container(g_pwd_opt_con,307,add_btn_y,34,34,lv_color_hex(0x00BDBD), LV_OPA_100, 100,lv_color_hex(0x1F3150), 0, LV_OPA_90);
+    lv_obj_set_style_pad_all(pwd_add_img, 0, LV_STATE_DEFAULT);
+    // 横线
+    lv_obj_t *divider_line1 = lv_line_create(pwd_add_img);
+    static const lv_point_t divider_points1[] = {{7, 17}, {27, 17}}; 
+    config_divider_line_style(divider_line1, divider_points1, 2, 0xFFFFFF, 3, LV_OPA_100);
+    // 竖线
+    lv_obj_t *divider_line2 = lv_line_create(pwd_add_img);
+    static const lv_point_t divider_points2[] = {{17, 7}, {17, 27}}; 
+    config_divider_line_style(divider_line2, divider_points2, 2, 0xFFFFFF, 3, LV_OPA_100);
+
+    lv_obj_t *pwd_add_label = create_text_label(g_pwd_opt_con, "add", &lv_font_montserrat_36, lv_color_hex(0x00BDBD), 351, add_lbl_y, LV_OPA_100);
 
     if(pwd_info->enroll_count >= MAX_PWD_COUNT) {
         lv_obj_set_style_text_color(pwd_add_label, lv_color_hex(0x888888), LV_STATE_DEFAULT);
@@ -1225,9 +1237,9 @@ static uint16_t update_pwd_opt_container(uint16_t finger_con_height)
         lv_obj_clear_flag(pwd_add_img, LV_OBJ_FLAG_CLICKABLE);
         lv_obj_remove_event_cb(pwd_add_img, pwd_add_btn_click_cb);
     } else {
-        lv_obj_add_flag(pwd_add_img, LV_OBJ_FLAG_CLICKABLE);
-        lv_obj_set_style_opa(pwd_add_img, LV_OPA_80, LV_STATE_PRESSED);
-        lv_obj_add_event_cb(pwd_add_img, pwd_add_btn_click_cb, LV_EVENT_CLICKED, enroll_scr);
+        lv_obj_add_flag(pwd_add_label, LV_OBJ_FLAG_CLICKABLE);
+        lv_obj_set_style_opa(pwd_add_label, LV_OPA_80, LV_STATE_PRESSED);
+        lv_obj_add_event_cb(pwd_add_label, pwd_add_btn_click_cb, LV_EVENT_CLICKED, enroll_scr);
     }
 
     return pwd_con_height;
@@ -1241,7 +1253,7 @@ static uint16_t update_card_opt_container(uint16_t pwd_con_height, uint16_t fing
     const uint16_t BASE_HEIGHT      = 188;
     const uint16_t PER_ITEM_HEIGHT  = 87;
     const uint16_t LINE_TOP_Y       = 90;
-    const uint16_t ADD_BTN_INIT_Y   = 104;
+    const uint16_t ADD_BTN_INIT_Y   = 122;
 
     static lv_point_t line_points_arr[MAX_CARD_COUNT][2];
     uint16_t card_con_height = BASE_HEIGHT;
@@ -1288,9 +1300,7 @@ static uint16_t update_card_opt_container(uint16_t pwd_con_height, uint16_t fing
     lv_obj_t *card_divider01 = lv_line_create(g_card_opt_con);
     static lv_point_t divider_top_points[] = {{38, LINE_TOP_Y}, {881, LINE_TOP_Y}};
     config_divider_line_style(card_divider01, divider_top_points, 2, 0xD4D4D4, 1, LV_OPA_100);
-    lv_obj_t *card_label = create_text_label(g_card_opt_con, "card",
-                                              &lv_font_montserrat_36, lv_color_hex(0x27394C),
-                                              95, 35, LV_OPA_100);
+    create_text_label(g_card_opt_con, "card",&lv_font_montserrat_36, lv_color_hex(0x27394C), 95, 35, LV_OPA_100);
 
     // 创建卡片条目（分割线/位置/逻辑 100%对标指纹）
     for (uint8_t i = 0; i < card_info->enroll_count && i < MAX_CARD_COUNT; i++)
@@ -1319,9 +1329,7 @@ static uint16_t update_card_opt_container(uint16_t pwd_con_height, uint16_t fing
         else
             strncpy(name_buf, card_info->card_names[i], sizeof(name_buf)-1);
 
-        lv_obj_t *label = create_text_label(card_info->card_record_cons[i], name_buf,
-                                           &lv_font_montserrat_32, lv_color_hex(0x000000),
-                                           62, 24, LV_OPA_100);
+        create_text_label(card_info->card_record_cons[i], name_buf, &lv_font_montserrat_32, lv_color_hex(0x000000), 62, 24, LV_OPA_100);
 
         lv_obj_add_flag(card_info->card_record_cons[i], LV_OBJ_FLAG_CLICKABLE);
         lv_obj_set_style_opa(card_info->card_record_cons[i], LV_OPA_90, LV_STATE_PRESSED);
@@ -1331,12 +1339,24 @@ static uint16_t update_card_opt_container(uint16_t pwd_con_height, uint16_t fing
 
     // ADD按钮：位置自动下移，和指纹/密码完全一致
     uint16_t add_btn_y = ADD_BTN_INIT_Y + (card_info->enroll_count * 88);
-    uint16_t add_lbl_y = add_btn_y + 12;
+    uint16_t add_lbl_y = add_btn_y - 6;
 
-    lv_obj_t *card_add_img = create_image_obj(g_card_opt_con, "H:+.png", 307, add_btn_y);
-    lv_obj_t *card_add_label = create_text_label(g_card_opt_con, "add",
-                                                  &lv_font_montserrat_36, lv_color_hex(0x00BDBD),
-                                                  351, add_lbl_y, LV_OPA_100);
+    // lv_obj_t *card_add_img = create_image_obj(g_card_opt_con, "H:+.png", 307, add_btn_y);
+    // lv_obj_t *card_add_label = create_text_label(g_card_opt_con, "add",
+    //                                               &lv_font_montserrat_36, lv_color_hex(0x00BDBD),
+    //                                               351, add_lbl_y, LV_OPA_100);
+    lv_obj_t *card_add_img   = create_container(g_card_opt_con,307,add_btn_y,34,34,lv_color_hex(0x00BDBD), LV_OPA_100, 100,lv_color_hex(0x1F3150), 0, LV_OPA_90);
+    lv_obj_set_style_pad_all(card_add_img, 0, LV_STATE_DEFAULT);
+    // 横线
+    lv_obj_t *divider_line1 = lv_line_create(card_add_img);
+    static const lv_point_t divider_points1[] = {{7, 17}, {27, 17}}; 
+    config_divider_line_style(divider_line1, divider_points1, 2, 0xFFFFFF, 3, LV_OPA_100);
+    // 竖线
+    lv_obj_t *divider_line2 = lv_line_create(card_add_img);
+    static const lv_point_t divider_points2[] = {{17, 7}, {17, 27}}; 
+    config_divider_line_style(divider_line2, divider_points2, 2, 0xFFFFFF, 3, LV_OPA_100);
+    
+    lv_obj_t *card_add_label = create_text_label(g_card_opt_con, "add",&lv_font_montserrat_36, lv_color_hex(0x00BDBD), 351, add_lbl_y, LV_OPA_100);
 
     // 按钮状态控制
     if(card_info->enroll_count >= MAX_CARD_COUNT) {
@@ -1361,7 +1381,7 @@ static uint16_t update_face_opt_container(uint16_t card_con_height, uint16_t pwd
     const uint16_t BASE_HEIGHT      = 290;
     const uint16_t PER_ITEM_HEIGHT  = 87;
     const uint16_t LINE_TOP_Y       = 90;
-    const uint16_t ADD_BTN_INIT_Y   = 104;
+    const uint16_t ADD_BTN_INIT_Y   = 122;
 
     static lv_point_t line_points_arr[MAX_FACE_COUNT][2];
     uint16_t face_con_height = BASE_HEIGHT;
@@ -1409,9 +1429,7 @@ static uint16_t update_face_opt_container(uint16_t card_con_height, uint16_t pwd
     lv_obj_t *face_divider01 = lv_line_create(g_face_opt_con);
     static lv_point_t divider_top_points[] = {{38, LINE_TOP_Y}, {881, LINE_TOP_Y}};
     config_divider_line_style(face_divider01, divider_top_points, 2, 0xD4D4D4, 1, LV_OPA_100);
-    lv_obj_t *face_label = create_text_label(g_face_opt_con, "face",
-                                              &lv_font_montserrat_36, lv_color_hex(0x27394C),
-                                              95, 35, LV_OPA_100);
+    create_text_label(g_face_opt_con, "face",&lv_font_montserrat_36, lv_color_hex(0x27394C),95, 35, LV_OPA_100);
 
     // 创建人脸条目（分割线/位置/逻辑 100%对标指纹）
     for (uint8_t i = 0; i < face_info->enroll_count && i < MAX_FACE_COUNT; i++)
@@ -1440,9 +1458,7 @@ static uint16_t update_face_opt_container(uint16_t card_con_height, uint16_t pwd
         else
             strncpy(name_buf, face_info->face_names[i], sizeof(name_buf)-1);
 
-        lv_obj_t *label = create_text_label(face_info->face_record_cons[i], name_buf,
-                                           &lv_font_montserrat_32, lv_color_hex(0x000000),
-                                           62, 24, LV_OPA_100);
+        create_text_label(face_info->face_record_cons[i], name_buf, &lv_font_montserrat_32, lv_color_hex(0x000000), 62, 24, LV_OPA_100);
 
         lv_obj_add_flag(face_info->face_record_cons[i], LV_OBJ_FLAG_CLICKABLE);
         lv_obj_set_style_opa(face_info->face_record_cons[i], LV_OPA_90, LV_STATE_PRESSED);
@@ -1452,13 +1468,24 @@ static uint16_t update_face_opt_container(uint16_t card_con_height, uint16_t pwd
 
     // ADD按钮：位置自动下移，和指纹/密码/卡片完全一致
     uint16_t add_btn_y = ADD_BTN_INIT_Y + (face_info->enroll_count * 88);
-    uint16_t add_lbl_y = add_btn_y + 12;
+    uint16_t add_lbl_y = add_btn_y - 6;
 
-    lv_obj_t *face_add_img = create_image_obj(g_face_opt_con, "H:+.png", 307, add_btn_y);
-    lv_obj_t *face_add_label = create_text_label(g_face_opt_con, "add",
-                                                  &lv_font_montserrat_36, lv_color_hex(0x00BDBD),
-                                                  351, add_lbl_y, LV_OPA_100);
-
+    // lv_obj_t *face_add_img = create_image_obj(g_face_opt_con, "H:+.png", 307, add_btn_y);
+    // lv_obj_t *face_add_label = create_text_label(g_face_opt_con, "add",
+    //                                               &lv_font_montserrat_36, lv_color_hex(0x00BDBD),
+    //                                               351, add_lbl_y, LV_OPA_100);
+    lv_obj_t *face_add_img = create_container(g_face_opt_con,307,add_btn_y,34,34,lv_color_hex(0x00BDBD), LV_OPA_100, 100,lv_color_hex(0x1F3150), 0, LV_OPA_90);
+    lv_obj_set_style_pad_all(face_add_img, 0, LV_STATE_DEFAULT);
+    // 横线
+    lv_obj_t *divider_line1 = lv_line_create(face_add_img);
+    static const lv_point_t divider_points1[] = {{7, 17}, {27, 17}}; 
+    config_divider_line_style(divider_line1, divider_points1, 2, 0xFFFFFF, 3, LV_OPA_100);
+    // 竖线
+    lv_obj_t *divider_line2 = lv_line_create(face_add_img);
+    static const lv_point_t divider_points2[] = {{17, 7}, {17, 27}}; 
+    config_divider_line_style(divider_line2, divider_points2, 2, 0xFFFFFF, 3, LV_OPA_100);
+    
+    lv_obj_t *face_add_label = create_text_label(g_face_opt_con, "add",&lv_font_montserrat_36, lv_color_hex(0x00BDBD), 351, add_lbl_y, LV_OPA_100);
     // 按钮状态控制
     if(face_info->enroll_count >= MAX_FACE_COUNT) {
         lv_obj_set_style_text_color(face_add_label, lv_color_hex(0x888888), LV_STATE_DEFAULT);
@@ -1618,7 +1645,7 @@ void edit_update_name(edit_type_e type, const char *new_name, uint8_t index)
     if(g_current_enroll_member.type == MEMBER_TYPE_FAMILY) {
         uint16_t card_h = update_card_opt_container(pwd_h, finger_h);
         
-        uint16_t face_h = update_face_opt_container(card_h, pwd_h, finger_h);
+        update_face_opt_container(card_h, pwd_h, finger_h);
     }
 
     LV_LOG_USER("===== edit_update_name finished =====");
@@ -1784,13 +1811,13 @@ void face_enroll_complete(const char *face_name)
 // ==========  ui_enroll_create 中的容器初始化逻辑 ==========
 void ui_enroll_create(common_member_info_t *member_info, lv_obj_t *parent_scr)
 {
-    init_enroll_styles();
     
+    init_enroll_styles();
     if(member_info == NULL || parent_scr == NULL) {
         LV_LOG_WARN("ui_enroll_create: invalid param!");
         return;
     }
-    
+    //destroy_family_member();
     if(!g_member_info_inited) {
         memset(&g_current_enroll_member, 0, sizeof(common_member_info_t));
         g_member_info_inited = true;
@@ -1829,7 +1856,7 @@ void ui_enroll_create(common_member_info_t *member_info, lv_obj_t *parent_scr)
     
     char title_text[32] = {0};
     strcpy(title_text, g_current_enroll_member.type == MEMBER_TYPE_FAMILY ? "family member" : "other member");
-    lv_obj_t *title_label = create_text_label(enroll_scr, title_text, &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 83, 80, LV_OPA_100);
+    create_text_label(enroll_scr, title_text, &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 83, 80, LV_OPA_100);
 
     g_opt_con = create_container(enroll_scr,0,302,1024,399, lv_color_hex(0xE0EDFF), LV_OPA_100, 31,lv_color_hex(0x1F3150), 0, LV_OPA_90);
     lv_obj_set_style_pad_all(g_opt_con, 0, LV_STATE_DEFAULT);
@@ -1848,12 +1875,42 @@ void ui_enroll_create(common_member_info_t *member_info, lv_obj_t *parent_scr)
     lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(back_btn,LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(back_btn,LV_OPA_80,LV_STATE_PRESSED);
-    lv_obj_add_event_cb(back_btn,back_btn_click_cb,LV_EVENT_CLICKED, parent_scr);
+    lv_obj_add_event_cb(back_btn,enroll_opt_back_btn_click_cb,LV_EVENT_CLICKED, parent_scr);
     
     update_status_bar_parent(enroll_scr);
     lv_scr_load(enroll_scr);
 }
 
+void enroll_opt_back_btn_click_cb(lv_event_t *e)
+{
+    if(e == NULL) return;
+    lv_obj_t *parent_scr = (lv_obj_t *)lv_event_get_user_data(e);
+    
+    // 获取当前正在显示的页面（要删除的目标）
+    lv_obj_t *current_del_scr = lv_disp_get_scr_act(NULL);
+    if(!lv_obj_is_valid(current_del_scr)) return;
+
+    // ===================== 只处理当前是注册页面的情况 =====================
+    if(current_del_scr == enroll_scr) {
+        // ============== 根据成员类型判断，重建对应列表页面 ==============
+        if(g_current_enroll_member.type == MEMBER_TYPE_FAMILY) {
+            // 家庭成员：重建家庭用户管理界面
+            ui_family_menber_create(parent_scr);  
+            LV_LOG_WARN("Back to family member manage");
+        } 
+        else if(g_current_enroll_member.type == MEMBER_TYPE_OTHER) {
+            // 其他成员：重建其他用户管理界面
+            ui_other_member_create(parent_scr);  
+            LV_LOG_WARN("Back to other member manage");
+        }
+
+        // 销毁当前注册页面（统一处理）
+        lv_obj_del(current_del_scr);
+        enroll_scr = NULL;
+
+        return;
+    }
+}
 // ========== 获取当前指纹信息 ==========
 finger_enroll_info_t *get_current_finger_info(void)
 {
@@ -2033,4 +2090,15 @@ void clear_member_all_biometrics(uint8_t member_idx, member_type_e type)
     }
 }
 
+void destroy_enroll(void)
+{
+    if(enroll_scr == NULL || !lv_obj_is_valid(enroll_scr)) return;
+    lv_obj_del(enroll_scr);
+    enroll_scr = NULL;
+    LV_LOG_WARN("Enroll response: Destroy the enroll interface");
+}
+common_member_info_t *get_current_enroll_member(void)
+{
+    return &g_current_enroll_member;
+}
 #endif

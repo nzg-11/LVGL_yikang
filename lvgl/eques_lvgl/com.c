@@ -1,6 +1,7 @@
 #include "com.h"
 
 extern void update_status_bar_parent(lv_obj_t *new_scr);
+extern void lv_homepage(void);
 extern lv_obj_t *sys_settings_scr;
 extern lv_obj_t *msg_center_scr;
 extern lv_obj_t *monitor_video_scr;
@@ -20,74 +21,47 @@ extern lv_obj_t *edit_record_scr;
 
 void back_btn_click_cb(lv_event_t *e)
 {
-    // 1. 基础校验
     if(e == NULL) return;
     lv_obj_t *parent_scr = (lv_obj_t *)lv_event_get_user_data(e);
-    if(!lv_obj_is_valid(parent_scr)) {
-        LV_LOG_ERROR("4444");
-        return;
-    }
-    // // 第一步：【先获取当前正在显示的页面】（这就是要删除的子页面！）
-    // lv_obj_t *del_scr = lv_disp_get_scr_act(NULL);
-
-    // 获取当前正在显示的页面（就是要销毁的子页面）
+    
+    // 获取当前正在显示的页面（要删除的目标）
     lv_obj_t *current_del_scr = lv_disp_get_scr_act(NULL);
     if(!lv_obj_is_valid(current_del_scr)) return;
 
-    lv_scr_load(parent_scr);
-    update_status_bar_parent(parent_scr);
-
-    // 只销毁【当前子页面】，绝不乱删父页面！
-    if(current_del_scr == monitor_scr) {
-        // 销毁第二层子页：监控模式
-        lv_obj_del(current_del_scr);
-        monitor_scr = NULL;
-        // 清空子页内所有野指针（和你创建时的清空逻辑一致）
-        g_switch = NULL;
-        g_state_label = NULL;
-        g_time_con = NULL;
-        g_time_slot_label = NULL;
-    }
-    else if(current_del_scr == sys_settings_scr) {
-        // 销毁第一层子页：系统设置
-        lv_obj_del(current_del_scr);
-        sys_settings_scr = NULL;
-    }
-    else if(current_del_scr == msg_center_scr) {
-        lv_obj_del(current_del_scr);
-        msg_center_scr = NULL;
-    }
-    else if(current_del_scr == monitor_video_scr) {
-        lv_obj_del(current_del_scr);
-        monitor_video_scr = NULL;
-    }
-    else if(current_del_scr == user_manage_scr) {
+    // ===================== 分支1：当前是【用户管理界面】（主页已被删除，必须重建） =====================
+    if(current_del_scr == user_manage_scr) {
+        // 1. 【重建主页】（因为之前进管理用户时把主页删了）
+        lv_homepage();  
+        // 2. 【销毁用户管理】（此时已经切到主页，删旧页100%安全）
         lv_obj_del(current_del_scr);
         user_manage_scr = NULL;
-    }
-    else if(current_del_scr == dev_info_scr) {
-        lv_obj_del(current_del_scr);
-        dev_info_scr = NULL;
-    }
-    else if(current_del_scr == file_cache_scr) {
-        lv_obj_del(current_del_scr);
-        file_cache_scr = NULL;
-    }
-    else if(current_del_scr == enroll_scr) {
-        lv_obj_del(current_del_scr);
-        enroll_scr = NULL;
-    }
-    else if(current_del_scr == edit_record_scr) {
-        lv_obj_del(current_del_scr);
-        edit_record_scr = NULL;
+        LV_LOG_WARN("User management response: Rebuild the homepage and destroy the management interface");
+        return;  // 结束，不走其他逻辑
     }
 
-    // // 第三步：删除刚才获取的页面（安全，已不是活跃屏）
-    // if(lv_obj_is_valid(del_scr)) {
-    //     LV_LOG_WARN("22222"); // 先打印，再删除
-    //     lv_obj_del(del_scr);
-    // }
-    LV_LOG_WARN("111");
+    // ===================== 分支2：其他普通页面（主页还在，直接返回父页面） =====================
+    if(!lv_obj_is_valid(parent_scr)) {
+        LV_LOG_ERROR("父页面无效");
+        return;
+    }
+    // 1. 先加载父页面（主页）
+    lv_scr_load(parent_scr);
+    update_status_bar_parent(parent_scr);
+    // 2. 销毁当前旧页面
+    if(current_del_scr == monitor_scr) {
+        lv_obj_del(current_del_scr);
+        monitor_scr = NULL;
+        g_switch = NULL; g_state_label = NULL; g_time_con = NULL; g_time_slot_label = NULL;
+    }
+    else if(current_del_scr == sys_settings_scr)  { lv_obj_del(current_del_scr); sys_settings_scr = NULL; }
+    else if(current_del_scr == msg_center_scr)     { lv_obj_del(current_del_scr); msg_center_scr = NULL; }
+    else if(current_del_scr == monitor_video_scr) { lv_obj_del(current_del_scr); monitor_video_scr = NULL; }
+    else if(current_del_scr == dev_info_scr)       { lv_obj_del(current_del_scr); dev_info_scr = NULL; }
+    else if(current_del_scr == file_cache_scr)     { lv_obj_del(current_del_scr); file_cache_scr = NULL; }
+    else if(current_del_scr == enroll_scr)        { lv_obj_del(current_del_scr); enroll_scr = NULL; }
+    else if(current_del_scr == edit_record_scr)   { lv_obj_del(current_del_scr); edit_record_scr = NULL; }
+
+    LV_LOG_WARN("普通页面返回成功");
 }
 
 /************************** 分割线相关函数实现 **************************/

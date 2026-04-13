@@ -436,7 +436,18 @@ static lv_obj_t *battery_label = NULL;
 static lv_timer_t *status_bar_timer = NULL;
 static bool status_bar_is_homepage = false;
 
-
+// 安全销毁主页 释放所有资源
+void destroy_homepage(void)
+{
+    // 1. 销毁状态栏（定时器+所有控件）
+    destroy_status_bar();
+    
+    // 2. 销毁主页根容器
+    if(is_lv_obj_valid(homepage_scr)) {
+        lv_obj_del(homepage_scr);
+        homepage_scr = NULL; // 关键！置空全局指针
+    }
+}
 // ====================== 屏幕加载回调 ======================
 static void homepage_scr_load_cb(lv_event_t *e)
 {

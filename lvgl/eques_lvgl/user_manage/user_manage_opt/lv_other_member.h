@@ -34,6 +34,7 @@ extern other_member_info_t other_member_list[MAX_OTHER_MEMBER_COUNT];
 // 其他成员按钮点击回调（界面入口）
 void other_member_btn_click_cb(lv_event_t *e);
 void update_other_member_count_ui(uint8_t member_idx);
+void ui_other_member_create(lv_obj_t *user_manage_scr);
 #ifdef __cplusplus
 } /* extern "C" */
 #endif

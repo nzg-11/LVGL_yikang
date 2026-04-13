@@ -127,6 +127,7 @@ lv_obj_t *user_manage_scr = NULL;
 static lv_style_t user_manage_grad_style;
 static bool user_manage_style_inited = false;
 
+void user_manage_back_btn_click_cb(lv_event_t *e);
 // 全局样式初始化
 static void init_user_manage_styles(void)
 {
@@ -182,10 +183,9 @@ void ui_user_manage_create(lv_obj_t *homepage_scr)
     lv_obj_t *user_manage_family_con = create_container(user_manage_scr,
     49,150,927,83,
     lv_color_hex(0x192A46), LV_OPA_100, 6,lv_color_hex(0x1F3150), 0, LV_OPA_90);
-    lv_obj_t *family_member_img = create_image_obj(user_manage_scr, "H:family_member.png", 73, 176);
-    lv_obj_t *right_img1 = create_image_obj(user_manage_scr, "H:right.png", 932, 176);
-    lv_obj_t *family_member_label = create_text_label
-    (user_manage_scr, "family menber", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 130, 169, LV_OPA_100);
+    create_image_obj(user_manage_scr, "H:family_member.png", 73, 176);
+    create_image_obj(user_manage_scr, "H:right.png", 932, 176);
+    create_text_label(user_manage_scr, "family menber", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 130, 169, LV_OPA_100);
     lv_obj_add_flag(user_manage_family_con, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(user_manage_family_con, LV_OPA_80,LV_STATE_PRESSED);
     lv_obj_add_event_cb(user_manage_family_con, family_menber_btn_click_cb, LV_EVENT_CLICKED, user_manage_scr);
@@ -193,10 +193,9 @@ void ui_user_manage_create(lv_obj_t *homepage_scr)
     lv_obj_t *user_manage_other_con = create_container(user_manage_scr,
     49,241,927,83,
     lv_color_hex(0x192A46), LV_OPA_100, 6,lv_color_hex(0x1F3150), 0, LV_OPA_90);
-    lv_obj_t *other_member_img = create_image_obj(user_manage_scr, "H:other_member.png", 74, 263);
-    lv_obj_t *right_img2 = create_image_obj(user_manage_scr, "H:right.png", 932, 263);
-    lv_obj_t *other_member_label = create_text_label
-    (user_manage_scr, "other menber", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 130, 261, LV_OPA_100);
+    create_image_obj(user_manage_scr, "H:other_member.png", 74, 263);
+    create_image_obj(user_manage_scr, "H:right.png", 932, 263);
+    create_text_label(user_manage_scr, "other menber", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 130, 261, LV_OPA_100);
     lv_obj_add_flag(user_manage_other_con, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(user_manage_other_con, LV_OPA_80,LV_STATE_PRESSED);
     lv_obj_add_event_cb(user_manage_other_con, other_member_btn_click_cb, LV_EVENT_CLICKED, user_manage_scr);
@@ -204,10 +203,9 @@ void ui_user_manage_create(lv_obj_t *homepage_scr)
     lv_obj_t *user_manage_permission_con = create_container(user_manage_scr,
     49,332,927,83,
     lv_color_hex(0x192A46), LV_OPA_100, 6,lv_color_hex(0x1F3150), 0, LV_OPA_90);
-    lv_obj_t *permission_img = create_image_obj(user_manage_scr, "H:user_permission.png", 73, 353);
-    lv_obj_t *right_img3 = create_image_obj(user_manage_scr, "H:right.png", 932, 353);
-    lv_obj_t *permission_label = create_text_label
-    (user_manage_scr, "user permission", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 130, 350, LV_OPA_100);
+    create_image_obj(user_manage_scr, "H:user_permission.png", 73, 353);
+    create_image_obj(user_manage_scr, "H:right.png", 932, 353);
+    create_text_label(user_manage_scr, "user permission", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 130, 350, LV_OPA_100);
     lv_obj_add_flag(user_manage_permission_con, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(user_manage_permission_con, LV_OPA_80,LV_STATE_PRESSED);
     lv_obj_add_event_cb(user_manage_permission_con, user_permission_btn_click_cb, LV_EVENT_CLICKED, user_manage_scr);
@@ -219,23 +217,58 @@ void ui_user_manage_create(lv_obj_t *homepage_scr)
     lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(back_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(back_btn, LV_OPA_80, LV_STATE_PRESSED);
-    lv_obj_add_event_cb(back_btn, back_btn_click_cb, LV_EVENT_CLICKED, homepage_scr);
+    lv_obj_add_event_cb(back_btn, user_manage_back_btn_click_cb, LV_EVENT_CLICKED, homepage_scr);
     
     // 切换到设置屏幕
     lv_scr_load(user_manage_scr);
 }
-
+extern void destroy_homepage(void);
 
 /***********************用户管理界面回调*********************/
 void user_manage_btn_click_cb(lv_event_t *e)
 {
     if(e == NULL) return;
     
-    lv_obj_t *homepage_scr = (lv_obj_t *)lv_event_get_user_data(e);
-    if(homepage_scr == NULL) {
+    lv_obj_t *homepage_scr_temp = (lv_obj_t *)lv_event_get_user_data(e);
+    if(homepage_scr_temp == NULL) {
         LV_LOG_WARN("user_manage_btn_click_cb: homepage_scr is NULL!");
         return;
     }
-    ui_user_manage_create(homepage_scr);
+    // 2. 创建用户管理界面
+    ui_user_manage_create(homepage_scr_temp); // 你的原有创建函数
+    // 3. 加载用户管理界面
+    lv_scr_load(user_manage_scr);
+    // 4. 更新状态栏到用户管理界面
+    update_status_bar_parent(user_manage_scr);
+    destroy_homepage();
+    LV_LOG_WARN("user_manage_btn_click_cb: Destroy the homepage and create the management interface");
+}
+extern void lv_homepage(void);
+void user_manage_back_btn_click_cb(lv_event_t *e)
+{
+    if(e == NULL) return;
+    lv_obj_t *parent_scr = (lv_obj_t *)lv_event_get_user_data(e);
+    
+    // 获取当前正在显示的页面（要删除的目标）
+    lv_obj_t *current_del_scr = lv_disp_get_scr_act(NULL);
+    if(!lv_obj_is_valid(current_del_scr)) return;
+
+    // ===================== 分支1：当前是【用户管理界面】（主页已被删除，必须重建） =====================
+    if(current_del_scr == user_manage_scr) {
+        // 1. 【重建主页】（因为之前进管理用户时把主页删了）
+        lv_homepage();  
+        // 2. 【销毁用户管理】（此时已经切到主页，删旧页100%安全）
+        lv_obj_del(current_del_scr);
+        user_manage_scr = NULL;
+        LV_LOG_WARN("User management response: Rebuild the homepage and destroy the management interface");
+        return;  // 结束，不走其他逻辑
+    }
+}
+void destroy_user_manage(void)
+{
+    if(is_lv_obj_valid(user_manage_scr)) {
+        lv_obj_del(user_manage_scr);
+        user_manage_scr = NULL;
+    }
 }
 #endif

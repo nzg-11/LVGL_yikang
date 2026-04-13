@@ -30,6 +30,8 @@ extern family_member_info_t family_member_list[MAX_FAMILY_MEMBER_COUNT];
 
 void family_menber_btn_click_cb(lv_event_t *e);
 void update_member_count_ui(uint8_t member_idx);
+void destroy_family_member(void);
+void ui_family_menber_create(lv_obj_t *user_manage_scr);
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
