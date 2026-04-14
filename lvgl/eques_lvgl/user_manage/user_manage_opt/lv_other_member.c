@@ -1924,7 +1924,7 @@ static void name_input_click_cb(lv_event_t *e)
         lv_obj_set_style_text_color(name_keyboard, lv_color_hex(0xFFFFFF), LV_STATE_DEFAULT);
         lv_obj_set_style_border_color(name_keyboard, lv_color_hex(0x1F3150), LV_STATE_DEFAULT);
         lv_obj_set_style_radius(name_keyboard, 6, LV_STATE_DEFAULT);
-        lv_obj_set_size(name_keyboard, LV_HOR_RES, LV_VER_RES/3);
+        lv_obj_set_size(name_keyboard, LV_HOR_RES, 250);
         lv_obj_align(name_keyboard, LV_ALIGN_BOTTOM_MID, 0, 0);
         lv_obj_add_event_cb(name_keyboard, hide_name_keyboard, LV_EVENT_READY, NULL);
     }
