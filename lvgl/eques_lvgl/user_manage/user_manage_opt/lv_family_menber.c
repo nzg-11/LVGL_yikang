@@ -1310,6 +1310,7 @@ extern void destroy_user_manage(void);
 // ====================================== UI主函数  ======================================
 void ui_family_menber_create(lv_obj_t *user_manage_scr)
 {
+    // 初始化默认头像颜色
     if(selected_avatar_color.ch.red == 0 && selected_avatar_color.ch.green == 0 && selected_avatar_color.ch.blue == 0) {
         selected_avatar_color = lv_color_hex(0xEDF4FF);
     }
@@ -1319,19 +1320,16 @@ void ui_family_menber_create(lv_obj_t *user_manage_scr)
         LV_LOG_WARN("ui_family_menber_create: user_manage_scr is NULL!");
         return;
     }
-
-    if(is_lv_obj_valid(family_menber_scr)) {
-        lv_obj_del(family_menber_scr);
-        family_menber_scr = NULL;
-    }
-
+    // 创建家庭成员活跃屏幕并进入页面
     family_menber_scr = lv_obj_create(NULL);
     lv_obj_add_event_cb(family_menber_scr, family_menber_scr_load_cb, LV_EVENT_SCREEN_LOAD_START, NULL);
 
+    // 初始化添加成员弹窗资源
     bg_mask_layer = NULL;
     name_keyboard = NULL;
     selected_avatar_color = lv_color_hex(0xEDF4FF);
 
+    // 背景颜色渐变
     lv_style_reset(&family_menber_grad_style);
     lv_style_set_bg_color(&family_menber_grad_style, lv_color_hex(0x010715));
     lv_style_set_bg_grad_color(&family_menber_grad_style, lv_color_hex(0x0E1D37));
@@ -1340,17 +1338,19 @@ void ui_family_menber_create(lv_obj_t *user_manage_scr)
     lv_style_set_bg_grad_stop(&family_menber_grad_style, 255);
     lv_obj_add_style(family_menber_scr, &family_menber_grad_style, LV_STATE_DEFAULT);
 
+    // 家庭成员文本
     family_menber_label = create_text_label(family_menber_scr, "family menber", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 83, 80, LV_OPA_100);
 
+    // 添加成员按钮
     family_menber_add_con = create_container
     (family_menber_scr,47,150,300,200,lv_color_hex(0x192A46), LV_OPA_100, 6,lv_color_hex(0x1F3150), 0, LV_OPA_90);
     lv_obj_add_flag(family_menber_add_con, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(family_menber_add_con, LV_OPA_80, LV_STATE_PRESSED);
     lv_obj_add_event_cb(family_menber_add_con, family_menber_add_click_cb, LV_EVENT_CLICKED, user_manage_scr);
-
     family_menber_add = create_container
     (family_menber_scr,161,213,74,74,lv_color_hex(0x2F476F), LV_OPA_100, 100,lv_color_hex(0x1F3150), 0, LV_OPA_90);
 
+    // 分隔线
     lv_obj_t *divider_line1 = lv_line_create(family_menber_scr);
     static const lv_point_t divider_points1[] = {{173, 251}, {223, 251}}; 
     config_divider_line_style(divider_line1, divider_points1, 2, 0x617C9D, 8, LV_OPA_100);
@@ -1358,16 +1358,19 @@ void ui_family_menber_create(lv_obj_t *user_manage_scr)
     static const lv_point_t divider_points2[] = {{198, 225}, {198, 275}}; 
     config_divider_line_style(divider_line2, divider_points2, 2, 0x617C9D, 8, LV_OPA_100);
 
+    // 添加成员按钮点击事件
     lv_obj_add_flag(family_menber_add, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(family_menber_add, LV_OPA_80, LV_STATE_PRESSED);
     lv_obj_add_event_cb(family_menber_add, family_menber_add_click_cb, LV_EVENT_CLICKED, user_manage_scr);
 
+    // 删除成员按钮
     delete_img = create_container_circle(family_menber_scr, 928, 99, 30,
     true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
     lv_obj_add_flag(delete_img, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(delete_img, LV_OPA_80, LV_STATE_PRESSED);
     lv_obj_add_event_cb(delete_img, delete_img_click_cb, LV_EVENT_CLICKED, NULL);
-
+    
+    // 返回按钮
     back_btn = create_container_circle(family_menber_scr, 52, 90, 30,
     true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
     lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
@@ -1376,7 +1379,6 @@ void ui_family_menber_create(lv_obj_t *user_manage_scr)
     lv_obj_add_event_cb(back_btn,family_menber_back_btn_click_cb,LV_EVENT_CLICKED,user_manage_scr);
 
     restore_family_members(family_menber_scr);
-
     lv_scr_load(family_menber_scr);
 }
 
@@ -1411,6 +1413,7 @@ void family_menber_back_btn_click_cb(lv_event_t *e)
     }
 }
 
+// 销毁家庭成员界面
 void destroy_family_member(void)
 {
     if(family_menber_scr == NULL || !lv_obj_is_valid(family_menber_scr)) return;
@@ -1420,6 +1423,7 @@ void destroy_family_member(void)
 }
 
 // ====================================== 初始化函数 ======================================
+// 初始化家庭成员背景样式
 static void init_family_menber_styles(void)
 {
     if(!family_menber_style_inited) {
@@ -1427,7 +1431,7 @@ static void init_family_menber_styles(void)
         family_menber_style_inited = true;
     }
 }
-
+// 家庭成员界面加载回调函数
 static void family_menber_scr_load_cb(lv_event_t *e)
 {
     if(e == NULL) return;
@@ -1438,18 +1442,21 @@ static void family_menber_scr_load_cb(lv_event_t *e)
 }
 
 // ====================================== 删除模式相关 ======================================
+// 右上角删除成员实际 进入标志位置为true
 static void delete_img_click_cb(lv_event_t *e)
 {
     if(e == NULL) return;
     switch_delete_mode(true);
 }
 
+// 删除模式下取消删除成员 进入标志位置为false
 static void delete_cancel_click_cb(lv_event_t *e)
 {
     if(e == NULL) return;
     switch_delete_mode(false);
 }
 
+// 删除家庭成员弹窗取消回调函数
 static void delete_popup_cancel_cb(lv_event_t *e)
 {
     if(e == NULL) return;
@@ -1463,6 +1470,7 @@ static void delete_popup_cancel_cb(lv_event_t *e)
     }
 }
 
+// 当删除成员时，压缩数组索引，将有效成员前移，无效成员释放
 static void compact_family_members(void)
 {
     uint8_t valid_idx = 0; 
@@ -1492,6 +1500,7 @@ static void compact_family_members(void)
     member_count = valid_idx;
 }
 
+// 删除家庭成员弹窗回调函数
 static void delete_confirm_click_cb(lv_event_t *e)
 {
     if(e == NULL) return;
@@ -1518,6 +1527,7 @@ static void delete_confirm_click_cb(lv_event_t *e)
     
     create_text_label(confirm_popup, "confirm_delete?", &lv_font_montserrat_32, lv_color_hex(0x000000), 156, 52, LV_OPA_100);
     
+    // 确认删除按钮
     lv_obj_t *confirm_btn = create_custom_gradient_container
     (confirm_popup, 190, 141, 220, 44, 6, 0x006BDC, 0x00BDBD, LV_GRAD_DIR_HOR, 0, 225, LV_OPA_100);
     lv_obj_set_style_pad_all(confirm_btn, 0, LV_STATE_DEFAULT);
@@ -1527,6 +1537,7 @@ static void delete_confirm_click_cb(lv_event_t *e)
     lv_obj_add_flag(confirm_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_add_event_cb(confirm_btn, delete_popup_ok_cb, LV_EVENT_CLICKED, confirm_popup);
     
+    // 取消删除按钮
     lv_obj_t *cancel_btn = create_container
     (confirm_popup, 190, 210, 220, 44, lv_color_hex(0xE0EDFF), LV_OPA_100, 8, lv_color_hex(0xFF3333), 0, LV_OPA_90);
     lv_obj_set_style_pad_all(cancel_btn, 0, LV_STATE_DEFAULT);
@@ -1535,10 +1546,10 @@ static void delete_confirm_click_cb(lv_event_t *e)
     lv_obj_set_align(cancel_label, LV_ALIGN_CENTER);
     lv_obj_add_flag(cancel_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_add_event_cb(cancel_btn, delete_popup_cancel_cb, LV_EVENT_CLICKED, confirm_popup);
-    
     lv_obj_move_foreground(confirm_popup);
 }
 
+// 选择成员ui样式回调函数
 static void delete_flag_click_cb(lv_event_t *e)
 {
     if(e == NULL || !g_is_delete_mode) return;
@@ -1550,8 +1561,6 @@ static void delete_flag_click_cb(lv_event_t *e)
         LV_LOG_WARN("Invalid index or not selected: idx=%d", idx);
         return;
     }
-
-    LV_LOG_USER("取消选中成员：%d", idx);
     
     if(delete_flag_img != NULL && lv_obj_is_valid(delete_flag_img)) {
         lv_obj_del(delete_flag_img);
@@ -1562,15 +1571,13 @@ static void delete_flag_click_cb(lv_event_t *e)
     if(g_delete_hid_containers[idx] != NULL && lv_obj_is_valid(g_delete_hid_containers[idx])) {
         lv_obj_clear_flag(g_delete_hid_containers[idx], LV_OBJ_FLAG_HIDDEN);
         lv_obj_set_style_opa(g_delete_hid_containers[idx], LV_OPA_100, LV_STATE_DEFAULT);
-        LV_LOG_USER("成功显示成员%d的delete_hid容器", idx);
-    } else {
-        LV_LOG_WARN("成员%d的delete_hid容器不存在或无效", idx);
-    }
+    } 
     if(g_member_cards[idx] != NULL && lv_obj_is_valid(g_member_cards[idx])) {
         lv_obj_set_style_opa(g_member_cards[idx], LV_OPA_100, LV_STATE_DEFAULT);
     }
 }
 
+// 点击成员删除按钮回调函数
 static void member_delete_btn_click_cb(lv_event_t *e)
 {
     if(e == NULL || !g_is_delete_mode) return;
@@ -1604,23 +1611,23 @@ static void member_delete_btn_click_cb(lv_event_t *e)
         lv_obj_add_event_cb(g_delete_flag_imgs[idx], delete_flag_click_cb, LV_EVENT_CLICKED, (void*)(uintptr_t)idx);
         lv_obj_add_flag(g_delete_flag_imgs[idx], LV_OBJ_FLAG_CLICKABLE);
         g_member_selected[idx] = true;
-        LV_LOG_USER("成功创建成员%d的delete_flag图片", idx);
 
         if(g_member_cards[idx] != NULL && lv_obj_is_valid(g_member_cards[idx])) {
             lv_obj_set_style_opa(g_member_cards[idx], LV_OPA_50, LV_STATE_DEFAULT);
         }
     } else {
-        LV_LOG_WARN("创建成员%d的delete_flag图片失败", idx);
         lv_obj_clear_flag(delete_hid, LV_OBJ_FLAG_HIDDEN);
     }
 }
 
+// 确认删除成员回调函数
 static void delete_popup_ok_cb(lv_event_t *e)
 {
     if(e == NULL) return;
     lv_obj_t *popup = (lv_obj_t *)lv_event_get_user_data(e);
     
     bool has_delete = false;
+    // 清除选择成员的录入信息
     for(uint8_t i = 0; i < MAX_FAMILY_MEMBER_COUNT; i++) {
         if(g_member_selected[i]) {
             clear_member_all_biometrics(i, MEMBER_TYPE_FAMILY);
@@ -1663,10 +1670,11 @@ static void delete_popup_ok_cb(lv_event_t *e)
     switch_delete_mode(false);
 }
 
+// 切换删除模式，显示/隐藏删除按钮
 static void switch_delete_mode(bool enter)
 {
     g_is_delete_mode = enter;
-    
+    // 如果进入删除模式，隐藏返回按钮、删除图标、成员列表标签
     if(enter) {
         if(back_btn != NULL && lv_obj_is_valid(back_btn)) {
             lv_obj_add_flag(back_btn, LV_OBJ_FLAG_HIDDEN);
@@ -1686,7 +1694,8 @@ static void switch_delete_mode(bool enter)
             lv_obj_add_flag(g_delete_cancel_btn, LV_OBJ_FLAG_CLICKABLE);
             lv_obj_set_style_opa(g_delete_cancel_btn, LV_OPA_80, LV_STATE_PRESSED);
             lv_obj_add_event_cb(g_delete_cancel_btn, delete_cancel_click_cb, LV_EVENT_CLICKED, NULL);
-        } else {
+        } 
+        else {
             lv_obj_clear_flag(g_delete_cancel_btn, LV_OBJ_FLAG_HIDDEN);
         }
         
@@ -1698,7 +1707,8 @@ static void switch_delete_mode(bool enter)
             lv_obj_add_flag(g_delete_confirm_btn, LV_OBJ_FLAG_CLICKABLE);
             lv_obj_set_style_opa(g_delete_confirm_btn, LV_OPA_80, LV_STATE_PRESSED);
             lv_obj_add_event_cb(g_delete_confirm_btn, delete_confirm_click_cb, LV_EVENT_CLICKED, NULL);
-        } else {
+        } 
+        else {
             lv_obj_clear_flag(g_delete_confirm_btn, LV_OBJ_FLAG_HIDDEN);
         }
         
@@ -1721,7 +1731,7 @@ static void switch_delete_mode(bool enter)
         }
 
         
-    } else {
+    } else {// 如果退出删除模式，显示返回按钮、删除图标、成员列表标签
         if(back_btn != NULL && lv_obj_is_valid(back_btn)) {
             lv_obj_clear_flag(back_btn, LV_OBJ_FLAG_HIDDEN);
         }
@@ -1752,13 +1762,13 @@ static void switch_delete_mode(bool enter)
     }
 }
 
+// 显示/隐藏所有成员删除按钮
 static void show_all_member_delete_btn(bool show)
 {
     if(family_menber_scr == NULL || !lv_obj_is_valid(family_menber_scr)) return;
     
     for(uint8_t idx = 0; idx < MAX_FAMILY_MEMBER_COUNT; idx++) {
         if(!family_member_list[idx].is_valid) continue;
-        
         if(g_delete_hid_containers[idx] != NULL && lv_obj_is_valid(g_delete_hid_containers[idx])) {
             if(show) {
                 if(!g_member_selected[idx]) {
@@ -1788,10 +1798,11 @@ static void show_all_member_delete_btn(bool show)
 }
 
 // ====================================== 成员卡片操作 ======================================
+// 保存家庭成员信息到全局数组
 static uint8_t save_family_member_info(const char *name, lv_color_t color)
 {
     if(name == NULL) return MAX_FAMILY_MEMBER_COUNT;
-    
+    // 遍历家庭成员列表，保存有效成员信息
     for(uint8_t i = 0; i < MAX_FAMILY_MEMBER_COUNT; i++) {
         if(!family_member_list[i].is_valid) {
             strncpy(family_member_list[i].name, name, sizeof(family_member_list[i].name)-1);
@@ -1803,12 +1814,13 @@ static uint8_t save_family_member_info(const char *name, lv_color_t color)
     return MAX_FAMILY_MEMBER_COUNT;
 }
 
+// 恢复家庭成员卡片，删除成员之后调用恢复
 static void restore_family_members(lv_obj_t *parent)
 {
     if(parent == NULL) return;
 
     member_count = 0;
-
+    // 遍历家庭成员列表，恢复有效成员卡片
     for(uint8_t i = 0; i < MAX_FAMILY_MEMBER_COUNT; i++) {
         if(family_member_list[i].is_valid) {
             create_family_member_card(parent,
@@ -1817,10 +1829,11 @@ static void restore_family_members(lv_obj_t *parent)
             member_count++;
         }
     }
-
+    // 更新添加成员按钮状态
     update_add_member_btn_state();
 }
 
+// 将每个家庭成员的信息存储到全局结构体，根据索引进入不同回调中
 static void member_card_click_cb(lv_event_t *e)
 {
     if(e == NULL || g_is_delete_mode) return;
@@ -1843,10 +1856,13 @@ static void member_card_click_cb(lv_event_t *e)
     static common_member_info_t g_temp_member_info;
     g_temp_member_info = member_info;
     lv_obj_t *family_member_scr = lv_obj_get_parent(lv_event_get_target(e));
+    //进入录入界面
     ui_enroll_create(&g_temp_member_info, family_member_scr);
+    // 销毁当前家庭成员界面
     destroy_family_member();
 }
 
+// 创建家庭卡片ui组件以及属性信息
 static lv_obj_t *create_family_member_card(lv_obj_t *parent, const char *member_name, lv_color_t avatar_color, uint8_t member_idx)
 {
     if(parent == NULL || member_name == NULL || member_idx >= MAX_FAMILY_MEMBER_COUNT) return NULL;
@@ -1861,6 +1877,7 @@ static lv_obj_t *create_family_member_card(lv_obj_t *parent, const char *member_
     lv_coord_t card_x = col_x[current_col];
     lv_coord_t card_y = row_start_y + current_row * row_step;
 
+    // 创建家庭成员卡片容器，动态增加索引值
     lv_obj_t *member_con = create_container
     (parent, card_x, card_y, 300, 200, lv_color_hex(0x192A46), LV_OPA_100, 6, lv_color_hex(0x1F3150), 0, LV_OPA_90);
     lv_obj_set_user_data(member_con, (void*)(uintptr_t)member_idx);
@@ -1875,7 +1892,8 @@ static lv_obj_t *create_family_member_card(lv_obj_t *parent, const char *member_
     lv_obj_t *name_label = create_text_label
     (member_con, member_name, &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
     lv_obj_align(name_label, LV_ALIGN_TOP_MID, 0, 87);
-
+    
+    // 获取家庭成员已录入指纹数量、密码数量、卡片数量、人脸数量
     uint8_t finger_count = family_member_list[member_idx].finger_count;
     uint8_t pwd_count = family_member_list[member_idx].pwd_count;
     uint8_t card_count = family_member_list[member_idx].card_count;
@@ -1922,6 +1940,7 @@ static lv_obj_t *create_family_member_card(lv_obj_t *parent, const char *member_
     return member_con;
 }
 
+// 更新成员卡片上的录入信息，包括指纹、密码、卡片、人脸的记录数量以及图片
 void update_member_count_ui(uint8_t member_idx)
 {
     if(member_idx >= MAX_FAMILY_MEMBER_COUNT) return;
@@ -1977,6 +1996,7 @@ void update_member_count_ui(uint8_t member_idx)
 }
 
 // ====================================== 弹窗&键盘 ======================================
+// 头像点击回调 记录当前选择的头像属性
 static void avatar_click_cb(lv_event_t *e)
 {
     if(e == NULL) return;
@@ -1987,9 +2007,10 @@ static void avatar_click_cb(lv_event_t *e)
             close_custom_popup();
             return;
         }
-    
+    // 记录当前选择的头像颜色
     selected_avatar_color = lv_obj_get_style_bg_color(avatar, LV_STATE_DEFAULT);
-    
+
+    // 记录当前选择的姓名
     char member_name[16] = {0};
     if(g_name_input != NULL && lv_obj_is_valid(g_name_input)) {
         const char *input_name = lv_textarea_get_text(g_name_input);
@@ -2002,25 +2023,26 @@ static void avatar_click_cb(lv_event_t *e)
         snprintf(member_name, sizeof(member_name), "00%d", member_count + 1);
     }
     
+    // 保存当前选择的成员信息
     uint8_t member_idx = save_family_member_info(member_name, selected_avatar_color);
+
     if(member_idx == MAX_FAMILY_MEMBER_COUNT) {
         LV_LOG_WARN("No empty slot for new member");
         close_custom_popup();
         return;
     }
-    
+    // 正式创建成员卡片
     if(family_menber_scr != NULL && lv_obj_is_valid(family_menber_scr)) {
         create_family_member_card(family_menber_scr, member_name, selected_avatar_color, member_idx);
         member_count++;
         update_add_member_btn_state();
     }
     
-    if(name_keyboard != NULL && lv_obj_is_valid(name_keyboard)) {
-        lv_obj_add_flag(name_keyboard, LV_OBJ_FLAG_HIDDEN);
-    }
+    // 关闭自定义弹窗 销毁资源
     close_custom_popup();
 }
 
+// 姓名输入框键盘确认回调函数 隐藏键盘
 static void hide_name_keyboard(lv_event_t *e)
 {
     (void)e;
@@ -2029,6 +2051,7 @@ static void hide_name_keyboard(lv_event_t *e)
     }
 }
 
+// 姓名输入框点击回调函数 弹出键盘
 static void name_input_click_cb(lv_event_t *e)
 {
     if(e == NULL) return;
@@ -2050,14 +2073,17 @@ static void name_input_click_cb(lv_event_t *e)
     lv_obj_move_foreground(name_keyboard);
 }
 
+// 关闭自定义弹窗，清除残余弹窗资源
 static void close_custom_popup(void)
 {
     if(name_keyboard != NULL && lv_obj_is_valid(name_keyboard)) {
-        lv_obj_add_flag(name_keyboard, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_del(name_keyboard);
+        name_keyboard = NULL;
     }
     
     if(bg_mask_layer != NULL && lv_obj_is_valid(bg_mask_layer)) {
-        lv_obj_add_flag(bg_mask_layer, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_del(bg_mask_layer);
+        bg_mask_layer = NULL;
     }
     if(custom_popup != NULL && lv_obj_is_valid(custom_popup)) {
         lv_obj_del(custom_popup);
@@ -2065,17 +2091,13 @@ static void close_custom_popup(void)
     }
 }
 
-static void popup_btn_click_cb(lv_event_t *e)
-{
-    if(e == NULL) return;
-    close_custom_popup();
-}
-
+// 关闭自定义弹窗按钮点击回调函数
 static void popup_close_btn_cb(lv_event_t *e)
 {
     close_custom_popup();
 }
 
+// 添加家庭成员头像选择弹窗
 void family_menber_add_click_cb(lv_event_t *e)
 {
     if(e == NULL) return;
@@ -2084,16 +2106,17 @@ void family_menber_add_click_cb(lv_event_t *e)
         LV_LOG_WARN("family_menber_add_click_cb: screen obj is NULL!");
         return;
     }
-
+    // 关闭已打开的自定义弹窗
     close_custom_popup();
     create_bg_mask_layer(family_menber_scr);
 
+    // 创建自定义弹窗容器大小
     custom_popup = create_container
     (family_menber_scr, 212, 94, 600, 423, lv_color_hex(0xE0EDFF), LV_OPA_100, 16, lv_color_hex(0x1F3150), 0, LV_OPA_90);
     lv_obj_set_style_pad_all(custom_popup, 0, LV_STATE_DEFAULT);
 
+    // 创建姓名输入框
     create_text_label(custom_popup, "name:", &lv_font_montserrat_24, lv_color_hex(0x7C7C7C), 51, 69, LV_OPA_100);
-    
     lv_obj_t *name_input = lv_textarea_create(custom_popup);
     lv_obj_clear_flag(name_input, LV_OBJ_FLAG_SCROLLABLE);
     lv_obj_set_size(name_input, 382, 44);
@@ -2109,12 +2132,13 @@ void family_menber_add_click_cb(lv_event_t *e)
     lv_obj_add_flag(name_input, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(name_input, LV_OPA_80, LV_STATE_PRESSED);
     lv_obj_add_event_cb(name_input, name_input_click_cb, LV_EVENT_CLICKED, NULL);
+    g_name_input = name_input;
 
+    // 创建头像选择容器 一共六个颜色
     create_text_label(custom_popup, "Avatar:", &lv_font_montserrat_24, lv_color_hex(0x7C7C7C), 41, 124, LV_OPA_100);
     lv_obj_t *avatar_con = create_container
     (custom_popup, 136, 171, 298, 192, lv_color_hex(0xFFFFFF), LV_OPA_100, 6, lv_color_hex(0x1F3150), 0, LV_OPA_90); 
     lv_obj_set_style_pad_all(avatar_con, 0, LV_STATE_DEFAULT);
-
     lv_color_t avatar_colors[] = {
         lv_color_hex(0xFFDADA), lv_color_hex(0xD0FFD0), lv_color_hex(0xFFD0FF),
         lv_color_hex(0xD0D0FF), lv_color_hex(0xFFFFD0), lv_color_hex(0xD0FFFF)
@@ -2134,8 +2158,8 @@ void family_menber_add_click_cb(lv_event_t *e)
             lv_obj_add_event_cb(avatar, avatar_click_cb, LV_EVENT_CLICKED, (void*)(uintptr_t)avatar_idx);
         }
     }
-    g_name_input = name_input;
-
+    
+    // 创建关闭按钮
     lv_obj_t *back_con = create_custom_gradient_container
         (custom_popup, 540, 20, 40, 40, 200, 0xE0EDFF, 0xE0EDFF, LV_GRAD_DIR_VER, 0, 225, LV_OPA_100);
     lv_obj_set_style_pad_all(back_con, 0, LV_STATE_DEFAULT);
@@ -2148,10 +2172,10 @@ void family_menber_add_click_cb(lv_event_t *e)
     lv_obj_add_flag(back_con, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(back_con, LV_OPA_80, LV_STATE_PRESSED);
     lv_obj_add_event_cb(back_con, popup_close_btn_cb, LV_EVENT_CLICKED, NULL);
-
     lv_obj_move_foreground(custom_popup);
 }
 
+// 创建背景遮罩层
 static void create_bg_mask_layer(lv_obj_t *target_container)
 {
     if(bg_mask_layer != NULL && lv_obj_is_valid(bg_mask_layer)) {
@@ -2161,6 +2185,7 @@ static void create_bg_mask_layer(lv_obj_t *target_container)
     
     bg_mask_layer = lv_obj_create(target_container);
     lv_coord_t mask_width = 1024;
+    // 遮罩层高度为家庭成员列表最大高度
     lv_coord_t mask_height = get_member_list_max_height();
     
     lv_obj_set_size(bg_mask_layer, mask_width, mask_height);
@@ -2175,6 +2200,7 @@ static void create_bg_mask_layer(lv_obj_t *target_container)
 }
 
 // ====================================== 工具函数 ======================================
+// 获取家庭成员列表最大高度
 static lv_coord_t get_member_list_max_height(void)
 {
     lv_coord_t max_bottom_y = 600;
@@ -2194,8 +2220,10 @@ static lv_coord_t get_member_list_max_height(void)
     return max_bottom_y;
 }
 
+// 若已添加满最大家庭成员数量，禁用添加按钮
 static void update_add_member_btn_state(void)
 {
+    // 添加容器
     if(family_menber_add_con != NULL && lv_obj_is_valid(family_menber_add_con)) {
         if(member_count >= MAX_FAMILY_MEMBER_COUNT) {
             lv_obj_clear_flag(family_menber_add_con, LV_OBJ_FLAG_CLICKABLE);
@@ -2205,6 +2233,7 @@ static void update_add_member_btn_state(void)
             lv_obj_set_style_opa(family_menber_add_con, LV_OPA_100, LV_STATE_DEFAULT);
         }
     }
+    // 添加按钮
     if(family_menber_add != NULL && lv_obj_is_valid(family_menber_add)) {
         if(member_count >= MAX_FAMILY_MEMBER_COUNT) {
             lv_obj_clear_flag(family_menber_add, LV_OBJ_FLAG_CLICKABLE);

@@ -189,8 +189,8 @@ void pwd_add_btn_click_cb(lv_event_t *e)
 
     ui_pwd_add_create(parent_scr);
     update_status_bar_parent(pwd_add_scr);
-    destroy_enroll();
-    LV_LOG_WARN("进入密码添加界面，销毁录入界面");
+    // destroy_enroll();
+    // LV_LOG_WARN("进入密码添加界面，销毁录入界面");
 }
 
 /**
@@ -204,10 +204,12 @@ void pwd_add_back_btn_click_cb(lv_event_t *e)
     lv_obj_t *current_scr = lv_disp_get_scr_act(NULL);
 
     if (lv_obj_is_valid(current_scr) && current_scr == pwd_add_scr) {
-        common_member_info_t *member = get_current_enroll_member();
-        ui_enroll_create(member, parent_scr);  
-        lv_obj_del(current_scr);
-        pwd_add_scr = NULL;
+        //common_member_info_t *member = get_current_enroll_member();
+        // ui_enroll_create(member, parent_scr);  
+        // lv_obj_del(current_scr);
+        lv_scr_load(parent_scr);  // 直接切回原来的页面！
+        lv_obj_del(current_scr);  // 只删除密码页
+        current_scr = NULL;
     }
 }
 
@@ -445,7 +447,7 @@ static void pwd_confirm_click_cb(lv_event_t *e)
 {
     if (e == NULL) return;
     
-    common_member_info_t *member = get_current_enroll_member();
+    //common_member_info_t *member = get_current_enroll_member();
     lv_obj_t *parent_scr = (lv_obj_t *)lv_event_get_user_data(e);
     bool is_success = false;
 
@@ -471,8 +473,8 @@ static void pwd_confirm_click_cb(lv_event_t *e)
     }
 
     // 返回注册页面
-    ui_enroll_create(member, parent_scr);
-
+    //ui_enroll_create(member, parent_scr);
+    lv_scr_load(parent_scr);
     // 重置数据和UI
     close_pwd_dialog();
     memset(g_pwd_first, 0, sizeof(g_pwd_first));

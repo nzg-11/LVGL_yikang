@@ -141,7 +141,7 @@ void ui_edit_record_create(edit_type_e type, const char *cur_name, uint8_t index
     lv_obj_t *save_btn = create_text_label(edit_record_scr, "save", &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 928, 90, LV_OPA_100);
     lv_obj_add_flag(save_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(save_btn, LV_OPA_80, LV_STATE_PRESSED);
-    lv_obj_add_event_cb(save_btn, save_btn_click_cb, LV_EVENT_CLICKED, NULL);
+    lv_obj_add_event_cb(save_btn, save_btn_click_cb, LV_EVENT_CLICKED, parent_scr);
 
     // 名称编辑容器
     lv_obj_t *edit_record_con = create_container(edit_record_scr,
@@ -204,6 +204,7 @@ static void save_btn_click_cb(lv_event_t *e)
     (void)e;
     const char *input_text = lv_textarea_get_text(g_name_ta);
 
+    lv_obj_t *parent_scr = (lv_obj_t *)lv_event_get_user_data(e);
     // 非空校验
     if(input_text == NULL || strlen(input_text) == 0) {
         LV_LOG_WARN("Save failed: Name cannot be empty");
@@ -215,8 +216,9 @@ static void save_btn_click_cb(lv_event_t *e)
     hide_keyboard(NULL);
 
     // 返回录入界面并重建
-    common_member_info_t *member = get_current_enroll_member();
-    ui_enroll_create(member, g_parent_scr);  
+    // common_member_info_t *member = get_current_enroll_member();
+    // ui_enroll_create(member, g_parent_scr);  
+    lv_scr_load(parent_scr);
 
     // 销毁编辑界面
     if(lv_obj_is_valid(edit_record_scr)) {
@@ -233,12 +235,13 @@ void edit_record_back_btn_click_cb(lv_event_t *e)
     (void)e;
     LV_LOG_INFO("back to enroll screen");
     
+    lv_obj_t *parent_scr = (lv_obj_t *)lv_event_get_user_data(e);
     hide_keyboard(NULL);
 
     // 返回录入界面并重建
-    common_member_info_t *member = get_current_enroll_member();
-    ui_enroll_create(member, g_parent_scr);  
-
+    // common_member_info_t *member = get_current_enroll_member();
+    // ui_enroll_create(member, g_parent_scr);  
+    lv_scr_load(parent_scr);
     // 销毁编辑界面
     if(lv_obj_is_valid(edit_record_scr)) {
         lv_obj_del(edit_record_scr);
@@ -273,7 +276,7 @@ void edit_record_btn_click_cb(lv_event_t *e)
         for(int i=0; i<MAX_FINGER_COUNT; i++){
             if(finger_info->finger_record_cons[i] == target && lv_obj_is_valid(finger_info->finger_record_cons[i])){
                 ui_edit_record_create(EDIT_TYPE_FINGER, finger_info->finger_names[i], i, enroll_scr);
-                destroy_enroll();
+                //destroy_enroll();
                 return;
             }
         }
@@ -284,7 +287,7 @@ void edit_record_btn_click_cb(lv_event_t *e)
         for(int i=0; i<MAX_PWD_COUNT; i++){
             if(pwd_info->pwd_record_cons[i] == target && lv_obj_is_valid(pwd_info->pwd_record_cons[i])){
                 ui_edit_record_create(EDIT_TYPE_PWD, pwd_info->pwd_names[i], i, enroll_scr);
-                destroy_enroll();
+                //destroy_enroll();
                 return;
             }
         }
@@ -300,7 +303,7 @@ void edit_record_btn_click_cb(lv_event_t *e)
             for(int i=0; i<MAX_CARD_COUNT; i++){
                 if(card_info->card_record_cons[i] == target && lv_obj_is_valid(card_info->card_record_cons[i])){
                     ui_edit_record_create(EDIT_TYPE_CARD, card_info->card_names[i], i, enroll_scr);
-                    destroy_enroll();
+                    //destroy_enroll();
                     return;
                 }
             }
@@ -310,7 +313,7 @@ void edit_record_btn_click_cb(lv_event_t *e)
             for(int i=0; i<MAX_FACE_COUNT; i++){
                 if(face_info->face_record_cons[i] == target && lv_obj_is_valid(face_info->face_record_cons[i])){
                     ui_edit_record_create(EDIT_TYPE_FACE, face_info->face_names[i], i, enroll_scr);
-                    destroy_enroll();
+                    //destroy_enroll();
                     return;
                 }
             }
@@ -389,15 +392,16 @@ static void dialog_confirm_cb(lv_event_t *e)
 {
     (void)e;
     LV_LOG_INFO("dialog confirm, delete item");
-    
+    lv_obj_t *parent_scr = (lv_obj_t *)lv_event_get_user_data(e);
     // 执行删除操作
     edit_delete_item(g_edit_type, g_edit_index);
     close_dialog();
     hide_keyboard(NULL);
 
     // 返回录入界面并重建
-    common_member_info_t *member = get_current_enroll_member();
-    ui_enroll_create(member, g_parent_scr);  
+    // common_member_info_t *member = get_current_enroll_member();
+    // ui_enroll_create(member, g_parent_scr);  
+    lv_scr_load(parent_scr);
 
     // 销毁编辑界面
     if(lv_obj_is_valid(edit_record_scr)) {

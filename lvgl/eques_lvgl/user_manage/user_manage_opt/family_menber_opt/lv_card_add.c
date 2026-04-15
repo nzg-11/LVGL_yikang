@@ -229,13 +229,13 @@ static void card_fail_confirm_cb(lv_event_t *e)
 {
     if (e == NULL) return;
 
-    common_member_info_t *member = get_current_enroll_member();
+    //common_member_info_t *member = get_current_enroll_member();
     lv_obj_t *parent_scr = lv_event_get_user_data(e);
 
     // 关闭弹窗并返回录入界面
     close_card_fail_popup();
-    ui_enroll_create(member, parent_scr);
-
+    //ui_enroll_create(member, parent_scr);
+    lv_scr_load(parent_scr);
     // 销毁卡片录入界面
     if (lv_obj_is_valid(card_add_scr)) {
         lv_obj_del(card_add_scr);
@@ -349,7 +349,7 @@ static void card_popup_confirm_cb(lv_event_t *e)
 {
     if (e == NULL) return;
 
-    common_member_info_t *member = get_current_enroll_member();
+    //common_member_info_t *member = get_current_enroll_member();
     lv_obj_t *parent_scr = lv_event_get_user_data(e);
     const char *card_name = lv_textarea_get_text(card_input_textarea);
 
@@ -363,8 +363,8 @@ static void card_popup_confirm_cb(lv_event_t *e)
     close_card_popup();
 
     // 返回录入主界面
-    ui_enroll_create(member, parent_scr);
-
+    //ui_enroll_create(member, parent_scr);
+    lv_scr_load(parent_scr);
     // 销毁当前卡片界面
     if (lv_obj_is_valid(card_add_scr)) {
         lv_obj_del(card_add_scr);
@@ -486,9 +486,8 @@ void card_add_btn_click_cb(lv_event_t *e)
 
     // 进入卡片录入界面
     ui_card_add_create(parent_scr);
-    lv_scr_load(card_add_scr);
     update_status_bar_parent(card_add_scr);
-    destroy_enroll();
+    //destroy_enroll();
 
     LV_LOG_INFO("Enter card add interface, destroy main enroll interface");
 }
@@ -503,13 +502,14 @@ static void card_add_back_btn_click_cb(lv_event_t *e)
 
     lv_obj_t *parent_scr = lv_event_get_user_data(e);
     lv_obj_t *current_scr = lv_disp_get_scr_act(NULL);
-
+    
     if (!lv_obj_is_valid(current_scr)) return;
 
     // 返回录入主界面
     if (current_scr == card_add_scr) {
-        common_member_info_t *member = get_current_enroll_member();
-        ui_enroll_create(member, parent_scr);
+        // common_member_info_t *member = get_current_enroll_member();
+        // ui_enroll_create(member, parent_scr);
+        lv_scr_load(parent_scr);
         ui_card_add_destroy();
     }
 }

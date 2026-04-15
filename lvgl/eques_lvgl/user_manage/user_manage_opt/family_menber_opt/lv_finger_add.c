@@ -199,10 +199,12 @@ static void finger_add_click_cb(lv_event_t *e)
         case 2: lv_label_set_text(precent_label, "50%"); break;
         case 3: lv_label_set_text(precent_label, "75%"); break;
         case 4: lv_label_set_text(precent_label, "100%"); break;
-        case 5:
+        case 5:{
             lv_obj_t *enroll_scr = (lv_obj_t *)lv_event_get_user_data(e);
             create_finger_complete_popup(enroll_scr);
             break;
+        }
+            
         default: lv_label_set_text(precent_label, "0%"); break;
     }
 }
@@ -217,9 +219,9 @@ void finger_add_btn_click_cb(lv_event_t *e)
     if(parent_scr == NULL) return;
 
     ui_finger_add_create(parent_scr);
-    lv_scr_load(finger_add_scr);
+    // lv_scr_load(finger_add_scr);
     update_status_bar_parent(finger_add_scr);
-    destroy_enroll();
+    //destroy_enroll();
 
     LV_LOG_INFO("Enter finger add interface");
 }
@@ -236,9 +238,9 @@ void finger_add_back_btn_click_cb(lv_event_t *e)
     if(!lv_obj_is_valid(current_scr)) return;
 
     if(current_scr == finger_add_scr) {
-        common_member_info_t *member = get_current_enroll_member();
-        ui_enroll_create(member, parent_scr);
-
+        // common_member_info_t *member = get_current_enroll_member();
+        // ui_enroll_create(member, parent_scr);
+        lv_scr_load(parent_scr); 
         lv_obj_del(current_scr);
         finger_add_scr = NULL;
     }
@@ -251,7 +253,7 @@ static void finger_confirm_click_cb(lv_event_t *e)
 {
     if(e == NULL) return;
 
-    common_member_info_t *member = get_current_enroll_member();
+    //common_member_info_t *member = get_current_enroll_member();
     lv_obj_t *parent_scr = (lv_obj_t *)lv_event_get_user_data(e);
 
     // 获取名称
@@ -265,8 +267,9 @@ static void finger_confirm_click_cb(lv_event_t *e)
     close_finger_popup();
 
     // 返回主界面
-    ui_enroll_create(member, parent_scr);
-
+    //ui_enroll_create(member, parent_scr);
+    lv_scr_load(parent_scr); 
+    
     // 销毁资源
     if(lv_obj_is_valid(finger_add_scr)) {
         lv_obj_del(finger_add_scr);

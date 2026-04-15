@@ -1024,7 +1024,7 @@ static void init_enroll_styles(void)
 }
 
 /******************************************************************************************
- *                               核心：录入界面创建
+ *                               录入界面创建
  ******************************************************************************************/
 void ui_enroll_create(common_member_info_t *member_info, lv_obj_t *parent_scr)
 {
@@ -1205,12 +1205,14 @@ static uint16_t update_finger_opt_container(void)
     // 按钮状态控制
     if(finger_info->enroll_count >= MAX_FINGER_COUNT) {
         lv_obj_set_style_text_color(finger_add_label, lv_color_hex(0x888888), LV_STATE_DEFAULT);
-        lv_obj_set_style_opa(finger_add_img, LV_OPA_50, LV_STATE_DEFAULT);
+        lv_obj_set_style_bg_color(finger_add_img, lv_color_hex(0xAAAAAA), LV_STATE_DEFAULT);
+        lv_obj_set_style_border_color(finger_add_img, lv_color_hex(0xAAAAAA), LV_STATE_DEFAULT);
         lv_obj_clear_flag(finger_add_img, LV_OBJ_FLAG_CLICKABLE);
         lv_obj_remove_event_cb(finger_add_img, finger_add_btn_click_cb);
     } else {
         lv_obj_add_flag(finger_add_img, LV_OBJ_FLAG_CLICKABLE);
-        lv_obj_set_style_opa(finger_add_img, LV_OPA_80, LV_STATE_PRESSED);
+        lv_obj_set_style_bg_color(finger_add_img, lv_color_hex(0x00BDBD), LV_STATE_DEFAULT);
+        lv_obj_set_style_border_color(finger_add_img, lv_color_hex(0x00BDBD), LV_STATE_DEFAULT);
         lv_obj_add_event_cb(finger_add_img, finger_add_btn_click_cb, LV_EVENT_CLICKED, enroll_scr);
     }
 
@@ -1326,12 +1328,14 @@ static uint16_t update_pwd_opt_container(uint16_t finger_con_height)
     // 按钮状态控制
     if(pwd_info->enroll_count >= MAX_PWD_COUNT) {
         lv_obj_set_style_text_color(pwd_add_label, lv_color_hex(0x888888), LV_STATE_DEFAULT);
-        lv_obj_set_style_opa(pwd_add_img, LV_OPA_50, LV_STATE_DEFAULT);
+        lv_obj_set_style_bg_color(pwd_add_img, lv_color_hex(0xAAAAAA), LV_STATE_DEFAULT);
+        lv_obj_set_style_border_color(pwd_add_img, lv_color_hex(0xAAAAAA), LV_STATE_DEFAULT);   
         lv_obj_clear_flag(pwd_add_img, LV_OBJ_FLAG_CLICKABLE);
         lv_obj_remove_event_cb(pwd_add_img, pwd_add_btn_click_cb);
     } else {
         lv_obj_add_flag(pwd_add_img, LV_OBJ_FLAG_CLICKABLE);
-        lv_obj_set_style_opa(pwd_add_img, LV_OPA_80, LV_STATE_PRESSED);
+        lv_obj_set_style_bg_color(pwd_add_img, lv_color_hex(0x00BDBD), LV_STATE_DEFAULT);
+        lv_obj_set_style_border_color(pwd_add_img, lv_color_hex(0x00BDBD), LV_STATE_DEFAULT);
         lv_obj_add_event_cb(pwd_add_img, pwd_add_btn_click_cb, LV_EVENT_CLICKED, enroll_scr);
     }
 
@@ -1445,15 +1449,16 @@ static uint16_t update_card_opt_container(uint16_t pwd_con_height, uint16_t fing
     // 按钮状态控制
     if(card_info->enroll_count >= MAX_CARD_COUNT) {
         lv_obj_set_style_text_color(card_add_label, lv_color_hex(0x888888), LV_STATE_DEFAULT);
-        lv_obj_set_style_opa(card_add_img, LV_OPA_50, LV_STATE_DEFAULT);
+        lv_obj_set_style_bg_color(card_add_img, lv_color_hex(0xAAAAAA), LV_STATE_DEFAULT);
+        lv_obj_set_style_border_color(card_add_img, lv_color_hex(0xAAAAAA), LV_STATE_DEFAULT);   
         lv_obj_clear_flag(card_add_img, LV_OBJ_FLAG_CLICKABLE);
         lv_obj_remove_event_cb(card_add_img, card_add_btn_click_cb);
     } else {
         lv_obj_add_flag(card_add_img, LV_OBJ_FLAG_CLICKABLE);
-        lv_obj_set_style_opa(card_add_img, LV_OPA_80, LV_STATE_PRESSED);
+        lv_obj_set_style_bg_color(card_add_img, lv_color_hex(0x00BDBD), LV_STATE_DEFAULT);
+        lv_obj_set_style_border_color(card_add_img, lv_color_hex(0x00BDBD), LV_STATE_DEFAULT);
         lv_obj_add_event_cb(card_add_img, card_add_btn_click_cb, LV_EVENT_CLICKED, enroll_scr);
     }
-
     return card_con_height;
 }
 
@@ -1566,12 +1571,14 @@ static uint16_t update_face_opt_container(uint16_t card_con_height, uint16_t pwd
     // 按钮状态控制
     if(face_info->enroll_count >= MAX_FACE_COUNT) {
         lv_obj_set_style_text_color(face_add_label, lv_color_hex(0x888888), LV_STATE_DEFAULT);
-        lv_obj_set_style_opa(face_add_img, LV_OPA_50, LV_STATE_DEFAULT);
+        lv_obj_set_style_bg_color(face_add_img, lv_color_hex(0xAAAAAA), LV_STATE_DEFAULT);
+        lv_obj_set_style_border_color(face_add_img, lv_color_hex(0xAAAAAA), LV_STATE_DEFAULT);   
         lv_obj_clear_flag(face_add_img, LV_OBJ_FLAG_CLICKABLE);
         lv_obj_remove_event_cb(face_add_img, face_add_btn_click_cb);
     } else {
         lv_obj_add_flag(face_add_img, LV_OBJ_FLAG_CLICKABLE);
-        lv_obj_set_style_opa(face_add_img, LV_OPA_80, LV_STATE_PRESSED);
+        lv_obj_set_style_bg_color(face_add_img, lv_color_hex(0x00BDBD), LV_STATE_DEFAULT);
+        lv_obj_set_style_border_color(face_add_img, lv_color_hex(0x00BDBD), LV_STATE_DEFAULT);
         lv_obj_add_event_cb(face_add_img, face_add_btn_click_cb, LV_EVENT_CLICKED, enroll_scr);
     }
 
