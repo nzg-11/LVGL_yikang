@@ -238,10 +238,7 @@ void ui_user_manage_create(lv_obj_t *homepage_scr)
     lv_obj_add_event_cb(user_manage_permission_con, user_permission_btn_click_cb, LV_EVENT_CLICKED, user_manage_scr);
 
     // ====================== 左上角返回按钮 ======================
-    lv_obj_t *back_btn = create_container_circle(
-        user_manage_scr, 52, 90, 30,
-        true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100
-    );
+    lv_obj_t *back_btn = create_container_circle(user_manage_scr, 52, 90, 30, true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
     lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(back_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(back_btn, LV_OPA_80, LV_STATE_PRESSED);
@@ -292,8 +289,6 @@ void user_manage_back_btn_click_cb(lv_event_t *e)
         lv_homepage();                      // 重建主页
         lv_obj_del(current_del_scr);        // 销毁用户管理界面
         user_manage_scr = NULL;            // 指针置空
-
-        LV_LOG_WARN("User management response: Rebuild the homepage and destroy the management interface");
         return;
     }
 }

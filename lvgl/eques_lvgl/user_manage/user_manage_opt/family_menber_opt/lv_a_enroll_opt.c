@@ -1079,6 +1079,7 @@ void ui_enroll_create(common_member_info_t *member_info, lv_obj_t *parent_scr)
     g_opt_con = create_container(enroll_scr,0,302,1024,399, lv_color_hex(0xE0EDFF), LV_OPA_100, 31,lv_color_hex(0x1F3150), 0, LV_OPA_90);
     lv_obj_set_style_pad_all(g_opt_con, 0, LV_STATE_DEFAULT);
     lv_obj_add_flag(g_opt_con, LV_OBJ_FLAG_SCROLLABLE);
+    // 禁用弹性滚动
     lv_obj_clear_flag(g_opt_con, LV_OBJ_FLAG_SCROLL_ELASTIC);
 
     // 初始化所有录入容器

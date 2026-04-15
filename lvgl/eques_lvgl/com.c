@@ -28,17 +28,6 @@ void back_btn_click_cb(lv_event_t *e)
     lv_obj_t *current_del_scr = lv_disp_get_scr_act(NULL);
     if(!lv_obj_is_valid(current_del_scr)) return;
 
-    // ===================== 分支1：当前是【用户管理界面】（主页已被删除，必须重建） =====================
-    if(current_del_scr == user_manage_scr) {
-        // 1. 【重建主页】（因为之前进管理用户时把主页删了）
-        lv_homepage();  
-        // 2. 【销毁用户管理】（此时已经切到主页，删旧页100%安全）
-        lv_obj_del(current_del_scr);
-        user_manage_scr = NULL;
-        LV_LOG_WARN("User management response: Rebuild the homepage and destroy the management interface");
-        return;  // 结束，不走其他逻辑
-    }
-
     // ===================== 分支2：其他普通页面（主页还在，直接返回父页面） =====================
     if(!lv_obj_is_valid(parent_scr)) {
         LV_LOG_ERROR("父页面无效");
