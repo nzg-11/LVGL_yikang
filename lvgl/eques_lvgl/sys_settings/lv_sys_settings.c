@@ -31,7 +31,8 @@ static void factory_reset_click_cb(lv_event_t *e);
 static void light_slider_value_changed_cb(lv_event_t *e);
 static void ring_slider_value_changed_cb(lv_event_t *e);
 static void notify_slider_value_changed_cb(lv_event_t *e);
-   
+void sys_settings_back_btn_click_cb(lv_event_t *e);
+
 // 外部控制接口函数声明
 void set_light_brightness(uint8_t brightness);  // 设置屏幕亮度（0-100）
 uint8_t get_light_brightness(void);             // 获取当前亮度
@@ -43,7 +44,7 @@ void set_notify_volume(uint8_t volume);         // 设置通知音量（0-100）
 uint8_t get_notify_volume(void);                // 获取当前通知音量
 
 void slider_reset_to_default(void);             // 滑块恢复默认值（50%）
-
+static void sys_settings_destroy(void);
 // ==================== 滑块回调函数实现 ====================
 // 屏幕亮度滑块值改变回调
 static void light_slider_value_changed_cb(lv_event_t *e) {
@@ -175,12 +176,6 @@ void ui_sys_settings_create(lv_obj_t *homepage_scr) {
         LV_LOG_WARN("ui_sys_settings_create: homepage_scr is NULL!");
         return;
     }
-
-    // // 1. 关键：如果旧设置页存在，先销毁！释放所有内存
-    // if(is_lv_obj_valid(sys_settings_scr)) {
-    //     lv_obj_del(sys_settings_scr);
-    //     sys_settings_scr = NULL;
-    // }
     sys_settings_scr = lv_obj_create(NULL);  
     
     lv_style_reset(&sys_settings_grad_style);
@@ -329,19 +324,13 @@ void ui_sys_settings_create(lv_obj_t *homepage_scr) {
     }
     lv_obj_t *Factory_Reset = create_text_label(sys_settings_scr, "Factory_Reset", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 75, 933, LV_OPA_100);
 
-    // // 左上角返回按钮
-    // lv_obj_t *back_btn = create_image_obj(sys_settings_scr, "D:back.png", 52, 123);
-    // lv_obj_add_flag(back_btn, LV_OBJ_FLAG_CLICKABLE);
-    // lv_obj_set_style_opa(back_btn, LV_OPA_80, LV_STATE_PRESSED);
-    // lv_obj_add_event_cb(back_btn, back_btn_click_cb, LV_EVENT_CLICKED, homepage_scr);
-
     // 返回
     lv_obj_t *back_btn = create_container_circle(sys_settings_scr, 52, 90, 30,
     true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
     lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(back_btn,LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(back_btn,LV_OPA_80,LV_STATE_PRESSED);
-    lv_obj_add_event_cb(back_btn,back_btn_click_cb,LV_EVENT_CLICKED,homepage_scr);
+    lv_obj_add_event_cb(back_btn, sys_settings_back_btn_click_cb, LV_EVENT_CLICKED, homepage_scr);
 
     update_status_bar_parent(sys_settings_scr);
     lv_scr_load(sys_settings_scr);
@@ -447,6 +436,43 @@ static void factory_reset_click_cb(lv_event_t *e) {
     lv_obj_add_event_cb(cancel_btn, reset_popup_close_cb, LV_EVENT_CLICKED, NULL);
 }
 
+extern void lv_homepage(void);
+// 系统设置界面返回
+void sys_settings_back_btn_click_cb(lv_event_t *e)
+{
+    if (e == NULL) return;
+    // 回到主页
+    lv_homepage();
+    // 彻底清理系统设置界面
+    sys_settings_destroy();
+}
+// 完全销毁系统设置界面 → 零内存泄漏
+static void sys_settings_destroy(void)
+{
+    // 1. 销毁恢复出厂弹窗
+    if (lv_obj_is_valid(reset_popup)) {
+        lv_obj_del(reset_popup);
+        reset_popup = NULL;
+    }
+
+    // 2. 销毁主界面
+    if (lv_obj_is_valid(sys_settings_scr)) {
+        lv_obj_del(sys_settings_scr);
+        sys_settings_scr = NULL;
+    }
+
+    // 3. 释放样式（解决你说的几KB泄漏）
+    if (sys_settings_style_inited) {
+        lv_style_reset(&sys_settings_grad_style);
+        sys_settings_style_inited = false;
+    }
+
+    // 4. 所有全局控件指针 置空
+    g_time_view_label = NULL;
+    light_slider = NULL;
+    ring_slider = NULL;
+    notify_slider = NULL;
+}
 #endif
 
 #endif

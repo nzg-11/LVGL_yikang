@@ -7,7 +7,9 @@ static screen_off_time_t g_screen_off_time = SCREEN_OFF_15S; // 默认15s
 static const char *g_time_strs[] = {"10s", "15s", "30s", "1min", "5min", "10min"};
 static lv_obj_t *g_time_view_label = NULL; // 主页面的显示标签
 static lv_obj_t *g_time_checkboxes[SCREEN_OFF_MAX] = {NULL}; // 复选框数组
-
+void screen_time_back_btn_click_cb(lv_event_t *e);
+// 销毁亮屏时间界面 → 零内存泄漏
+static void light_time_destroy(void);
 // 子模块内部回调函数声明
 static void light_time_checkbox_cb(lv_event_t *e);
 static void time_container_click_cb(lv_event_t *e);
@@ -225,10 +227,36 @@ void ui_screen_time_settings_create(lv_obj_t *homepage_scr)
     lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(back_btn,LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(back_btn,LV_OPA_80,LV_STATE_PRESSED);
-    lv_obj_add_event_cb(back_btn,back_btn_click_cb,LV_EVENT_CLICKED,homepage_scr);
+    lv_obj_add_event_cb(back_btn,screen_time_back_btn_click_cb,LV_EVENT_CLICKED,homepage_scr);
 
     //更新状态条父对象
     update_status_bar_parent(light_time_scr);
     // 切换到子页面
     lv_scr_load(light_time_scr);
+}
+
+// 亮屏时间界面返回
+void screen_time_back_btn_click_cb(lv_event_t *e)
+{
+    lv_obj_t *parent_scr = lv_event_get_user_data(e);
+    if (parent_scr == NULL) return;
+    if (e == NULL) return;
+    // 返回系统设置主页
+    ui_sys_settings_create(parent_scr);
+    // 销毁当前子界面
+    light_time_destroy();
+}
+// 销毁亮屏时间界面 → 零内存泄漏
+static void light_time_destroy(void)
+{
+    // 1. 销毁界面
+    if (lv_obj_is_valid(light_time_scr)) {
+        lv_obj_del(light_time_scr);
+        light_time_scr = NULL;
+    }
+
+    // 2. 清空所有复选框指针
+    for (int i = 0; i < SCREEN_OFF_MAX; i++) {
+        g_time_checkboxes[i] = NULL;
+    }
 }

@@ -163,12 +163,6 @@ void ui_user_manage_create(lv_obj_t *homepage_scr)
         LV_LOG_WARN("ui_user_manage_create: homepage_scr is NULL!");
         return;
     }
-
-    // 销毁旧界面，重建新界面（避免残留控件）
-    if(is_lv_obj_valid(user_manage_scr)) {
-        lv_obj_del(user_manage_scr);
-        user_manage_scr = NULL;
-    }
     user_manage_scr = lv_obj_create(NULL);
 
     // ====================== 背景渐变样式 ======================
@@ -243,7 +237,8 @@ void ui_user_manage_create(lv_obj_t *homepage_scr)
     lv_obj_add_flag(back_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(back_btn, LV_OPA_80, LV_STATE_PRESSED);
     lv_obj_add_event_cb(back_btn, user_manage_back_btn_click_cb, LV_EVENT_CLICKED, homepage_scr);
-    
+
+    update_status_bar_parent(user_manage_scr);
     // 切换显示用户管理界面
     lv_scr_load(user_manage_scr);
 }
@@ -265,13 +260,11 @@ void user_manage_btn_click_cb(lv_event_t *e)
 
     // 创建用户管理界面
     ui_user_manage_create(homepage_scr_temp);
-    // 切换显示
-    lv_scr_load(user_manage_scr);
     // 更新状态栏
-    update_status_bar_parent(user_manage_scr);
+    
     // 销毁主页
     destroy_homepage();
-
+    update_status_bar_parent(user_manage_scr);
     LV_LOG_WARN("user_manage_btn_click_cb: Destroy the homepage and create the management interface");
 }
 

@@ -36,7 +36,8 @@ static void dnd_time_click_cb(lv_event_t *e);
 static void dnd_popup_close_cb(lv_event_t *e);
 // 确定按钮回调
 static void dnd_time_confirm_cb(lv_event_t *e);
-
+static void notify_destroy(void);
+void notify_back_btn_click_cb(lv_event_t *e);
 // 子模块初始化
 void notification_init(void) {
     // 初始化默认状态
@@ -372,10 +373,20 @@ static void dnd_time_confirm_cb(lv_event_t *e) {
 // 创建消息通知子页面
 void ui_notification_settings_create(lv_obj_t *homepage_scr) {
     // 1. 创建子页面对象
-    // lv_obj_t *notify_scr = lv_obj_create(NULL);
-    if(is_lv_obj_valid(notify_scr)) {
+    if(lv_obj_is_valid(notify_scr))
+    {
         lv_obj_del(notify_scr);
         notify_scr = NULL;
+    }
+    // 同时强制关闭残留弹窗
+    if(dnd_popup != NULL)
+    {
+        lv_obj_del(dnd_popup);
+        dnd_popup = NULL;
+        start_hour_roller = NULL;
+        start_min_roller = NULL;
+        end_hour_roller = NULL;
+        end_min_roller = NULL;
     }
     notify_scr = lv_obj_create(NULL);  
     
@@ -526,11 +537,29 @@ void ui_notification_settings_create(lv_obj_t *homepage_scr) {
     lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(back_btn,LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(back_btn,LV_OPA_80,LV_STATE_PRESSED);
-    lv_obj_add_event_cb(back_btn,back_btn_click_cb,LV_EVENT_CLICKED,homepage_scr);
+    lv_obj_add_event_cb(back_btn,notify_back_btn_click_cb,LV_EVENT_CLICKED,homepage_scr);
 
     // 7. 更新状态栏父对象
     update_status_bar_parent(notify_scr);
     
     // 8. 切换到子页面
     lv_scr_load(notify_scr);
+}
+
+void notify_back_btn_click_cb(lv_event_t *e)
+{
+    lv_obj_t *parent_scr = lv_event_get_user_data(e);
+    if (parent_scr == NULL || e == NULL) return;
+    // 2. 回到父页面（系统设置页）
+    lv_scr_load(parent_scr);
+    // 1. 销毁当前通知页面
+    notify_destroy();
+}
+static void notify_destroy(void)
+{
+    // 销毁主页面
+    if (lv_obj_is_valid(notify_scr)) {
+        lv_obj_del(notify_scr);
+        notify_scr = NULL;
+    }
 }

@@ -2197,6 +2197,8 @@ static void create_bg_mask_layer(lv_obj_t *target_container)
     lv_obj_set_style_radius(bg_mask_layer, 0, LV_STATE_DEFAULT);
     lv_obj_add_flag(bg_mask_layer, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_move_foreground(bg_mask_layer);
+    // 点击遮罩层隐藏键盘
+    lv_obj_add_event_cb(bg_mask_layer, hide_name_keyboard, LV_EVENT_CLICKED, NULL);
 }
 
 // ====================================== 工具函数 ======================================

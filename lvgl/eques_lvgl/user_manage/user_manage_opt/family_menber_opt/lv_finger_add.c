@@ -296,7 +296,7 @@ static void create_finger_complete_popup(lv_obj_t *enroll_scr)
     lv_obj_set_style_border_width(finger_bg_mask_layer, 0, LV_STATE_DEFAULT);
     lv_obj_add_flag(finger_bg_mask_layer, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_clear_flag(finger_bg_mask_layer, LV_OBJ_FLAG_HIDDEN);
-
+    lv_obj_add_event_cb(finger_bg_mask_layer, hide_finger_keyboard, LV_EVENT_CLICKED, NULL);
     // 弹窗主体
     finger_custom_popup = create_container(finger_add_scr, 212, 150, 600, 270,
         lv_color_hex(0xE0EDFF), LV_OPA_100,

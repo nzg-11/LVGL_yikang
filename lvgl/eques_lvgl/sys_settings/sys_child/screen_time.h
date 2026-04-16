@@ -23,7 +23,6 @@ typedef enum {
  * @param display_label 主页面用于显示亮屏时间的标签对象
  */
 void screen_time_init(lv_obj_t *display_label);
-
 /**
  * @brief 创建亮屏时间设置子页面
  * @param homepage_scr 主页面对象（用于返回按钮回调）

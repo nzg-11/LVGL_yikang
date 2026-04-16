@@ -422,7 +422,7 @@ static void face_timeout_timer_cb(lv_timer_t *timer)
     lv_obj_add_flag(face_bg_mask_layer, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_clear_flag(face_bg_mask_layer, LV_OBJ_FLAG_HIDDEN);
     lv_obj_move_foreground(face_bg_mask_layer);
-
+    lv_obj_add_event_cb(face_bg_mask_layer, hide_face_keyboard, LV_EVENT_CLICKED, NULL);
     // 创建失败弹窗
     face_fail_popup = create_container(
         face_add_scr, 212, 150, 600, 200,

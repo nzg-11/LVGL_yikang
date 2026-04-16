@@ -326,7 +326,7 @@ static void clean_calendar_obj(void);
 static void calendar_event_handler(lv_event_t *e);
 static void create_calendar(lv_obj_t *parent);
 static void date_picker_click_cb(lv_event_t *e);
-
+void msg_center_back_btn_click_cb(lv_event_t *e);
 
 //==================== 实现 =====================
 static void init_msg_center_styles(void)
@@ -371,8 +371,17 @@ static void clean_calendar_obj(void)
             lv_obj_del(g_calendar); 
         }
         g_calendar = NULL; 
-        memset(&g_selected_calendar_date, 0, sizeof(lv_calendar_date_t));
-        memset(g_highlighted_dates, 0, sizeof(g_highlighted_dates));
+    }
+
+    memset(&g_selected_calendar_date, 0, sizeof(lv_calendar_date_t));
+    memset(g_highlighted_dates, 0, sizeof(g_highlighted_dates));
+
+    // ========== 释放样式，根治KB级泄漏 ==========
+    if(msg_center_style_inited)
+    {
+        lv_style_reset(&msg_center_grad_style);
+        lv_style_reset(&g_calendar_selected_style);
+        msg_center_style_inited = false;
     }
 }
 
@@ -489,15 +498,6 @@ void ui_msg_center_create(lv_obj_t *homepage_scr)
     init_msg_center_styles();
     if(!homepage_scr || !lv_obj_is_valid(homepage_scr)) return;
 
-    clean_calendar_obj();
-    clear_all_visitor_records();
-    clear_all_doorbell_records();
-    clear_all_alarm_records();
-
-    if(is_lv_obj_valid(msg_center_scr)) {
-        lv_obj_del(msg_center_scr);
-        msg_center_scr = NULL;
-    }
     msg_center_scr = lv_obj_create(NULL);
 
     lv_style_reset(&msg_center_grad_style);
@@ -581,19 +581,54 @@ void ui_msg_center_create(lv_obj_t *homepage_scr)
     lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(back_btn,LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(back_btn,LV_OPA_80,LV_STATE_PRESSED);
-    lv_obj_add_event_cb(back_btn,back_btn_click_cb,LV_EVENT_CLICKED,homepage_scr);
+    lv_obj_add_event_cb(back_btn,msg_center_back_btn_click_cb,LV_EVENT_CLICKED,NULL);
 
     // 默认显示访客
     switch_record_type(visitor_rec_con);
     update_status_bar_parent(msg_center_scr);
     lv_scr_load(msg_center_scr);
 }
-
+extern void destroy_homepage(void);
+extern void lv_homepage(void);
+// 模式切换按钮点击事件
 void msg_center_btn_click_cb(lv_event_t *e)
 {
-    lv_obj_t *home = lv_event_get_user_data(e);
-    if(home && lv_obj_is_valid(home)) {
-        ui_msg_center_create(home);
+    if(e == NULL) return;
+
+    lv_obj_t *homepage_scr_temp = (lv_obj_t *)lv_event_get_user_data(e);
+    if(homepage_scr_temp == NULL) {
+        LV_LOG_WARN("user_manage_btn_click_cb: homepage_scr is NULL!");
+        return;
+    }
+    // 创建消息中心界面
+    ui_msg_center_create(homepage_scr_temp);
+    // 销毁主页
+    destroy_homepage();
+    // 更新消息中心状态栏
+    update_status_bar_parent(msg_center_scr);
+
+}
+
+void msg_center_back_btn_click_cb(lv_event_t *e)
+{
+    if(e == NULL) return;
+
+    lv_obj_t *current_del_scr = lv_disp_get_scr_act(NULL);
+
+    if(!lv_obj_is_valid(current_del_scr)) return;
+
+    // 当前显示的是消息中心界面
+    if(current_del_scr == msg_center_scr) {
+        // ====================== 【返回前清理资源】======================
+        clean_calendar_obj();  // 销毁日历
+        clear_all_visitor_records();
+        clear_all_doorbell_records();
+        clear_all_alarm_records();
+
+        lv_homepage();               // 重建主页
+        lv_obj_del(current_del_scr); // 销毁消息中心
+        msg_center_scr = NULL;       // 必须置 NULL！！！
+        return;
     }
 }
 #endif

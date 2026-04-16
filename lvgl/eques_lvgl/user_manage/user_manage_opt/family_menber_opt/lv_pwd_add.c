@@ -266,14 +266,14 @@ static void show_pwd_dialog(const char *msg, bool is_success, lv_obj_t *enroll_s
 
     // 创建遮罩层
     g_pwd_dialog_mask = lv_obj_create(pwd_add_scr);
-    lv_obj_set_size(g_pwd_dialog_mask, LV_HOR_RES, 1280);
+    lv_obj_set_size(g_pwd_dialog_mask, LV_HOR_RES, LV_VER_RES);
     lv_obj_set_pos(g_pwd_dialog_mask, 0, 0);
     lv_obj_set_style_bg_color(g_pwd_dialog_mask, lv_color_hex(0x000000), LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(g_pwd_dialog_mask, LV_OPA_70, LV_STATE_DEFAULT);
     lv_obj_set_style_border_width(g_pwd_dialog_mask, 0, LV_STATE_DEFAULT);
     lv_obj_add_flag(g_pwd_dialog_mask, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_clear_flag(g_pwd_dialog_mask, LV_OBJ_FLAG_HIDDEN);
-
+    lv_obj_add_event_cb(g_pwd_dialog_mask, hide_pwd_keyboard, LV_EVENT_CLICKED, NULL);
     // 创建弹窗容器
     g_pwd_dialog = create_container(pwd_add_scr, 212, 150, 600, is_success ? 270 : 180,
                     lv_color_hex(0xE0EDFF), LV_OPA_100, 16, 

@@ -361,7 +361,7 @@ static void del_btn_click_cb(lv_event_t *e)
     lv_obj_set_style_bg_color(g_mask, lv_color_hex(0x000000), LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(g_mask, LV_OPA_70, LV_STATE_DEFAULT);
     lv_obj_set_style_border_width(g_mask, 0, LV_STATE_DEFAULT);
-
+    
     // 删除确认弹窗
     g_dialog = create_container(edit_record_scr, 212, 150, 600, 297, lv_color_hex(0xE0EDFF), LV_OPA_100, 16, lv_color_hex(0x1F3150), 0, LV_OPA_90);
     lv_obj_set_style_pad_all(g_dialog, 0, LV_STATE_DEFAULT);

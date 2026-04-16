@@ -54,6 +54,17 @@ void update_status_bar_parent(lv_obj_t *new_scr);
 void destroy_status_bar(void);
 bool is_lv_obj_valid(lv_obj_t *obj);
 
+LV_IMG_DECLARE(wifi);
+LV_IMG_DECLARE(lupin);
+LV_IMG_DECLARE(lupin_off);
+LV_IMG_DECLARE(jiepin);
+LV_IMG_DECLARE(yinliang);
+LV_IMG_DECLARE(yinliang_off);
+LV_IMG_DECLARE(kaimai);
+LV_IMG_DECLARE(bimai);    
+LV_IMG_DECLARE(kaisuo);
+LV_IMG_DECLARE(kaisuo_off);
+
 #define false 0
 #define true 1
 /**********************

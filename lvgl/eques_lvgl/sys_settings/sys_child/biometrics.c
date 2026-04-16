@@ -37,6 +37,8 @@ static void bio_time_confirm_cb(lv_event_t *e);
 // ========== 遮罩层点击判断回调 ==========
 static void bio_time_popup_click_cb(lv_event_t *e);
 
+static void bio_destroy(void);
+void bio_back_btn_click_cb(lv_event_t *e);
 // 子模块初始化
 void biometrics_init(void) {
     // 初始化默认状态
@@ -351,12 +353,8 @@ static void bio_time_confirm_cb(lv_event_t *e) {
 
 // 创建生物识别设置子页面
 void ui_biometrics_settings_create(lv_obj_t *homepage_scr) {
+    
     // // 1. 创建子页面对象
-    // lv_obj_t *bio_scr = lv_obj_create(NULL);
-    if(is_lv_obj_valid(bio_scr)) {
-        lv_obj_del(bio_scr);
-        bio_scr = NULL;
-    }
     bio_scr = lv_obj_create(NULL);  
 
     // 2. 复用主模块渐变样式
@@ -500,7 +498,7 @@ void ui_biometrics_settings_create(lv_obj_t *homepage_scr) {
     lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(back_btn,LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(back_btn,LV_OPA_80,LV_STATE_PRESSED);
-    lv_obj_add_event_cb(back_btn,back_btn_click_cb,LV_EVENT_CLICKED,homepage_scr);
+    lv_obj_add_event_cb(back_btn,bio_back_btn_click_cb,LV_EVENT_CLICKED,homepage_scr);
 
     // 7. 更新状态栏父对象
     update_status_bar_parent(bio_scr);
@@ -528,4 +526,35 @@ void biometrics_reset_to_default(void) {
     biometric_set_time_slot(g_time_slot);
 
     LV_LOG_USER("Biometrics reset to default: all switches ON, temp pwd=123456, time slot=8:00-8:05");
+}
+// 返回按钮回调（安全版：先销毁自己，再加载父页面）
+void bio_back_btn_click_cb(lv_event_t *e)
+{
+    lv_obj_t *parent_scr = lv_event_get_user_data(e);
+    if (parent_scr == NULL || e == NULL) return;
+    // 2. 回到父页面（系统设置页）
+    lv_scr_load(parent_scr);
+    // 1. 销毁当前生物识别页面 + 弹窗
+    bio_destroy();
+}
+// 销毁生物识别页面 → 彻底释放内存
+static void bio_destroy(void)
+{
+    // 2. 销毁主页面
+    if (lv_obj_is_valid(bio_scr)) {
+        lv_obj_del(bio_scr);
+        bio_scr = NULL;
+    }
+
+    // 3. 清空所有控件指针（杜绝野指针）
+    for (int i = 0; i < BIOMETRIC_MAX; i++) {
+        g_switches[i] = NULL;
+    }
+
+    // 4. 弹窗相关指针清空
+    bio_start_hour_roller = NULL;
+    bio_start_min_roller = NULL;
+    bio_end_hour_roller = NULL;
+    bio_end_min_roller = NULL;
+    bio_time_label = NULL;
 }

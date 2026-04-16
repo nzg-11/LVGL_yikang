@@ -402,7 +402,7 @@ static void create_card_complete_popup(lv_obj_t *enroll_scr)
     lv_obj_set_style_border_width(card_bg_mask_layer, 0, LV_STATE_DEFAULT);
     lv_obj_add_flag(card_bg_mask_layer, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_clear_flag(card_bg_mask_layer, LV_OBJ_FLAG_HIDDEN);
-
+    lv_obj_add_event_cb(card_bg_mask_layer, hide_card_keyboard, LV_EVENT_CLICKED, NULL);
     // ===================== 创建成功弹窗 =====================
     card_custom_popup = create_container(
         card_add_scr, 212, 150, 600, 270,

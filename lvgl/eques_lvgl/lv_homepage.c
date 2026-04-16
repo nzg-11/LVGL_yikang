@@ -434,6 +434,7 @@ static lv_obj_t *time_label = NULL;
 static lv_obj_t *battery_used_con = NULL;  
 static lv_obj_t *battery_label = NULL;     
 static lv_timer_t *status_bar_timer = NULL;
+static lv_obj_t *wifi_img = NULL;
 static bool status_bar_is_homepage = false;
 
 // 安全销毁主页 释放所有资源
@@ -700,33 +701,23 @@ static void create_status_bar_ex(bool is_homepage)
         lv_obj_align(status_bar, LV_ALIGN_TOP_LEFT, 0, 0);
 
         // 日期
-        date_label = create_text_label(
-            status_bar, "2023-01-01",
-            &lv_font_montserrat_36, lv_color_hex(0xFFFFFF),
-            48, 24, LV_OPA_100);
+        date_label = create_text_label(status_bar, "2023-01-01",&lv_font_montserrat_36, lv_color_hex(0xFFFFFF),0, 0, LV_OPA_100);
+        lv_obj_align(date_label, LV_ALIGN_LEFT_MID, 48, 0);
 
         // 时间
-        time_label = create_text_label(
-            status_bar, "12:00",
-            &lv_font_montserrat_36, lv_color_hex(0xFFFFFF),
-            280, 25, LV_OPA_100);
+        time_label = create_text_label(status_bar, "12:00",&lv_font_montserrat_36, lv_color_hex(0xFFFFFF),0, 0, LV_OPA_100);
+        lv_obj_align(time_label, LV_ALIGN_LEFT_MID, 280, 0);
 
         // WiFi
-        create_container_circle(
-            status_bar, 400, 33, 28,
-            true, lv_color_hex(0xFFFFFF), lv_color_hex(0x808080), 0, LV_OPA_0);
+        wifi_img = create_image_obj(status_bar, &wifi, 0, 0);
+        lv_obj_align(wifi_img, LV_ALIGN_LEFT_MID, 400, 0);
 
         // 电池外框
-        battery_con = create_container(
-            status_bar, 444, 31, 65, 30,
-            lv_color_hex(0x2E4B7D), LV_OPA_0, 0,
-            lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
-
+        battery_con = create_container(status_bar, 0, 0, 65, 30, lv_color_hex(0x2E4B7D), LV_OPA_0, 0, lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
+        lv_obj_align(battery_con, LV_ALIGN_LEFT_MID, 444, 0);
         // 电池进度
-        battery_used_con = create_container(
-            status_bar, 447, 34, 0, 24,
-            lv_color_hex(0x00ac11), LV_OPA_100, 0,
-            lv_color_hex(0xFFFFFF), 3, LV_OPA_0);
+        battery_used_con = create_container(status_bar, 0, 0, 0, 24, lv_color_hex(0x00ac11), LV_OPA_100, 0, lv_color_hex(0xFFFFFF), 3, LV_OPA_0);
+        lv_obj_align(battery_used_con, LV_ALIGN_LEFT_MID, 447, 0);
     }
     else
     {
@@ -734,33 +725,24 @@ static void create_status_bar_ex(bool is_homepage)
         lv_obj_align(status_bar, LV_ALIGN_TOP_RIGHT, 0, 0);
 
         // 日期
-        date_label = create_text_label(
-            status_bar, "2023-01-01",
-            &lv_font_montserrat_36, lv_color_hex(0xFFFFFF),
-            514, 24, LV_OPA_100);
+        date_label = create_text_label(status_bar, "2023-01-01", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 0, 15, LV_OPA_100);
+        lv_obj_align(date_label, LV_ALIGN_LEFT_MID, 514, 0);
 
         // 时间
-        time_label = create_text_label(
-            status_bar, "12:00",
-            &lv_font_montserrat_36, lv_color_hex(0xFFFFFF),
-            744, 25, LV_OPA_100);
+        time_label = create_text_label(status_bar, "12:00", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 744, 15, LV_OPA_100);
+        lv_obj_align(time_label, LV_ALIGN_LEFT_MID, 744, 0);
 
         // WiFi
-        create_container_circle(
-            status_bar, 866, 33, 28,
-            true, lv_color_hex(0xFFFFFF), lv_color_hex(0x808080), 0, LV_OPA_0);
+        wifi_img = create_image_obj(status_bar, &wifi, 0, 0);
+        lv_obj_align(wifi_img, LV_ALIGN_LEFT_MID, 856, 0);
 
         // 电池外框
-        battery_con = create_container(
-            status_bar, 910, 31, 65, 30,
-            lv_color_hex(0x2E4B7D), LV_OPA_0, 0,
-            lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
+        battery_con = create_container(status_bar, 910, 21, 65, 30, lv_color_hex(0x2E4B7D), LV_OPA_0, 0, lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
+        lv_obj_align(battery_con, LV_ALIGN_LEFT_MID, 910, 0);
 
         // 电池进度
-        battery_used_con = create_container(
-            status_bar, 913, 34, 0, 24,
-            lv_color_hex(0x00ac11), LV_OPA_100, 0,
-            lv_color_hex(0xFFFFFF), 3, LV_OPA_0);
+        battery_used_con = create_container(status_bar, 913, 24, 0, 24, lv_color_hex(0x00ac11), LV_OPA_100, 0, lv_color_hex(0xFFFFFF), 3, LV_OPA_0);
+        lv_obj_align(battery_used_con, LV_ALIGN_LEFT_MID, 913, 0);
     }
 
     // 电池百分比（共用）
