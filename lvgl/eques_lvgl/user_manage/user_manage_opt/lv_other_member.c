@@ -1264,7 +1264,7 @@ void ui_other_member_create(lv_obj_t *user_manage_scr)
     lv_style_set_bg_grad_stop(&other_member_grad_style, 255);
     lv_obj_add_style(other_member_scr, &other_member_grad_style, LV_STATE_DEFAULT);
 
-    other_member_label = create_text_label(other_member_scr, "other member", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 83, 80, LV_OPA_100);
+    other_member_label = create_text_label(other_member_scr, "普通成员", &eques_bold_36, lv_color_hex(0xFFFFFF), 83, 80, LV_OPA_100);
 
     // 添加成员容器
     other_member_add_con = create_container
@@ -1288,14 +1288,27 @@ void ui_other_member_create(lv_obj_t *user_manage_scr)
     lv_obj_add_event_cb(other_member_add, other_member_add_click_cb, LV_EVENT_CLICKED, user_manage_scr);
 
     // 删除按钮
-    delete_img = create_image_obj(other_member_scr, "H:....png", 928, 99);
+    delete_img = create_container
+    (other_member_scr,928,81,55,30,lv_color_hex(0x192A46), LV_OPA_0, 0,lv_color_hex(0x1F3150), 0, LV_OPA_90);
+    lv_obj_set_style_pad_all(delete_img, 0, LV_STATE_DEFAULT);
+    //三个点（不可点击）
+    lv_obj_t *cir1 =create_container_circle
+    (delete_img, 5, 13, 9,true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
+    lv_obj_t *cir2 =create_container_circle
+    (delete_img, 25, 13, 9,true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
+    lv_obj_t *cir3 =create_container_circle
+    (delete_img, 45, 13, 9,true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
+    lv_obj_clear_flag(cir1, LV_OBJ_FLAG_CLICKABLE);
+    lv_obj_clear_flag(cir2, LV_OBJ_FLAG_CLICKABLE);
+    lv_obj_clear_flag(cir3, LV_OBJ_FLAG_CLICKABLE);
+
     lv_obj_add_flag(delete_img, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(delete_img, LV_OPA_80, LV_STATE_PRESSED);
     lv_obj_add_event_cb(delete_img, delete_img_click_cb, LV_EVENT_CLICKED, NULL);
 
     // 返回按钮
-    back_btn = create_container_circle(other_member_scr, 52, 90, 30,
-    true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
+    back_btn = create_text_label
+    (other_member_scr, ICON_CHEVORN_LEFT, &my_custom_icon, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
     lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(back_btn,LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(back_btn,LV_OPA_80,LV_STATE_PRESSED);
@@ -1414,13 +1427,13 @@ static void delete_confirm_click_cb(lv_event_t *e)
         16, lv_color_hex(0x1F3150), 0, LV_OPA_90
     );
     
-    create_text_label(confirm_popup, "confirm_delete?", &lv_font_montserrat_32, lv_color_hex(0x000000), 156, 52, LV_OPA_100);
+    create_text_label(confirm_popup, "确认删除此用户吗？", &eques_regular_32, lv_color_hex(0x000000), 156, 52, LV_OPA_100);
     
     lv_obj_t *confirm_btn = create_custom_gradient_container
     (confirm_popup, 190, 141, 220, 44, 6, 0x006BDC, 0x00BDBD, LV_GRAD_DIR_HOR, 0, 225, LV_OPA_100);
     lv_obj_set_style_pad_all(confirm_btn, 0, LV_STATE_DEFAULT);
     lv_obj_t *confirm_label = create_text_label(
-    confirm_btn, "confirm", &lv_font_montserrat_24, lv_color_hex(0x000000), 0, 0, LV_OPA_100);
+    confirm_btn, "确定", &eques_bold_24, lv_color_hex(0x000000), 0, 0, LV_OPA_100);
     lv_obj_set_align(confirm_label, LV_ALIGN_CENTER);
     lv_obj_add_flag(confirm_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_add_event_cb(confirm_btn, delete_popup_ok_cb, LV_EVENT_CLICKED, confirm_popup);
@@ -1429,7 +1442,7 @@ static void delete_confirm_click_cb(lv_event_t *e)
     (confirm_popup, 190, 210, 220, 44, lv_color_hex(0xE0EDFF), LV_OPA_100, 8, lv_color_hex(0xFF3333), 0, LV_OPA_90);
     lv_obj_set_style_pad_all(cancel_btn, 0, LV_STATE_DEFAULT);
     lv_obj_t *cancel_label = create_text_label
-    (cancel_btn, "cancel", &lv_font_montserrat_20, lv_color_hex(0xBDBDBD), 0, 0, LV_OPA_100);
+    (cancel_btn, "取消", &eques_bold_24, lv_color_hex(0xBDBDBD), 0, 0, LV_OPA_100);
     lv_obj_set_align(cancel_label, LV_ALIGN_CENTER);
     lv_obj_add_flag(cancel_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_add_event_cb(cancel_btn, delete_popup_cancel_cb, LV_EVENT_CLICKED, confirm_popup);
@@ -1498,9 +1511,8 @@ static void member_delete_btn_click_cb(lv_event_t *e)
         g_delete_flag_imgs[idx] = NULL;
     }
     
-    g_delete_flag_imgs[idx] = create_image_obj(member_con, "H:delete_flag.png", 250, 10);
+    g_delete_flag_imgs[idx] = create_text_label(member_con, ICON_CHECK, &my_custom_icon, lv_color_hex(0xFFFFFF), 250, 10, LV_OPA_100);
     if(g_delete_flag_imgs[idx] != NULL && lv_obj_is_valid(g_delete_flag_imgs[idx])) {
-        lv_obj_set_size(g_delete_flag_imgs[idx], 36, 36);
         lv_obj_add_event_cb(g_delete_flag_imgs[idx], delete_flag_click_cb, LV_EVENT_CLICKED, (void*)(uintptr_t)idx);
         lv_obj_add_flag(g_delete_flag_imgs[idx], LV_OBJ_FLAG_CLICKABLE);
         g_member_selected[idx] = true;
@@ -1582,7 +1594,7 @@ static void switch_delete_mode(bool enter)
         
         if(g_delete_cancel_btn == NULL || !lv_obj_is_valid(g_delete_cancel_btn)) {
             g_delete_cancel_btn = create_text_label(
-                other_member_scr, "cancel", &lv_font_montserrat_24, 
+                other_member_scr, "取消", &eques_regular_24, 
                 lv_color_hex(0x00BDBD), 48, 90, LV_OPA_100
             );
             lv_obj_add_flag(g_delete_cancel_btn, LV_OBJ_FLAG_CLICKABLE);
@@ -1594,7 +1606,7 @@ static void switch_delete_mode(bool enter)
         
         if(g_delete_confirm_btn == NULL || !lv_obj_is_valid(g_delete_confirm_btn)) {
             g_delete_confirm_btn = create_text_label(
-                other_member_scr, "delete", &lv_font_montserrat_24, 
+                other_member_scr, "删除", &eques_regular_24, 
                 lv_color_hex(0xFF0000), 928, 90, LV_OPA_100
             );
             lv_obj_add_flag(g_delete_confirm_btn, LV_OBJ_FLAG_CLICKABLE);
@@ -1690,6 +1702,7 @@ static void show_all_member_delete_btn(bool show)
     }
 }
 
+
 // ====================== 成员卡片 ======================
 static lv_obj_t *create_other_member_card(lv_obj_t *parent, const char *member_name, lv_color_t avatar_color, uint8_t member_idx)
 {
@@ -1721,31 +1734,44 @@ static lv_obj_t *create_other_member_card(lv_obj_t *parent, const char *member_n
 
     // 名称
     lv_obj_t *name_label = create_text_label
-    (member_con, member_name, &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
+    (member_con, member_name, &eques_regular_36, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
     lv_obj_align(name_label, LV_ALIGN_TOP_MID, 0, 87);
 
     uint8_t finger_count = other_member_list[member_idx].finger_count;
     uint8_t pwd_count = other_member_list[member_idx].pwd_count;
+    char text_buf[8] = {0};
 
-    // 指纹
-    char finger_text[8] = {0};
-    snprintf(finger_text, sizeof(finger_text), "%d", finger_count);
-    const char *finger_img_path = (finger_count > 0) ? "H:finger_has_record.png" : "H:finger_no_record.png";
-    g_other_finger_imgs[member_idx] = create_image_obj(member_con, finger_img_path, 88, 157);
-    g_other_finger_labels[member_idx] = create_text_label
-    (member_con, finger_text, &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 124, 157, LV_OPA_100);
+    // ==========================
+    // 指纹图标 + 数字
+    // ==========================
+    lv_obj_t *icon_finger = lv_label_create(member_con);
+    lv_label_set_text(icon_finger, ICON_FINGERPRINT_S);
+    lv_obj_set_style_text_font(icon_finger, &my_custom_icon_26, 0);
+    lv_obj_set_pos(icon_finger, 88, 157);
+    lv_obj_set_style_text_color(icon_finger,
+        (finger_count > 0) ? lv_color_hex(0x00BDBD) : lv_color_hex(0xD4D4D4), 0);
 
-    // 密码
-    char pwd_text[8] = {0};
-    snprintf(pwd_text, sizeof(pwd_text), "%d", pwd_count);
-    const char *pwd_img_path = (pwd_count > 0) ? "H:pwd_has_record.png" : "H:pwd_no_record.png";
-    g_other_pwd_imgs[member_idx] = create_image_obj(member_con, pwd_img_path, 150, 155);
-    g_other_pwd_labels[member_idx] = create_text_label
-    (member_con, pwd_text, &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 186, 157, LV_OPA_100);
+    snprintf(text_buf, sizeof(text_buf), "%d", finger_count);
+    g_other_finger_labels[member_idx] = create_text_label(member_con, text_buf, &eques_regular_24,
+        (finger_count > 0) ? lv_color_hex(0x00BDBD) : lv_color_hex(0xD4D4D4), 124, 157, LV_OPA_100);
+
+    // ==========================
+    // 密码图标 + 数字
+    // ==========================
+    lv_obj_t *icon_pwd = lv_label_create(member_con);
+    lv_label_set_text(icon_pwd, ICON_PASSWORD_S);
+    lv_obj_set_style_text_font(icon_pwd, &my_custom_icon_26, 0);
+    lv_obj_set_pos(icon_pwd, 150, 157);
+    lv_obj_set_style_text_color(icon_pwd,
+        (pwd_count > 0) ? lv_color_hex(0x00BDBD) : lv_color_hex(0xD4D4D4), 0);
+
+    snprintf(text_buf, sizeof(text_buf), "%d", pwd_count);
+    g_other_pwd_labels[member_idx] = create_text_label(member_con, text_buf, &eques_regular_24,
+        (pwd_count > 0) ? lv_color_hex(0x00BDBD) : lv_color_hex(0xD4D4D4), 186, 157, LV_OPA_100);
 
     // 删除按钮容器
     lv_obj_t *delete_hid = create_container
-    (member_con, 250, 10, 36, 36, lv_color_hex(0x192A46), LV_OPA_100, 100, lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
+    (member_con, 250, 10, 32, 32, lv_color_hex(0x192A46), LV_OPA_100, 100, lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
     lv_obj_add_flag(delete_hid, LV_OBJ_FLAG_HIDDEN);
     lv_obj_add_flag(delete_hid, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(delete_hid, LV_OPA_80, LV_STATE_PRESSED);
@@ -1770,21 +1796,23 @@ void update_other_member_count_ui(uint8_t member_idx)
     uint8_t finger_count = other_member_list[member_idx].finger_count;
     uint8_t pwd_count = other_member_list[member_idx].pwd_count;
 
-    char finger_text[8] = {0};
-    snprintf(finger_text, sizeof(finger_text), "%d", finger_count);
-    lv_label_set_text(g_other_finger_labels[member_idx], finger_text);
-    if(g_other_finger_imgs[member_idx] != NULL && lv_obj_is_valid(g_other_finger_imgs[member_idx])) {
-        const char *finger_img_path = (finger_count > 0) ? "H:finger_has_record.png" : "H:finger_no_record.png";
-        lv_img_set_src(g_other_finger_imgs[member_idx], finger_img_path);
-    }
+    char text_buf[8] = {0};
 
-    char pwd_text[8] = {0};
-    snprintf(pwd_text, sizeof(pwd_text), "%d", pwd_count);
-    lv_label_set_text(g_other_pwd_labels[member_idx], pwd_text);
-    if(g_other_pwd_imgs[member_idx] != NULL && lv_obj_is_valid(g_other_pwd_imgs[member_idx])) {
-        const char *pwd_img_path = (pwd_count > 0) ? "H:pwd_has_record.png" : "H:pwd_no_record.png";
-        lv_img_set_src(g_other_pwd_imgs[member_idx], pwd_img_path);
-    }
+    // ==========================
+    // 更新指纹数量 + 颜色
+    // ==========================
+    snprintf(text_buf, sizeof(text_buf), "%d", finger_count);
+    lv_label_set_text(g_other_finger_labels[member_idx], text_buf);
+    lv_obj_set_style_text_color(g_other_finger_labels[member_idx],
+        (finger_count > 0) ? lv_color_hex(0x00BDBD) : lv_color_hex(0xD4D4D4), LV_STATE_DEFAULT);
+
+    // ==========================
+    // 更新密码数量 + 颜色
+    // ==========================
+    snprintf(text_buf, sizeof(text_buf), "%d", pwd_count);
+    lv_label_set_text(g_other_pwd_labels[member_idx], text_buf);
+    lv_obj_set_style_text_color(g_other_pwd_labels[member_idx],
+        (pwd_count > 0) ? lv_color_hex(0x00BDBD) : lv_color_hex(0xD4D4D4), LV_STATE_DEFAULT);
 
     lv_obj_invalidate(lv_scr_act());
 }
@@ -1937,7 +1965,7 @@ void other_member_add_click_cb(lv_event_t *e)
     (other_member_scr, 212, 94, 600, 423, lv_color_hex(0xE0EDFF), LV_OPA_100, 16, lv_color_hex(0x1F3150), 0, LV_OPA_90);
     lv_obj_set_style_pad_all(custom_popup, 0, LV_STATE_DEFAULT);
 
-    create_text_label(custom_popup, "name:", &lv_font_montserrat_24, lv_color_hex(0x7C7C7C), 51, 69, LV_OPA_100);
+    create_text_label(custom_popup, "名称", &eques_regular_24, lv_color_hex(0x7C7C7C), 51, 69, LV_OPA_100);
 
     lv_obj_t *name_input = lv_textarea_create(custom_popup);
     lv_obj_clear_flag(name_input, LV_OBJ_FLAG_SCROLLABLE);
@@ -1947,15 +1975,15 @@ void other_member_add_click_cb(lv_event_t *e)
     lv_obj_set_style_text_color(name_input, lv_color_hex(0x333333), LV_STATE_DEFAULT);
     lv_obj_set_style_border_width(name_input, 0, LV_STATE_DEFAULT);
     lv_obj_set_style_radius(name_input, 6, LV_STATE_DEFAULT);
-    lv_textarea_set_placeholder_text(name_input, "0-8");
+    //lv_textarea_set_placeholder_text(name_input, "0-8");
     lv_textarea_set_max_length(name_input, 8);
     lv_textarea_set_one_line(name_input, true);
-    lv_obj_set_style_text_font(name_input, &lv_font_montserrat_24, LV_STATE_DEFAULT);
+    //lv_obj_set_style_text_font(name_input, &lv_font_montserrat_24, LV_STATE_DEFAULT);
     lv_obj_add_flag(name_input, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(name_input, LV_OPA_80, LV_STATE_PRESSED);
-    lv_obj_add_event_cb(name_input, name_input_click_cb, LV_EVENT_CLICKED, NULL);
+    //lv_obj_add_event_cb(name_input, name_input_click_cb, LV_EVENT_CLICKED, NULL);
 
-    create_text_label(custom_popup, "Avatar:", &lv_font_montserrat_24, lv_color_hex(0x7C7C7C), 41, 124, LV_OPA_100);
+    create_text_label(custom_popup, "初始头像", &eques_regular_24, lv_color_hex(0x7C7C7C), 41, 124, LV_OPA_100);
     lv_obj_t *avatar_con = create_container
     (custom_popup, 136, 171, 298, 192, lv_color_hex(0xFFFFFF), LV_OPA_100, 6, lv_color_hex(0x1F3150), 0, LV_OPA_90);
     lv_obj_set_style_pad_all(avatar_con, 0, LV_STATE_DEFAULT);
@@ -1975,11 +2003,19 @@ void other_member_add_click_cb(lv_event_t *e)
         }
     }
 
-    lv_obj_t *close_img = create_image_obj(custom_popup, "H:X.png", 540, 20);
+    lv_obj_t *back_con = create_custom_gradient_container
+    (custom_popup, 540, 20, 40, 40, 200, 0xE0EDFF, 0xE0EDFF, LV_GRAD_DIR_VER, 0, 225, LV_OPA_100);
+    lv_obj_set_style_pad_all(back_con, 0, LV_STATE_DEFAULT);
+    lv_obj_t *x_line1 = lv_line_create(back_con);
+    static lv_point_t x_points1[] = {{5, 5}, {35, 35}};
+    config_divider_line_style(x_line1, x_points1, 2, 0x000000, 5, LV_OPA_100);
+    lv_obj_t *x_line2 = lv_line_create(back_con);
+    static lv_point_t x_points2[] = {{35, 5}, {5, 35}};
+    config_divider_line_style(x_line2, x_points2, 2, 0x000000, 5, LV_OPA_100);
     g_name_input = name_input;
-    lv_obj_add_flag(close_img, LV_OBJ_FLAG_CLICKABLE);
-    lv_obj_set_style_opa(close_img, LV_OPA_80, LV_STATE_PRESSED);
-    lv_obj_add_event_cb(close_img, popup_close_btn_cb, LV_EVENT_CLICKED, NULL);
+    lv_obj_add_flag(back_con, LV_OBJ_FLAG_CLICKABLE);
+    lv_obj_set_style_opa(back_con, LV_OPA_80, LV_STATE_PRESSED);
+    lv_obj_add_event_cb(back_con, popup_close_btn_cb, LV_EVENT_CLICKED, NULL);
 
     lv_obj_move_foreground(custom_popup);
 }

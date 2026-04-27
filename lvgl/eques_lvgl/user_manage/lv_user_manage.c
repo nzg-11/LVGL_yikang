@@ -174,65 +174,53 @@ void ui_user_manage_create(lv_obj_t *homepage_scr)
     lv_style_set_bg_grad_stop(&user_manage_grad_style, 255);                      // 渐变终点
     lv_obj_add_style(user_manage_scr, &user_manage_grad_style, LV_STATE_DEFAULT);
 
-    // 标题：user manager
+    // 标题：管理用户
     create_text_label(
-        user_manage_scr, "user manager", &lv_font_montserrat_36,
+        user_manage_scr, "管理用户", &eques_bold_36,
         lv_color_hex(0xFFFFFF), 83, 80, LV_OPA_100
     );
 
     /************************** 家庭成员模块 **************************/
-    lv_obj_t *user_manage_family_con = create_container(
-        user_manage_scr, 49, 150, 927, 83,
-        lv_color_hex(0x192A46), LV_OPA_100, 6,
-        lv_color_hex(0x1F3150), 0, LV_OPA_90
-    );
-    create_image_obj(user_manage_scr, "H:family_member.png", 73, 176);
-    create_image_obj(user_manage_scr, "H:right.png", 932, 176);
-    create_text_label(
-        user_manage_scr, "family menber", &lv_font_montserrat_36,
-        lv_color_hex(0xFFFFFF), 130, 169, LV_OPA_100
-    );
+    lv_obj_t *user_manage_family_con = create_container
+    ( user_manage_scr, 49, 150, 927, 83, lv_color_hex(0x192A46), LV_OPA_100, 6, lv_color_hex(0x1F3150), 0, LV_OPA_90);
+    lv_obj_set_style_pad_all(user_manage_family_con, 0, LV_STATE_DEFAULT);
+
+    lv_obj_t *family_member_img = create_text_label
+    (user_manage_family_con, ICON_FAMILY_MEMBER, &my_custom_icon, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
+    lv_obj_align(family_member_img, LV_ALIGN_LEFT_MID, 25, 0);
+
+    lv_obj_t *chevronorn_right_img = create_text_label
+    (user_manage_family_con, ICON_CHEVORN_RIGHT, &my_custom_icon, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
+    lv_obj_align(chevronorn_right_img, LV_ALIGN_RIGHT_MID, -25, 0);
+
+    create_text_label(user_manage_scr, "家庭成员", &eques_regular_36,lv_color_hex(0xFFFFFF), 130, 169, LV_OPA_100);
 
     lv_obj_add_flag(user_manage_family_con, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(user_manage_family_con, LV_OPA_80, LV_STATE_PRESSED);
     lv_obj_add_event_cb(user_manage_family_con, family_menber_btn_click_cb, LV_EVENT_CLICKED, user_manage_scr);
 
     /************************** 其他成员模块 **************************/
-    lv_obj_t *user_manage_other_con = create_container(
-        user_manage_scr, 49, 241, 927, 83,
-        lv_color_hex(0x192A46), LV_OPA_100, 6,
-        lv_color_hex(0x1F3150), 0, LV_OPA_90
-    );
-    create_image_obj(user_manage_scr, "H:other_member.png", 74, 263);
-    create_image_obj(user_manage_scr, "H:right.png", 932, 263);
-    create_text_label(
-        user_manage_scr, "other menber", &lv_font_montserrat_36,
-        lv_color_hex(0xFFFFFF), 130, 261, LV_OPA_100
-    );
+    lv_obj_t *user_manage_other_con = create_container
+    (user_manage_scr, 49, 241, 927, 83, lv_color_hex(0x192A46), LV_OPA_100, 6,lv_color_hex(0x1F3150), 0, LV_OPA_90);
+    lv_obj_set_style_pad_all(user_manage_other_con, 0, LV_STATE_DEFAULT);
+
+    lv_obj_t *other_member_img = create_text_label
+    (user_manage_other_con, ICON_OTHER_MEMBER, &my_custom_icon, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
+    lv_obj_align(other_member_img, LV_ALIGN_LEFT_MID, 25, 0);
+
+    lv_obj_t *chevronorn_right_img1 = create_text_label
+    (user_manage_other_con, ICON_CHEVORN_RIGHT, &my_custom_icon, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
+    lv_obj_align(chevronorn_right_img1, LV_ALIGN_RIGHT_MID, -25, 0);
+
+    create_text_label(user_manage_scr, "其他成员", &eques_regular_36, lv_color_hex(0xFFFFFF), 130, 261, LV_OPA_100);
 
     lv_obj_add_flag(user_manage_other_con, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(user_manage_other_con, LV_OPA_80, LV_STATE_PRESSED);
     lv_obj_add_event_cb(user_manage_other_con, other_member_btn_click_cb, LV_EVENT_CLICKED, user_manage_scr);
 
-    /************************** 用户权限模块 **************************/
-    lv_obj_t *user_manage_permission_con = create_container(
-        user_manage_scr, 49, 332, 927, 83,
-        lv_color_hex(0x192A46), LV_OPA_100, 6,
-        lv_color_hex(0x1F3150), 0, LV_OPA_90
-    );
-    create_image_obj(user_manage_scr, "H:user_permission.png", 73, 353);
-    create_image_obj(user_manage_scr, "H:right.png", 932, 353);
-    create_text_label(
-        user_manage_scr, "user permission", &lv_font_montserrat_36,
-        lv_color_hex(0xFFFFFF), 130, 350, LV_OPA_100
-    );
-
-    lv_obj_add_flag(user_manage_permission_con, LV_OBJ_FLAG_CLICKABLE);
-    lv_obj_set_style_opa(user_manage_permission_con, LV_OPA_80, LV_STATE_PRESSED);
-    lv_obj_add_event_cb(user_manage_permission_con, user_permission_btn_click_cb, LV_EVENT_CLICKED, user_manage_scr);
-
     // ====================== 左上角返回按钮 ======================
-    lv_obj_t *back_btn = create_container_circle(user_manage_scr, 52, 90, 30, true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
+    lv_obj_t *back_btn = create_text_label
+    (user_manage_scr, ICON_CHEVORN_LEFT, &my_custom_icon, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
     lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(back_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(back_btn, LV_OPA_80, LV_STATE_PRESSED);

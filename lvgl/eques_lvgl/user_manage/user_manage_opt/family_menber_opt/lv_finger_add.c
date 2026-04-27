@@ -11,7 +11,7 @@
 #include "lv_finger_add.h"
 #include "lv_a_enroll_opt.h"
 #include <string.h>
-
+#include "stdio.h"
 /*********************
  * 宏定义
  *********************/
@@ -118,12 +118,11 @@ void ui_finger_add_create(lv_obj_t *enroll_scr)
 
     // ===================== UI元素绘制 =====================
     // 标题
-    create_text_label(finger_add_scr, "add finger", &lv_font_montserrat_36,
-        lv_color_hex(0xFFFFFF), 83, 80, LV_OPA_100);
+    create_text_label(finger_add_scr, "添加指纹", &eques_bold_36, lv_color_hex(0xFFFFFF), 83, 80, LV_OPA_100);
 
     // 提示标签
-    precent_label = create_text_label(finger_add_scr, "Please place your finger",
-        &lv_font_montserrat_48, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
+    precent_label = create_text_label(finger_add_scr, "请录入指纹",
+        &eques_regular_32, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
     lv_obj_align(precent_label, LV_ALIGN_TOP_MID, 0, 508);
 
     // 圆形装饰UI（修复拼写错误）
@@ -152,8 +151,8 @@ void ui_finger_add_create(lv_obj_t *enroll_scr)
     lv_obj_add_event_cb(finger_percent_img, finger_add_click_cb, LV_EVENT_CLICKED, enroll_scr);
 
     // 返回按钮
-    lv_obj_t *back_btn = create_container_circle(finger_add_scr, 52, 90, 30,
-        true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
+    lv_obj_t *back_btn = create_text_label
+    (finger_add_scr, ICON_CHEVORN_LEFT, &my_custom_icon, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
     lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(back_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(back_btn, LV_OPA_80, LV_STATE_PRESSED);
@@ -175,7 +174,7 @@ static void finger_add_click_cb(lv_event_t *e)
     finger_add_step++;
     if(finger_add_step > 5) {
         finger_add_step = 0;
-        lv_label_set_text(precent_label, "0%");
+        lv_label_set_text(precent_label, "请录入指纹");
         lv_obj_set_pos(finger_percent_img, 309, 415);
 
         // 恢复样式
@@ -195,17 +194,17 @@ static void finger_add_click_cb(lv_event_t *e)
 
     // 进度切换
     switch(finger_add_step) {
-        case 1: lv_label_set_text(precent_label, "25%"); break;
-        case 2: lv_label_set_text(precent_label, "50%"); break;
-        case 3: lv_label_set_text(precent_label, "75%"); break;
-        case 4: lv_label_set_text(precent_label, "100%"); break;
+        case 1: lv_label_set_text(precent_label, "请再次输入1/5"); break;
+        case 2: lv_label_set_text(precent_label, "请再次输入2/5"); break;
+        case 3: lv_label_set_text(precent_label, "请再次输入3/5"); break;
+        case 4: lv_label_set_text(precent_label, "请再次输入4/5"); break;
         case 5:{
             lv_obj_t *enroll_scr = (lv_obj_t *)lv_event_get_user_data(e);
             create_finger_complete_popup(enroll_scr);
             break;
         }
             
-        default: lv_label_set_text(precent_label, "0%"); break;
+        default: lv_label_set_text(precent_label, "请录入指纹"); break;
     }
 }
 
@@ -221,7 +220,7 @@ void finger_add_btn_click_cb(lv_event_t *e)
     ui_finger_add_create(parent_scr);
     // lv_scr_load(finger_add_scr);
     update_status_bar_parent(finger_add_scr);
-    //destroy_enroll();
+    destroy_enroll();
 
     LV_LOG_INFO("Enter finger add interface");
 }
@@ -233,15 +232,13 @@ void finger_add_back_btn_click_cb(lv_event_t *e)
 {
     if(e == NULL) return;
     lv_obj_t *parent_scr = (lv_obj_t *)lv_event_get_user_data(e);
-
+    common_member_info_t *member = get_current_enroll_member();
     lv_obj_t *current_scr = lv_disp_get_scr_act(NULL);
     if(!lv_obj_is_valid(current_scr)) return;
 
-    if(current_scr == finger_add_scr) {
-        // common_member_info_t *member = get_current_enroll_member();
-        // ui_enroll_create(member, parent_scr);
-        lv_scr_load(parent_scr); 
-        lv_obj_del(current_scr);
+    ui_enroll_create(member, parent_scr);
+    if(lv_obj_is_valid(finger_add_scr)) {
+        lv_obj_del(finger_add_scr);
         finger_add_scr = NULL;
     }
 }
@@ -253,22 +250,27 @@ static void finger_confirm_click_cb(lv_event_t *e)
 {
     if(e == NULL) return;
 
-    //common_member_info_t *member = get_current_enroll_member();
+    common_member_info_t *member = get_current_enroll_member();// 获取当前录入成员,为了退出当前界面是直接重建录入界面传递成员信息
     lv_obj_t *parent_scr = (lv_obj_t *)lv_event_get_user_data(e);
 
     // 获取名称
-    const char *finger_name = lv_textarea_get_text(finger_input_textarea);
-    if(finger_name == NULL || strlen(finger_name) == 0) {
-        finger_name = "Unnamed finger";
-    }
+    // const char *finger_name = lv_textarea_get_text(finger_input_textarea);
+    // if(finger_name == NULL || strlen(finger_name) == 0) {
+    //     finger_name = "";
+    // }
+    // 自动生成指纹名称：指纹1、指纹2...
+    static uint8_t finger_idx = 1;
+    char finger_name[16];
+    finger_enroll_info_t *info = get_current_finger_info();
+    snprintf(finger_name, sizeof(finger_name), "指纹%d", info->enroll_count + 1);
 
     // 录入完成
     finger_enroll_complete(finger_name);
     close_finger_popup();
 
     // 返回主界面
-    //ui_enroll_create(member, parent_scr);
-    lv_scr_load(parent_scr); 
+    ui_enroll_create(member, parent_scr);// 重建录入界面，若不重建直接切换到录入界面，进入编辑界面会有几率卡死
+    //lv_scr_load(parent_scr); // 直接切换到录入界面，能保留原界面状态，但进入编辑界面有记录卡死
     
     // 销毁资源
     if(lv_obj_is_valid(finger_add_scr)) {
@@ -304,10 +306,9 @@ static void create_finger_complete_popup(lv_obj_t *enroll_scr)
     lv_obj_set_style_pad_all(finger_custom_popup, 0, LV_STATE_DEFAULT);
 
     // 成功提示
-    lv_obj_t *succeed_add_label = create_text_label(finger_custom_popup, "succeed add",
-        &lv_font_montserrat_24, lv_color_hex(0x000000), 0, 38, LV_OPA_100);
+    lv_obj_t *succeed_add_label = create_text_label(finger_custom_popup, "录入成功", &eques_regular_32, lv_color_hex(0x000000), 0, 38, LV_OPA_100);
     lv_obj_align(succeed_add_label, LV_ALIGN_TOP_MID, 0, 38);
-
+    create_text_label(finger_custom_popup, "名称", &eques_regular_24, lv_color_hex(0x7C7C7C), 82, 100, LV_OPA_100);
     // 名称输入框
     finger_input_textarea = lv_textarea_create(finger_custom_popup);
     lv_obj_clear_flag(finger_input_textarea, LV_OBJ_FLAG_SCROLLABLE);
@@ -317,13 +318,13 @@ static void create_finger_complete_popup(lv_obj_t *enroll_scr)
     lv_obj_set_style_text_color(finger_input_textarea, lv_color_hex(0x333333), LV_STATE_DEFAULT);
     lv_obj_set_style_border_width(finger_input_textarea, 0, LV_STATE_DEFAULT);
     lv_obj_set_style_radius(finger_input_textarea, 6, LV_STATE_DEFAULT);
-    lv_textarea_set_placeholder_text(finger_input_textarea, "please input name");
+    //lv_textarea_set_placeholder_text(finger_input_textarea, "please input name");
     lv_textarea_set_max_length(finger_input_textarea, FINGER_NAME_MAX_LEN);
     lv_textarea_set_one_line(finger_input_textarea, true);
-    lv_obj_set_style_text_font(finger_input_textarea, &lv_font_montserrat_24, LV_STATE_DEFAULT);
+    //lv_obj_set_style_text_font(finger_input_textarea, &eques_regular_24, LV_STATE_DEFAULT);
     lv_obj_add_flag(finger_input_textarea, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(finger_input_textarea, LV_OPA_80, LV_STATE_PRESSED);
-    lv_obj_add_event_cb(finger_input_textarea, finger_input_click_cb, LV_EVENT_CLICKED, NULL);
+    //lv_obj_add_event_cb(finger_input_textarea, finger_input_click_cb, LV_EVENT_CLICKED, NULL);
 
     // 确认按钮
     lv_obj_t *confirm_btn = create_custom_gradient_container(finger_custom_popup, 197, 171, 205, 44, 6,
@@ -332,8 +333,7 @@ static void create_finger_complete_popup(lv_obj_t *enroll_scr)
     lv_obj_set_style_opa(confirm_btn, LV_OPA_80, LV_STATE_PRESSED);
     lv_obj_set_style_pad_all(confirm_btn, 0, LV_STATE_DEFAULT);
 
-    lv_obj_t *confirm_label = create_text_label(confirm_btn, "Confirm",
-        &lv_font_montserrat_28, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
+    lv_obj_t *confirm_label = create_text_label(confirm_btn, "确认并返回",&eques_bold_24, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
     lv_obj_set_align(confirm_label, LV_ALIGN_CENTER);
     lv_obj_add_event_cb(confirm_btn, finger_confirm_click_cb, LV_EVENT_CLICKED, enroll_scr);
 }

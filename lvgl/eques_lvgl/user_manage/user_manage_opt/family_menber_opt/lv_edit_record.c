@@ -65,17 +65,6 @@ static void hide_keyboard(lv_event_t *e);
  *********************/
 
 /**
- * @brief 初始化编辑界面样式
- */
-static void init_msg_center_styles(void)
-{
-    if(!edit_record_style_inited) {
-        lv_style_init(&edit_record_grad_style);
-        edit_record_style_inited = true;
-    }
-}
-
-/**
  * @brief 创建生物特征编辑界面（UI核心函数，前置）
  * @param type: 编辑类型(指纹/密码/卡片/人脸)
  * @param cur_name: 当前名称
@@ -91,13 +80,7 @@ void ui_edit_record_create(edit_type_e type, const char *cur_name, uint8_t index
     g_parent_scr = parent_scr;
 
     LV_LOG_INFO("create edit record screen");
-    init_msg_center_styles();
-
-    // 销毁旧界面
-    if(lv_obj_is_valid(edit_record_scr)) {
-        lv_obj_del(edit_record_scr);
-        edit_record_scr = NULL;
-    }
+    lv_style_init(&edit_record_grad_style);
 
     // 创建界面根容器
     edit_record_scr = lv_obj_create(NULL);  
@@ -110,82 +93,97 @@ void ui_edit_record_create(edit_type_e type, const char *cur_name, uint8_t index
     lv_obj_add_style(edit_record_scr, &edit_record_grad_style, LV_STATE_DEFAULT);
     lv_obj_add_event_cb(edit_record_scr, hide_keyboard, LV_EVENT_CLICKED, NULL);
 
-    // ===================== 动态标题 =====================
-    char title_buf[16] = {0};
-    char name_label_buf[16] = {0};
-    switch(g_edit_type) {
-        case EDIT_TYPE_PWD: 
-            strcpy(title_buf, "Pwd Edit"); 
-            strcpy(name_label_buf, "Pwd Name"); 
-            break;
-        case EDIT_TYPE_CARD: 
-            strcpy(title_buf, "Card Edit"); 
-            strcpy(name_label_buf, "Card Name"); 
-            break;
-        case EDIT_TYPE_FACE: 
-            strcpy(title_buf, "Face Edit"); 
-            strcpy(name_label_buf, "Face Name"); 
-            break;
-        case EDIT_TYPE_FINGER: 
-            strcpy(title_buf, "Finger Edit"); 
-            strcpy(name_label_buf, "Finger Name"); 
-            break;
-        default: 
-            strcpy(title_buf, "Edit"); 
-            strcpy(name_label_buf, "Name"); 
-            break;
-    }
-    create_text_label(edit_record_scr, title_buf, &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 83, 80, LV_OPA_100);
-
-    // 保存按钮
-    lv_obj_t *save_btn = create_text_label(edit_record_scr, "save", &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 928, 90, LV_OPA_100);
-    lv_obj_add_flag(save_btn, LV_OBJ_FLAG_CLICKABLE);
-    lv_obj_set_style_opa(save_btn, LV_OPA_80, LV_STATE_PRESSED);
-    lv_obj_add_event_cb(save_btn, save_btn_click_cb, LV_EVENT_CLICKED, parent_scr);
-
     // 名称编辑容器
     lv_obj_t *edit_record_con = create_container(edit_record_scr,
     49,150,927,83,lv_color_hex(0xFFFFFF), LV_OPA_100, 6,lv_color_hex(0x1F3150), 0, LV_OPA_90);
     lv_obj_set_style_pad_all(edit_record_con, 0, LV_STATE_DEFAULT);
     lv_obj_add_flag(edit_record_con, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(edit_record_con, LV_OPA_80,LV_STATE_PRESSED);
-    lv_obj_add_event_cb(edit_record_con, name_con_click_cb, LV_EVENT_CLICKED, NULL);
+    //lv_obj_add_event_cb(edit_record_con, name_con_click_cb, LV_EVENT_CLICKED, NULL);
+//  ===================== 动态标题 =====================
+switch(g_edit_type) {
+    case EDIT_TYPE_PWD:
+        create_text_label(edit_record_scr, "密码修改", &eques_bold_36, lv_color_hex(0xFFFFFF), 83, 80, LV_OPA_100);
+        create_text_label(edit_record_con, "密码名称", &eques_regular_36, lv_color_hex(0x000000), 24, 19, LV_OPA_100);
+        break;
 
-    // 名称标签
-    create_text_label(edit_record_con, name_label_buf, &lv_font_montserrat_36, lv_color_hex(0x000000), 24, 19, LV_OPA_100);
-    create_text_label(edit_record_scr, "Name can be modified", &lv_font_montserrat_24, lv_color_hex(0x000000), 73, 233, LV_OPA_60);
+    case EDIT_TYPE_CARD:
+        create_text_label(edit_record_scr, "卡片修改", &eques_bold_36, lv_color_hex(0xFFFFFF), 83, 80, LV_OPA_100);
+        create_text_label(edit_record_con, "卡片名称", &eques_regular_36, lv_color_hex(0x000000), 24, 19, LV_OPA_100);
+        break;
+
+    case EDIT_TYPE_FACE:
+        create_text_label(edit_record_scr, "人脸修改", &eques_bold_36, lv_color_hex(0xFFFFFF), 83, 80, LV_OPA_100);
+        create_text_label(edit_record_con, "面容名称", &eques_regular_36, lv_color_hex(0x000000), 24, 19, LV_OPA_100);
+        break;
+
+    case EDIT_TYPE_FINGER:
+        create_text_label(edit_record_scr, "指纹修改", &eques_bold_36, lv_color_hex(0xFFFFFF), 83, 80, LV_OPA_100);
+        create_text_label(edit_record_con, "指纹名称", &eques_regular_36, lv_color_hex(0x000000), 24, 19, LV_OPA_100);
+        break;
+}
+
+    // 保存按钮
+    lv_obj_t *save_btn = create_text_label(edit_record_scr, "保存", &eques_regular_24, lv_color_hex(0xFFFFFF), 928, 90, LV_OPA_100);
+    lv_obj_add_flag(save_btn, LV_OBJ_FLAG_CLICKABLE);
+    lv_obj_set_style_opa(save_btn, LV_OPA_80, LV_STATE_PRESSED);
+    //lv_obj_add_event_cb(save_btn, save_btn_click_cb, LV_EVENT_CLICKED, parent_scr);
+
+
+
+
 
     // 名称输入框
-    g_name_ta = lv_textarea_create(edit_record_con);
-    lv_obj_set_style_pad_all(g_name_ta, 0, LV_STATE_DEFAULT);
-    lv_obj_set_size(g_name_ta, 150, 40);
-    lv_obj_set_pos(g_name_ta, 790, 27);
-    lv_obj_set_style_bg_opa(g_name_ta, LV_OPA_0, LV_STATE_DEFAULT);
-    lv_obj_set_style_border_width(g_name_ta, 0, LV_STATE_DEFAULT);
-    lv_obj_set_style_text_color(g_name_ta, lv_color_hex(0x000000), LV_STATE_DEFAULT);
-    lv_obj_set_style_text_font(g_name_ta, &lv_font_montserrat_24, LV_STATE_DEFAULT);
-    lv_textarea_set_max_length(g_name_ta, 8);
-    lv_textarea_set_one_line(g_name_ta, true);
-    lv_obj_add_event_cb(g_name_ta, name_con_click_cb, LV_EVENT_CLICKED, NULL);
+    // ===================== 替换为：纯文本标签（无textarea、不卡死、支持中文） =====================
+    g_name_ta = create_text_label(edit_record_con, "", &eques_regular_24, 
+                                lv_color_hex(0x000000), 0, 0, LV_OPA_100);
+    lv_obj_set_size(g_name_ta, 200, 40);    // 加宽一点，防止文字被截断
+    lv_obj_set_pos(g_name_ta, 650, 27);     // 位置保持不变
+    lv_obj_set_style_text_align(g_name_ta, LV_TEXT_ALIGN_RIGHT, 0); // 右对齐更美观
+    lv_label_set_long_mode(g_name_ta, LV_LABEL_LONG_SCROLL); // 超长自动滚动
+
+    //lv_obj_add_event_cb(g_name_ta, name_con_click_cb, LV_EVENT_CLICKED, NULL);
     
     // 自动填充原有名称
+    // 自动填充原有名称（空值根据类型自动生成：Face / Card / Finger / Pwd）
     if(g_edit_name != NULL) {
-        lv_textarea_set_text(g_name_ta, g_edit_name);
+        if(strlen(g_edit_name) == 0) {
+            char tmp_buf[16] = {0};
+            switch(g_edit_type) {
+                case EDIT_TYPE_FACE:
+                    snprintf(tmp_buf, sizeof(tmp_buf), "面容%d", g_edit_index + 1);
+                    break;
+                case EDIT_TYPE_CARD:
+                    snprintf(tmp_buf, sizeof(tmp_buf), "卡片%d", g_edit_index + 1);
+                    break;
+                case EDIT_TYPE_FINGER:
+                    snprintf(tmp_buf, sizeof(tmp_buf), "指纹%d", g_edit_index + 1);
+                    break;
+                case EDIT_TYPE_PWD:
+                    snprintf(tmp_buf, sizeof(tmp_buf), "密码%d", g_edit_index + 1);
+                    break;
+                default:
+                    break;
+            }
+            lv_label_set_text(g_name_ta, tmp_buf);
+        } else {
+            lv_label_set_text(g_name_ta, g_edit_name);
+        }
     }
 
     // 删除按钮
     lv_obj_t *delete_btn = create_container(edit_record_scr,
     408,502,208,50,lv_color_hex(0x192A46), LV_OPA_100, 6,lv_color_hex(0xE0EDFF), 0, LV_OPA_50);
     lv_obj_set_style_pad_all(delete_btn, 0, LV_STATE_DEFAULT); 
-    lv_obj_t *delete_btn_label = create_text_label(delete_btn, "delete", &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
+    lv_obj_t *delete_btn_label = create_text_label(delete_btn, "删除", &eques_regular_24, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
     lv_obj_align(delete_btn_label, LV_ALIGN_CENTER, 0, 0);
     lv_obj_add_flag(delete_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(delete_btn, LV_OPA_80, LV_STATE_PRESSED);
     lv_obj_add_event_cb(delete_btn, del_btn_click_cb, LV_EVENT_CLICKED, parent_scr);
 
     // 返回按钮
-    lv_obj_t *back_btn = create_container_circle(edit_record_scr, 52, 90, 30,
-    true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
+    lv_obj_t *back_btn = create_text_label
+    (edit_record_scr, ICON_CHEVORN_LEFT, &my_custom_icon, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
     lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(back_btn,LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(back_btn,LV_OPA_80,LV_STATE_PRESSED);
@@ -202,7 +200,7 @@ void ui_edit_record_create(edit_type_e type, const char *cur_name, uint8_t index
 static void save_btn_click_cb(lv_event_t *e)
 {
     (void)e;
-    const char *input_text = lv_textarea_get_text(g_name_ta);
+    const char *input_text = lv_label_get_text(g_name_ta);
 
     lv_obj_t *parent_scr = (lv_obj_t *)lv_event_get_user_data(e);
     // 非空校验
@@ -365,13 +363,13 @@ static void del_btn_click_cb(lv_event_t *e)
     // 删除确认弹窗
     g_dialog = create_container(edit_record_scr, 212, 150, 600, 297, lv_color_hex(0xE0EDFF), LV_OPA_100, 16, lv_color_hex(0x1F3150), 0, LV_OPA_90);
     lv_obj_set_style_pad_all(g_dialog, 0, LV_STATE_DEFAULT);
-    create_text_label(g_dialog, "Confirm delete?", &lv_font_montserrat_28,lv_color_hex(0x000000), 0, 40, LV_OPA_100);
+    create_text_label(g_dialog, "确定删除吗", &eques_regular_32,lv_color_hex(0x000000), 0, 40, LV_OPA_100);
     lv_obj_align_to(lv_obj_get_child(g_dialog, 0), g_dialog, LV_ALIGN_TOP_MID, 0, 40);
 
     // 取消按钮
     lv_obj_t *cancel = create_container(g_dialog, 0, 0, 220, 44, lv_color_hex(0x192A46), LV_OPA_100, 6, lv_color_hex(0x1F3150), 0, LV_OPA_100);
     lv_obj_align(cancel, LV_ALIGN_TOP_MID, 0, 210);
-    create_text_label(cancel, "cancel", &lv_font_montserrat_28,lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
+    create_text_label(cancel, "取消", &eques_regular_32,lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
     lv_obj_align(lv_obj_get_child(cancel, 0), LV_ALIGN_CENTER, 0, 0);
     lv_obj_add_flag(cancel, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_add_event_cb(cancel, dialog_cancel_cb, LV_EVENT_CLICKED, NULL);
@@ -379,7 +377,7 @@ static void del_btn_click_cb(lv_event_t *e)
     // 确认按钮
     lv_obj_t *confirm = create_container(g_dialog, 0, 0, 220, 44, lv_color_hex(0x192A46), LV_OPA_100, 6, lv_color_hex(0x1F3150), 0, LV_OPA_100);
     lv_obj_align(confirm, LV_ALIGN_TOP_MID, 0, 140);
-    create_text_label(confirm, "confirm", &lv_font_montserrat_28, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
+    create_text_label(confirm, "确定", &eques_regular_32, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
     lv_obj_align(lv_obj_get_child(confirm, 0), LV_ALIGN_CENTER, 0, 0);
     lv_obj_add_flag(confirm, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_add_event_cb(confirm, dialog_confirm_cb, LV_EVENT_CLICKED, enroll_scr);

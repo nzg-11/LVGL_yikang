@@ -126,8 +126,8 @@ void ui_face_add_create(lv_obj_t *enroll_scr)
 
     // ===================== UI元素绘制 =====================
     // 返回按钮
-    lv_obj_t *back_btn = create_container_circle(face_add_scr, 52, 90, 30,
-    true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
+    lv_obj_t *back_btn = create_text_label
+    (face_add_scr, ICON_CHEVORN_LEFT, &my_custom_icon, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
     lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(back_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(back_btn, LV_OPA_80, LV_STATE_PRESSED);
@@ -139,14 +139,11 @@ void ui_face_add_create(lv_obj_t *enroll_scr)
 
     // 标题
     lv_obj_t *face_add_label = create_text_label(
-        face_add_scr, "add face", &lv_font_montserrat_36,
-        lv_color_hex(0xFFFFFF), 0, 115, LV_OPA_100);
-    lv_obj_align(face_add_label, LV_ALIGN_TOP_MID, 0, 115);
+        face_add_scr, "添加人脸", &eques_bold_36,
+        lv_color_hex(0xFFFFFF), 83, 80, LV_OPA_100);
 
     // 提示文本
-    lv_obj_t *prompt_label = create_text_label(
-        face_add_scr, "Please place your face", &lv_font_montserrat_48,
-        lv_color_hex(0xFFFFFF), 0, 508, LV_OPA_100);
+    lv_obj_t *prompt_label = create_text_label(face_add_scr, "请离摄像头40-80厘米", &eques_regular_32, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
     lv_obj_align(prompt_label, LV_ALIGN_TOP_MID, 0, 508);
 
     // 圆形装饰UI
@@ -269,7 +266,7 @@ static void create_face_complete_popup(lv_obj_t *enroll_scr)
 
     // 成功提示
     lv_obj_t *succeed_label = create_text_label(
-        face_custom_popup, "succeed add", &lv_font_montserrat_24,
+        face_custom_popup, "添加成功", &eques_regular_24,
         lv_color_hex(0x000000), 0, 38, LV_OPA_100);
     lv_obj_align(succeed_label, LV_ALIGN_TOP_MID, 0, 38);
 
@@ -282,13 +279,13 @@ static void create_face_complete_popup(lv_obj_t *enroll_scr)
     lv_obj_set_style_text_color(face_input_textarea, lv_color_hex(0x333333), LV_STATE_DEFAULT);
     lv_obj_set_style_border_width(face_input_textarea, 0, LV_STATE_DEFAULT);
     lv_obj_set_style_radius(face_input_textarea, 6, LV_STATE_DEFAULT);
-    lv_textarea_set_placeholder_text(face_input_textarea, "please input face name");
+    //lv_textarea_set_placeholder_text(face_input_textarea, "please input face name");
     lv_textarea_set_max_length(face_input_textarea, FACE_NAME_MAX_LEN);
     lv_textarea_set_one_line(face_input_textarea, true);
-    lv_obj_set_style_text_font(face_input_textarea, &lv_font_montserrat_24, LV_STATE_DEFAULT);
+    //lv_obj_set_style_text_font(face_input_textarea, &lv_font_montserrat_24, LV_STATE_DEFAULT);
     lv_obj_add_flag(face_input_textarea, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(face_input_textarea, LV_OPA_80, LV_STATE_PRESSED);
-    lv_obj_add_event_cb(face_input_textarea, face_input_click_cb, LV_EVENT_CLICKED, NULL);
+    //lv_obj_add_event_cb(face_input_textarea, face_input_click_cb, LV_EVENT_CLICKED, NULL);
 
     // 确认按钮
     lv_obj_t *confirm_btn = create_custom_gradient_container(
@@ -298,9 +295,7 @@ static void create_face_complete_popup(lv_obj_t *enroll_scr)
     lv_obj_set_style_opa(confirm_btn, LV_OPA_80, LV_STATE_PRESSED);
     lv_obj_set_style_pad_all(confirm_btn, 0, LV_STATE_DEFAULT);
 
-    lv_obj_t *confirm_label = create_text_label(
-        confirm_btn, "Confirm", &lv_font_montserrat_28,
-        lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
+    lv_obj_t *confirm_label = create_text_label(confirm_btn, "确认并返回",&eques_bold_24, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
     lv_obj_set_align(confirm_label, LV_ALIGN_CENTER);
     lv_obj_add_event_cb(confirm_btn, face_popup_confirm_cb, LV_EVENT_CLICKED, enroll_scr);
 
@@ -320,7 +315,7 @@ static void face_popup_confirm_cb(lv_event_t *e)
     // 获取名称，空值使用默认
     const char *face_name = lv_textarea_get_text(face_input_textarea);
     if(face_name == NULL || strlen(face_name) == 0) {
-        face_name = "face01";
+        face_name = "";
     }
 
     // 通知录入完成
@@ -433,7 +428,7 @@ static void face_timeout_timer_cb(lv_timer_t *timer)
 
     // 失败提示
     lv_obj_t *fail_label = create_text_label(
-        face_fail_popup, "Add failed (timeout)", &lv_font_montserrat_24,
+        face_fail_popup, "添加失败", &eques_regular_24,
         lv_color_hex(0xFF0000), 0, 38, LV_OPA_100);
     lv_obj_align(fail_label, LV_ALIGN_TOP_MID, 0, 38);
 
@@ -445,9 +440,7 @@ static void face_timeout_timer_cb(lv_timer_t *timer)
     lv_obj_set_style_opa(fail_confirm_btn, LV_OPA_80, LV_STATE_PRESSED);
     lv_obj_set_style_pad_all(fail_confirm_btn, 0, LV_STATE_DEFAULT);
 
-    lv_obj_t *fail_confirm_label = create_text_label(
-        fail_confirm_btn, "Confirm", &lv_font_montserrat_28,
-        lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
+    lv_obj_t *fail_confirm_label = create_text_label(fail_confirm_btn, "确认并返回",&eques_bold_24, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
     lv_obj_set_align(fail_confirm_label, LV_ALIGN_CENTER);
     lv_obj_add_event_cb(fail_confirm_btn, face_fail_confirm_cb, LV_EVENT_CLICKED, enroll_scr);
 }

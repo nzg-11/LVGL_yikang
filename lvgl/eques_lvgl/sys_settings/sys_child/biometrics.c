@@ -27,6 +27,8 @@ static lv_obj_t *bio_end_hour_roller = NULL;
 static lv_obj_t *bio_end_min_roller = NULL;
 static lv_obj_t *bio_time_label = NULL; // 用于更新主页面时间段文本
 
+lv_style_t bio_grad_style;
+
 // 内部回调函数声明
 static void biometric_switch_cb(lv_event_t *e);
 static void temp_pwd_btn_cb(lv_event_t *e);
@@ -166,18 +168,18 @@ static void time_slot_click_cb(lv_event_t *e) {
     lv_obj_set_style_bg_opa(cancel_btn, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_set_style_border_width(cancel_btn, 0, LV_STATE_DEFAULT);
     lv_obj_set_style_shadow_width(cancel_btn, 0, LV_STATE_DEFAULT);
-    lv_obj_t *cancel_label = create_text_label(cancel_btn, "cancel", 
-                                               &lv_font_montserrat_36, lv_color_hex(0xBDBDBD), 
+    lv_obj_t *cancel_label = create_text_label(cancel_btn, "取消", 
+                                               &eques_regular_36, lv_color_hex(0xBDBDBD), 
                                                0, 0, LV_OPA_100);
     lv_obj_set_align(cancel_label, LV_ALIGN_CENTER);
     lv_obj_add_event_cb(cancel_btn, bio_time_popup_close_cb, LV_EVENT_CLICKED, NULL);
 
     // 标题（改为“Applicable Time”）
-    lv_obj_t *title_label = create_text_label(header, "bio_time", 
-                                             &lv_font_montserrat_36, lv_color_hex(0x192A46), 
-                                             0, 0, LV_OPA_100);
-    lv_label_set_text(title_label, "Applicable Time");
-    lv_obj_set_align(title_label, LV_ALIGN_CENTER);
+    // lv_obj_t *title_label = create_text_label(header, "bio_time", 
+    //                                          &eques_regular_36, lv_color_hex(0x192A46), 
+    //                                          0, 0, LV_OPA_100);
+    // lv_label_set_text(title_label, "Applicable Time");
+    // lv_obj_set_align(title_label, LV_ALIGN_CENTER);
 
     // 确定按钮（和消息通知样式一致）
     lv_obj_t *confirm_btn = lv_btn_create(header);
@@ -187,8 +189,8 @@ static void time_slot_click_cb(lv_event_t *e) {
     lv_obj_set_style_bg_opa(confirm_btn, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_set_style_border_width(confirm_btn, 0, LV_STATE_DEFAULT);
     lv_obj_set_style_shadow_width(confirm_btn, 0, LV_STATE_DEFAULT);
-    lv_obj_t *confirm_label = create_text_label(confirm_btn, "confirm", 
-                                               &lv_font_montserrat_36, lv_color_hex(0x00BDBD), 
+    lv_obj_t *confirm_label = create_text_label(confirm_btn, "确定", 
+                                               &eques_regular_36, lv_color_hex(0x00BDBD), 
                                                0, 0, LV_OPA_100);
     lv_obj_set_align(confirm_label, LV_ALIGN_CENTER);
     lv_obj_add_event_cb(confirm_btn, bio_time_confirm_cb, LV_EVENT_CLICKED, NULL);
@@ -218,10 +220,10 @@ static void time_slot_click_cb(lv_event_t *e) {
     lv_obj_set_style_shadow_opa(start_time_cont, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_set_style_border_width(start_time_cont, 0, LV_STATE_DEFAULT);
 
-    lv_obj_t *start_label = create_text_label(start_time_cont, "start_time", 
-                                             &lv_font_montserrat_36, lv_color_hex(0x9E9E9E), 
+    lv_obj_t *start_label = create_text_label(start_time_cont, "开始时间", 
+                                             &eques_regular_36, lv_color_hex(0x9E9E9E), 
                                              0, 20, LV_OPA_100);
-    lv_label_set_text(start_label, "Start Time");
+    lv_label_set_text(start_label, "开始时间");
     lv_obj_set_align(start_label, LV_ALIGN_TOP_MID);
 
     // 开始小时滚轮
@@ -231,7 +233,7 @@ static void time_slot_click_cb(lv_event_t *e) {
     lv_obj_set_align(bio_start_hour_roller, LV_ALIGN_LEFT_MID);
     lv_obj_set_pos(bio_start_hour_roller, 75, 30);
     lv_roller_set_selected(bio_start_hour_roller, start_h, LV_ANIM_OFF);
-    lv_obj_set_style_text_font(bio_start_hour_roller, &lv_font_montserrat_22, LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(bio_start_hour_roller, &eques_regular_24, LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(bio_start_hour_roller, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_set_style_shadow_opa(bio_start_hour_roller, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_set_style_border_width(bio_start_hour_roller, 0, LV_STATE_DEFAULT);
@@ -247,7 +249,7 @@ static void time_slot_click_cb(lv_event_t *e) {
     lv_obj_set_align(bio_start_min_roller, LV_ALIGN_RIGHT_MID);
     lv_obj_set_pos(bio_start_min_roller, -75, 30);
     lv_roller_set_selected(bio_start_min_roller, start_m, LV_ANIM_OFF); // 修复：去掉/10，适配完整分钟
-    lv_obj_set_style_text_font(bio_start_min_roller, &lv_font_montserrat_22, LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(bio_start_min_roller, &eques_regular_24, LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(bio_start_min_roller, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_set_style_shadow_opa(bio_start_min_roller, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_set_style_border_width(bio_start_min_roller, 0, LV_STATE_DEFAULT);
@@ -265,10 +267,10 @@ static void time_slot_click_cb(lv_event_t *e) {
     lv_obj_set_style_shadow_opa(end_time_cont, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_set_style_border_width(end_time_cont, 0, LV_STATE_DEFAULT);
 
-    lv_obj_t *end_label = create_text_label(end_time_cont, "end_time", 
-                                           &lv_font_montserrat_36, lv_color_hex(0x9E9E9E), 
+    lv_obj_t *end_label = create_text_label(end_time_cont, "结束时间", 
+                                           &eques_regular_36, lv_color_hex(0x9E9E9E), 
                                            0, 20, LV_OPA_100);
-    lv_label_set_text(end_label, "End Time");
+    lv_label_set_text(end_label, "结束时间");
     lv_obj_set_align(end_label, LV_ALIGN_TOP_MID);
 
     // 结束小时滚轮
@@ -278,7 +280,7 @@ static void time_slot_click_cb(lv_event_t *e) {
     lv_obj_set_align(bio_end_hour_roller, LV_ALIGN_LEFT_MID);
     lv_obj_set_pos(bio_end_hour_roller, 75, 30);
     lv_roller_set_selected(bio_end_hour_roller, end_h, LV_ANIM_OFF);
-    lv_obj_set_style_text_font(bio_end_hour_roller, &lv_font_montserrat_22, LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(bio_end_hour_roller, &eques_regular_24, LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(bio_end_hour_roller, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_set_style_shadow_opa(bio_end_hour_roller, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_set_style_border_width(bio_end_hour_roller, 0, LV_STATE_DEFAULT);
@@ -294,7 +296,7 @@ static void time_slot_click_cb(lv_event_t *e) {
     lv_obj_set_align(bio_end_min_roller, LV_ALIGN_RIGHT_MID);
     lv_obj_set_pos(bio_end_min_roller, -75, 30);
     lv_roller_set_selected(bio_end_min_roller, end_m, LV_ANIM_OFF); // 修复：去掉/10
-    lv_obj_set_style_text_font(bio_end_min_roller, &lv_font_montserrat_22, LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(bio_end_min_roller, &eques_regular_24, LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(bio_end_min_roller, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_set_style_shadow_opa(bio_end_min_roller, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_set_style_border_width(bio_end_min_roller, 0, LV_STATE_DEFAULT);
@@ -358,21 +360,19 @@ void ui_biometrics_settings_create(lv_obj_t *homepage_scr) {
     bio_scr = lv_obj_create(NULL);  
 
     // 2. 复用主模块渐变样式
-    extern lv_style_t sys_settings_grad_style;
-    lv_style_reset(&sys_settings_grad_style);
-    lv_style_set_bg_color(&sys_settings_grad_style, lv_color_hex(0x010715));
-    lv_style_set_bg_grad_color(&sys_settings_grad_style, lv_color_hex(0x0E1D37));
-    lv_style_set_bg_grad_dir(&sys_settings_grad_style, LV_GRAD_DIR_VER);
-    lv_obj_add_style(bio_scr, &sys_settings_grad_style, LV_STATE_DEFAULT);
+    lv_style_reset(&bio_grad_style);
+    lv_style_set_bg_color(&bio_grad_style, lv_color_hex(0x010715));
+    lv_style_set_bg_grad_color(&bio_grad_style, lv_color_hex(0x0E1D37));
+    lv_style_set_bg_grad_dir(&bio_grad_style, LV_GRAD_DIR_VER);
+    lv_obj_add_style(bio_scr, &bio_grad_style, LV_STATE_DEFAULT);
 
     // 3. 添加标题“生物识别”
-    create_text_label(bio_scr, "bio_title", &lv_font_montserrat_36, 
+    create_text_label(bio_scr, "生物识别", &eques_bold_36, 
                      lv_color_hex(0xFFFFFF), 83, 80, LV_OPA_100);
-    lv_label_set_text(lv_obj_get_child(bio_scr, 0), "Biometrics");
+    // lv_label_set_text(lv_obj_get_child(bio_scr, 0), "生物识别");
 
     // 生物识别选项列表
-    const char *bio_names[] = {"Fingerprint", "Password", "NFC_Card", "Face_Recognition"};
-    const char *hints[] = {"", "", "", "Enable_face_recognition", ""};
+    const char *bio_names[] = {"指纹", "密码", "NFC卡", "面容"};
 
     int y_pos = 150,y_switch = 170,y_label = 169;
     for (int i = 0; i < 4; i++) {
@@ -385,7 +385,7 @@ void ui_biometrics_settings_create(lv_obj_t *homepage_scr) {
         if (con == NULL) continue;
 
         // 选项名称
-        lv_obj_t *name_label = create_text_label(bio_scr, "bio_name", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 80, y_label, LV_OPA_100);
+        lv_obj_t *name_label = create_text_label(bio_scr, "生物识别", &eques_regular_36, lv_color_hex(0xFFFFFF), 80, y_label, LV_OPA_100);
         lv_label_set_text(name_label, bio_names[i]);
 
 
@@ -405,7 +405,7 @@ void ui_biometrics_settings_create(lv_obj_t *homepage_scr) {
         lv_obj_add_event_cb(g_switches[i], biometric_switch_cb, LV_EVENT_VALUE_CHANGED, (void *)(intptr_t)i);
         y_switch += 87,y_pos += 87,y_label += 87;
     }
-    lv_obj_t *name_label = create_text_label(bio_scr, "Enable_face_recognition", &lv_font_montserrat_20, lv_color_hex(0xFFFFFF), 80, 504, LV_OPA_70);
+    create_text_label(bio_scr, "开启后，才能启用这种方式进行开锁", &eques_regular_24, lv_color_hex(0xFFFFFF), 80, 504, LV_OPA_70);
 
     // 临时密码输入区域
     lv_obj_t *pwd_con = create_container(
@@ -414,10 +414,10 @@ void ui_biometrics_settings_create(lv_obj_t *homepage_scr) {
         lv_color_hex(0x2E4B7D), 0, LV_OPA_0
     );
     // 密码提示文本
-    lv_obj_t *temp_pwd = create_text_label(bio_scr, "Temp_pwd", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 80, 542, LV_OPA_100);
+    lv_obj_t *temp_pwd = create_text_label(bio_scr, "临时密码", &eques_regular_36, lv_color_hex(0xFFFFFF), 80, 542, LV_OPA_100);
     if (pwd_con) {
         // 密码显示标签
-        lv_obj_t *pwd_label = create_text_label(bio_scr, "temp_pwd", &lv_font_montserrat_36, lv_color_hex(0x000000), 80, 620, LV_OPA_100);
+        lv_obj_t *pwd_label = create_text_label(bio_scr, "临时密码", &eques_regular_36, lv_color_hex(0x000000), 80, 620, LV_OPA_100);
         lv_label_set_text(pwd_label, biometric_get_temp_pwd());
         lv_obj_set_style_bg_color(pwd_label, lv_color_hex(0xFFFFFF), LV_STATE_DEFAULT);
         lv_obj_set_style_bg_opa(pwd_label, LV_OPA_100, LV_STATE_DEFAULT);
@@ -439,13 +439,13 @@ void ui_biometrics_settings_create(lv_obj_t *homepage_scr) {
         
         lv_obj_set_style_bg_color(rand_btn, lv_color_hex(0x9BC4FF), LV_STATE_DEFAULT);
 
-        lv_obj_t *rand_label = create_text_label(rand_btn, "random", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
+        lv_obj_t *rand_label = create_text_label(rand_btn, "随机", &eques_regular_36, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
         lv_obj_set_align(rand_label, LV_ALIGN_CENTER);
         // lv_label_set_text(rand_label, "random");
         lv_obj_add_event_cb(rand_btn, temp_pwd_btn_cb, LV_EVENT_CLICKED, pwd_label);
     }
-    lv_obj_t *six_bit_pwd = create_text_label(bio_scr, "six_bit_pwd_used_unlocking", &lv_font_montserrat_16, lv_color_hex(0xFFFFFF), 80, 695, LV_OPA_70);
-    lv_obj_t *pwd_hint = create_text_label(bio_scr, "Applicable_Time", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 80, 727, LV_OPA_100);
+    create_text_label(bio_scr, "设置六位数数字密码用于临时开锁", &eques_regular_24, lv_color_hex(0xFFFFFF), 80, 695, LV_OPA_70);
+    lv_obj_t *pwd_hint = create_text_label(bio_scr, "适用时间", &eques_regular_36, lv_color_hex(0xFFFFFF), 80, 727, LV_OPA_100);
 
     int switch_idx = 4; // 对应临时密码的枚举值 BIOMETRIC_TEMP_PWD
     lv_obj_t *time_switch = lv_switch_create(bio_scr);
@@ -474,8 +474,8 @@ void ui_biometrics_settings_create(lv_obj_t *homepage_scr) {
         lv_obj_add_event_cb(time_con, time_slot_click_cb, LV_EVENT_CLICKED, NULL);
 
         // 时间段文本
-        bio_time_label  = create_text_label(bio_scr, "time_slot", 
-                                                &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 
+        bio_time_label  = create_text_label(bio_scr, "1", 
+                                                &eques_regular_24, lv_color_hex(0xFFFFFF), 
                                                 810, 737, LV_OPA_70);
         char time_text[64];
         // 时间段文本
@@ -485,16 +485,10 @@ void ui_biometrics_settings_create(lv_obj_t *homepage_scr) {
         // // 右侧箭头图标
         // lv_obj_t *arrow_img = create_image_obj(bio_scr, "D:Vector.png", 713, 786);
     }
-    // // 4. 添加返回按钮
-    // lv_obj_t *back_btn = create_image_obj(bio_scr, "D:back.png", 52, 123);
-    // if (back_btn) {
-    //     lv_obj_add_flag(back_btn, LV_OBJ_FLAG_CLICKABLE);
-    //     lv_obj_set_style_opa(back_btn, LV_OPA_80, LV_STATE_PRESSED);
-    //     lv_obj_add_event_cb(back_btn, back_btn_click_cb, LV_EVENT_CLICKED, homepage_scr);
-    // }
+
     // 返回
-    lv_obj_t *back_btn = create_container_circle(bio_scr, 52, 90, 30,
-    true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
+    lv_obj_t *back_btn = create_text_label
+    (bio_scr, ICON_CHEVORN_LEFT, &my_custom_icon, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
     lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(back_btn,LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(back_btn,LV_OPA_80,LV_STATE_PRESSED);
@@ -530,16 +524,24 @@ void biometrics_reset_to_default(void) {
 // 返回按钮回调（安全版：先销毁自己，再加载父页面）
 void bio_back_btn_click_cb(lv_event_t *e)
 {
-    lv_obj_t *parent_scr = lv_event_get_user_data(e);
-    if (parent_scr == NULL || e == NULL) return;
-    // 2. 回到父页面（系统设置页）
-    lv_scr_load(parent_scr);
-    // 1. 销毁当前生物识别页面 + 弹窗
-    bio_destroy();
+    lv_obj_t *current_del_scr = lv_disp_get_scr_act(NULL);
+
+    if(!lv_obj_is_valid(current_del_scr)) return;
+    if(current_del_scr == bio_scr) {
+        ui_sys_settings_create(current_del_scr);                     // 重建主页
+        bio_destroy();            // 清空所有控件指针
+        return;
+    }
 }
 // 销毁生物识别页面 → 彻底释放内存
-static void bio_destroy(void)
+void bio_destroy(void)
 {
+    // 1. 先销毁弹窗
+    if (lv_obj_is_valid(bio_time_popup)) {
+        lv_obj_del(bio_time_popup);
+        bio_time_popup = NULL;
+    }
+
     // 2. 销毁主页面
     if (lv_obj_is_valid(bio_scr)) {
         lv_obj_del(bio_scr);

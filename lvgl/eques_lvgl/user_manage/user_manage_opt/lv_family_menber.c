@@ -1339,7 +1339,7 @@ void ui_family_menber_create(lv_obj_t *user_manage_scr)
     lv_obj_add_style(family_menber_scr, &family_menber_grad_style, LV_STATE_DEFAULT);
 
     // 家庭成员文本
-    family_menber_label = create_text_label(family_menber_scr, "family menber", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 83, 80, LV_OPA_100);
+    family_menber_label = create_text_label(family_menber_scr, "家庭成员", &eques_bold_36, lv_color_hex(0xFFFFFF), 83, 80, LV_OPA_100);
 
     // 添加成员按钮
     family_menber_add_con = create_container
@@ -1364,15 +1364,27 @@ void ui_family_menber_create(lv_obj_t *user_manage_scr)
     lv_obj_add_event_cb(family_menber_add, family_menber_add_click_cb, LV_EVENT_CLICKED, user_manage_scr);
 
     // 删除成员按钮
-    delete_img = create_container_circle(family_menber_scr, 928, 99, 30,
-    true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
+    delete_img = create_container
+    (family_menber_scr,928,81,55,30,lv_color_hex(0x192A46), LV_OPA_0, 0,lv_color_hex(0x1F3150), 0, LV_OPA_90);
+    lv_obj_set_style_pad_all(delete_img, 0, LV_STATE_DEFAULT);
+    //三个点（不可点击）
+    lv_obj_t *cir1 =create_container_circle
+    (delete_img, 5, 13, 9,true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
+    lv_obj_t *cir2 =create_container_circle
+    (delete_img, 25, 13, 9,true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
+    lv_obj_t *cir3 =create_container_circle
+    (delete_img, 45, 13, 9,true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
+    lv_obj_clear_flag(cir1, LV_OBJ_FLAG_CLICKABLE);
+    lv_obj_clear_flag(cir2, LV_OBJ_FLAG_CLICKABLE);
+    lv_obj_clear_flag(cir3, LV_OBJ_FLAG_CLICKABLE);
+
     lv_obj_add_flag(delete_img, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(delete_img, LV_OPA_80, LV_STATE_PRESSED);
     lv_obj_add_event_cb(delete_img, delete_img_click_cb, LV_EVENT_CLICKED, NULL);
     
     // 返回按钮
-    back_btn = create_container_circle(family_menber_scr, 52, 90, 30,
-    true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
+    back_btn = create_text_label
+    (family_menber_scr, ICON_CHEVORN_LEFT, &my_custom_icon, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
     lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(back_btn,LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(back_btn,LV_OPA_80,LV_STATE_PRESSED);
@@ -1525,14 +1537,14 @@ static void delete_confirm_click_cb(lv_event_t *e)
         16, lv_color_hex(0x1F3150), 0, LV_OPA_90
     );
     
-    create_text_label(confirm_popup, "confirm_delete?", &lv_font_montserrat_32, lv_color_hex(0x000000), 156, 52, LV_OPA_100);
+    create_text_label(confirm_popup, "确定删除此用户吗？", &eques_regular_32, lv_color_hex(0x000000), 156, 52, LV_OPA_100);
     
     // 确认删除按钮
     lv_obj_t *confirm_btn = create_custom_gradient_container
     (confirm_popup, 190, 141, 220, 44, 6, 0x006BDC, 0x00BDBD, LV_GRAD_DIR_HOR, 0, 225, LV_OPA_100);
     lv_obj_set_style_pad_all(confirm_btn, 0, LV_STATE_DEFAULT);
     lv_obj_t *confirm_label = create_text_label(
-    confirm_btn, "confirm", &lv_font_montserrat_24, lv_color_hex(0x000000), 0, 0, LV_OPA_100);
+    confirm_btn, "确定", &eques_bold_24, lv_color_hex(0x000000), 0, 0, LV_OPA_100);
     lv_obj_set_align(confirm_label, LV_ALIGN_CENTER);
     lv_obj_add_flag(confirm_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_add_event_cb(confirm_btn, delete_popup_ok_cb, LV_EVENT_CLICKED, confirm_popup);
@@ -1542,7 +1554,7 @@ static void delete_confirm_click_cb(lv_event_t *e)
     (confirm_popup, 190, 210, 220, 44, lv_color_hex(0xE0EDFF), LV_OPA_100, 8, lv_color_hex(0xFF3333), 0, LV_OPA_90);
     lv_obj_set_style_pad_all(cancel_btn, 0, LV_STATE_DEFAULT);
     lv_obj_t *cancel_label = create_text_label
-    (cancel_btn, "cancel", &lv_font_montserrat_20, lv_color_hex(0xBDBDBD), 0, 0, LV_OPA_100);
+    (cancel_btn, "取消", &eques_bold_24, lv_color_hex(0xBDBDBD), 0, 0, LV_OPA_100);
     lv_obj_set_align(cancel_label, LV_ALIGN_CENTER);
     lv_obj_add_flag(cancel_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_add_event_cb(cancel_btn, delete_popup_cancel_cb, LV_EVENT_CLICKED, confirm_popup);
@@ -1605,9 +1617,8 @@ static void member_delete_btn_click_cb(lv_event_t *e)
         g_delete_flag_imgs[idx] = NULL;
     }
     
-    g_delete_flag_imgs[idx] = create_image_obj(member_con, "H:delete_flag.png", 250, 10);
+    g_delete_flag_imgs[idx] = create_text_label(member_con, ICON_CHECK, &my_custom_icon, lv_color_hex(0xFFFFFF), 250, 10, LV_OPA_100);
     if(g_delete_flag_imgs[idx] != NULL && lv_obj_is_valid(g_delete_flag_imgs[idx])) {
-        lv_obj_set_size(g_delete_flag_imgs[idx], 36, 36);
         lv_obj_add_event_cb(g_delete_flag_imgs[idx], delete_flag_click_cb, LV_EVENT_CLICKED, (void*)(uintptr_t)idx);
         lv_obj_add_flag(g_delete_flag_imgs[idx], LV_OBJ_FLAG_CLICKABLE);
         g_member_selected[idx] = true;
@@ -1688,7 +1699,7 @@ static void switch_delete_mode(bool enter)
         
         if(g_delete_cancel_btn == NULL || !lv_obj_is_valid(g_delete_cancel_btn)) {
             g_delete_cancel_btn = create_text_label(
-                family_menber_scr, "cancel", &lv_font_montserrat_24, 
+                family_menber_scr, "取消", &eques_regular_24, 
                 lv_color_hex(0x00BDBD), 48, 90, LV_OPA_100
             );
             lv_obj_add_flag(g_delete_cancel_btn, LV_OBJ_FLAG_CLICKABLE);
@@ -1701,7 +1712,7 @@ static void switch_delete_mode(bool enter)
         
         if(g_delete_confirm_btn == NULL || !lv_obj_is_valid(g_delete_confirm_btn)) {
             g_delete_confirm_btn = create_text_label(
-                family_menber_scr, "delete", &lv_font_montserrat_24, 
+                family_menber_scr, "删除", &eques_regular_24, 
                 lv_color_hex(0xFF0000), 928, 90, LV_OPA_100
             );
             lv_obj_add_flag(g_delete_confirm_btn, LV_OBJ_FLAG_CLICKABLE);
@@ -1863,6 +1874,14 @@ static void member_card_click_cb(lv_event_t *e)
 }
 
 // 创建家庭卡片ui组件以及属性信息
+// 声明你的图标字体
+LV_FONT_DECLARE(my_custom_icon_26);
+#define ICON_FINGERPRINT_S "\uf577"
+#define ICON_PASSWORD_S   "\uf03a"
+#define ICON_CARD_S       "\uf2bb"
+#define ICON_FACE_S       "\uf58c"
+
+// 创建家庭卡片ui组件以及属性信息
 static lv_obj_t *create_family_member_card(lv_obj_t *parent, const char *member_name, lv_color_t avatar_color, uint8_t member_idx)
 {
     if(parent == NULL || member_name == NULL || member_idx >= MAX_FAMILY_MEMBER_COUNT) return NULL;
@@ -1877,7 +1896,7 @@ static lv_obj_t *create_family_member_card(lv_obj_t *parent, const char *member_
     lv_coord_t card_x = col_x[current_col];
     lv_coord_t card_y = row_start_y + current_row * row_step;
 
-    // 创建家庭成员卡片容器，动态增加索引值
+    // 创建家庭成员卡片容器
     lv_obj_t *member_con = create_container
     (parent, card_x, card_y, 300, 200, lv_color_hex(0x192A46), LV_OPA_100, 6, lv_color_hex(0x1F3150), 0, LV_OPA_90);
     lv_obj_set_user_data(member_con, (void*)(uintptr_t)member_idx);
@@ -1887,48 +1906,83 @@ static lv_obj_t *create_family_member_card(lv_obj_t *parent, const char *member_
     lv_obj_add_event_cb(member_con, member_card_click_cb, LV_EVENT_CLICKED, (void*)(uintptr_t)member_idx);
     g_member_cards[member_idx] = member_con;
 
+    // 头像
     create_container(member_con, 122, 15, 60, 60, avatar_color, LV_OPA_100, 100, avatar_color, 0, LV_OPA_90);
 
+    // 名字
     lv_obj_t *name_label = create_text_label
-    (member_con, member_name, &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
+    (member_con, member_name, &eques_regular_36, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
     lv_obj_align(name_label, LV_ALIGN_TOP_MID, 0, 87);
     
-    // 获取家庭成员已录入指纹数量、密码数量、卡片数量、人脸数量
+    // 获取数量
     uint8_t finger_count = family_member_list[member_idx].finger_count;
-    uint8_t pwd_count = family_member_list[member_idx].pwd_count;
-    uint8_t card_count = family_member_list[member_idx].card_count;
-    uint8_t face_count = family_member_list[member_idx].face_count;
+    uint8_t pwd_count    = family_member_list[member_idx].pwd_count;
+    uint8_t card_count  = family_member_list[member_idx].card_count;
+    uint8_t face_count  = family_member_list[member_idx].face_count;
 
-    char finger_text[8] = {0};
-    snprintf(finger_text, sizeof(finger_text), "%d", finger_count);
-    const char *finger_img_path = (finger_count > 0) ? "H:finger_has_record.png" : "H:finger_no_record.png";
-    g_finger_imgs[member_idx] = create_image_obj(member_con, finger_img_path, 18, 157);
-    g_finger_labels[member_idx] = create_text_label
-    (member_con, finger_text, &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 55, 157, LV_OPA_100);
+    char text_buf[8];
 
-    char pwd_text[8] = {0};
-    snprintf(pwd_text, sizeof(pwd_text), "%d", pwd_count);
-    const char *pwd_img_path = (pwd_count > 0) ? "H:pwd_has_record.png" : "H:pwd_no_record.png";
-    g_pwd_imgs[member_idx] = create_image_obj(member_con, pwd_img_path, 88, 157);
-    g_pwd_labels[member_idx] = create_text_label
-    (member_con, pwd_text, &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 124, 157, LV_OPA_100);
 
-    char card_text[8] = {0};
-    snprintf(card_text, sizeof(card_text), "%d", card_count);
-    const char *card_img_path = (card_count > 0) ? "H:card_has_record.png" : "H:card_no_record.png";
-    g_card_imgs[member_idx] = create_image_obj(member_con, card_img_path, 152, 146);
-    g_card_labels[member_idx] = create_text_label
-    (member_con, card_text, &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 202, 157, LV_OPA_100);
+    // ==========================
+    // 指纹图标 + 数字
+    // ==========================
+    lv_obj_t *icon_finger = lv_label_create(member_con);
+    lv_label_set_text(icon_finger, ICON_FINGERPRINT_S);
+    lv_obj_set_style_text_font(icon_finger, &my_custom_icon_26, 0);
+    lv_obj_set_pos(icon_finger, 25, 157);
+    lv_obj_set_style_text_color(icon_finger, 
+        (finger_count > 0) ? lv_color_hex(0x00BDBD) : lv_color_hex(0xD4D4D4), 0);
 
-    char face_text[8] = {0};
-    snprintf(face_text, sizeof(face_text), "%d", face_count);
-    const char *face_img_path = (face_count > 0) ? "H:face_has_record.png" : "H:face_no_record.png";
-    g_face_imgs[member_idx] = create_image_obj(member_con, face_img_path, 230, 150);
-    g_face_labels[member_idx] = create_text_label
-    (member_con, face_text, &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 271, 157, LV_OPA_100);
+    snprintf(text_buf, sizeof(text_buf), "%d", finger_count);
+    g_finger_labels[member_idx] = create_text_label(member_con, text_buf, &eques_regular_24, 
+        (finger_count > 0) ? lv_color_hex(0x00BDBD) : lv_color_hex(0xD4D4D4), 55, 157, LV_OPA_100);
 
+    // ==========================
+    // 密码图标 + 数字
+    // ==========================
+    lv_obj_t *icon_pwd = lv_label_create(member_con);
+    lv_label_set_text(icon_pwd, ICON_PASSWORD_S);
+    lv_obj_set_style_text_font(icon_pwd, &my_custom_icon_26, 0);
+    lv_obj_set_pos(icon_pwd, 95, 157);
+    lv_obj_set_style_text_color(icon_pwd, 
+        (pwd_count > 0) ? lv_color_hex(0x00BDBD) : lv_color_hex(0xD4D4D4), 0);
+
+    snprintf(text_buf, sizeof(text_buf), "%d", pwd_count);
+    g_pwd_labels[member_idx] = create_text_label(member_con, text_buf, &eques_regular_24, 
+        (pwd_count > 0) ? lv_color_hex(0x00BDBD) : lv_color_hex(0xD4D4D4), 124, 157, LV_OPA_100);
+
+    // ==========================
+    // 卡片图标 + 数字
+    // ==========================
+    lv_obj_t *icon_card = lv_label_create(member_con);
+    lv_label_set_text(icon_card, ICON_CARD_S);
+    lv_obj_set_style_text_font(icon_card, &my_custom_icon_26, 0);
+    lv_obj_set_pos(icon_card, 170, 157);
+    lv_obj_set_style_text_color(icon_card, 
+        (card_count > 0) ? lv_color_hex(0x00BDBD) : lv_color_hex(0xD4D4D4), 0);
+
+    snprintf(text_buf, sizeof(text_buf), "%d", card_count);
+    g_card_labels[member_idx] = create_text_label(member_con, text_buf, &eques_regular_24, 
+        (card_count > 0) ? lv_color_hex(0x00BDBD) : lv_color_hex(0xD4D4D4), 202, 157, LV_OPA_100);
+
+    // ==========================
+    // 人脸图标 + 数字
+    // ==========================
+    lv_obj_t *icon_face = lv_label_create(member_con);
+    lv_label_set_text(icon_face, ICON_FACE_S);
+    lv_obj_set_style_text_font(icon_face, &my_custom_icon_26, 0);
+    lv_obj_set_pos(icon_face, 240, 157);
+    lv_obj_set_style_text_color(icon_face, 
+        (face_count > 0) ? lv_color_hex(0x00BDBD) : lv_color_hex(0xD4D4D4), 0);
+
+    snprintf(text_buf, sizeof(text_buf), "%d", face_count);
+    g_face_labels[member_idx] = create_text_label(member_con, text_buf, &eques_regular_24, 
+        (face_count > 0) ? lv_color_hex(0x00BDBD) : lv_color_hex(0xD4D4D4), 271, 157, LV_OPA_100);
+
+
+    // 删除按钮
     lv_obj_t *delete_hid = create_container
-    (member_con, 250, 10, 36, 36, lv_color_hex(0x192A46), LV_OPA_100, 100, lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
+    (member_con, 250, 10, 32, 32, lv_color_hex(0x192A46), LV_OPA_100, 100, lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
     lv_obj_add_flag(delete_hid, LV_OBJ_FLAG_HIDDEN);
     lv_obj_add_flag(delete_hid, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(delete_hid, LV_OPA_80, LV_STATE_PRESSED);
@@ -1940,6 +1994,7 @@ static lv_obj_t *create_family_member_card(lv_obj_t *parent, const char *member_
     return member_con;
 }
 
+// 更新成员卡片上的录入信息，包括指纹、密码、卡片、人脸的记录数量以及图片
 // 更新成员卡片上的录入信息，包括指纹、密码、卡片、人脸的记录数量以及图片
 void update_member_count_ui(uint8_t member_idx)
 {
@@ -1958,37 +2013,33 @@ void update_member_count_ui(uint8_t member_idx)
     uint8_t card_count = family_member_list[member_idx].card_count;
     uint8_t face_count = family_member_list[member_idx].face_count;
 
+    // ===================== 指纹 =====================
     char finger_text[8] = {0};
     snprintf(finger_text, sizeof(finger_text), "%d", finger_count);
     lv_label_set_text(g_finger_labels[member_idx], finger_text);
-    if(g_finger_imgs[member_idx] != NULL && lv_obj_is_valid(g_finger_imgs[member_idx])) {
-        const char *finger_img_path = (finger_count > 0) ? "H:finger_has_record.png" : "H:finger_no_record.png";
-        lv_img_set_src(g_finger_imgs[member_idx], finger_img_path);
-    }
+    lv_color_t finger_color = (finger_count == 0) ? lv_color_hex(0xD4D4D4) : lv_color_hex(0x00BDBD);
+    lv_obj_set_style_text_color(g_finger_labels[member_idx], finger_color, LV_STATE_DEFAULT);
 
+    // ===================== 密码 =====================
     char pwd_text[8] = {0};
     snprintf(pwd_text, sizeof(pwd_text), "%d", pwd_count);
     lv_label_set_text(g_pwd_labels[member_idx], pwd_text);
-    if(g_pwd_imgs[member_idx] != NULL && lv_obj_is_valid(g_pwd_imgs[member_idx])) {
-        const char *pwd_img_path = (pwd_count > 0) ? "H:pwd_has_record.png" : "H:pwd_no_record.png";
-        lv_img_set_src(g_pwd_imgs[member_idx], pwd_img_path);
-    }
+    lv_color_t pwd_color = (pwd_count == 0) ? lv_color_hex(0xD4D4D4) : lv_color_hex(0x00BDBD);
+    lv_obj_set_style_text_color(g_pwd_labels[member_idx], pwd_color, LV_STATE_DEFAULT);
 
+    // ===================== 卡片 =====================
     char card_text[8] = {0};
     snprintf(card_text, sizeof(card_text), "%d", card_count);
     lv_label_set_text(g_card_labels[member_idx], card_text);
-    if(g_card_imgs[member_idx] != NULL && lv_obj_is_valid(g_card_imgs[member_idx])) {
-        const char *card_img_path = (card_count > 0) ? "H:card_has_record.png" : "H:card_no_record.png";
-        lv_img_set_src(g_card_imgs[member_idx], card_img_path);
-    }
+    lv_color_t card_color = (card_count == 0) ? lv_color_hex(0xD4D4D4) : lv_color_hex(0x00BDBD);
+    lv_obj_set_style_text_color(g_card_labels[member_idx], card_color, LV_STATE_DEFAULT);
 
+    // ===================== 人脸 =====================
     char face_text[8] = {0};
     snprintf(face_text, sizeof(face_text), "%d", face_count);
     lv_label_set_text(g_face_labels[member_idx], face_text);
-    if(g_face_imgs[member_idx] != NULL && lv_obj_is_valid(g_face_imgs[member_idx])) {
-        const char *face_img_path = (face_count > 0) ? "H:face_has_record.png" : "H:face_no_record.png";
-        lv_img_set_src(g_face_imgs[member_idx], face_img_path);
-    }
+    lv_color_t face_color = (face_count == 0) ? lv_color_hex(0xD4D4D4) : lv_color_hex(0x00BDBD);
+    lv_obj_set_style_text_color(g_face_labels[member_idx], face_color, LV_STATE_DEFAULT);
 
     lv_obj_invalidate(lv_scr_act());
     LV_LOG_INFO("Updated count UI for member %d: finger=%d, pwd=%d, card=%d, face=%d",
@@ -2116,7 +2167,7 @@ void family_menber_add_click_cb(lv_event_t *e)
     lv_obj_set_style_pad_all(custom_popup, 0, LV_STATE_DEFAULT);
 
     // 创建姓名输入框
-    create_text_label(custom_popup, "name:", &lv_font_montserrat_24, lv_color_hex(0x7C7C7C), 51, 69, LV_OPA_100);
+    create_text_label(custom_popup, "名称", &eques_regular_24, lv_color_hex(0x7C7C7C), 81, 75, LV_OPA_100);
     lv_obj_t *name_input = lv_textarea_create(custom_popup);
     lv_obj_clear_flag(name_input, LV_OBJ_FLAG_SCROLLABLE);
     lv_obj_set_size(name_input, 382, 44);
@@ -2125,17 +2176,17 @@ void family_menber_add_click_cb(lv_event_t *e)
     lv_obj_set_style_text_color(name_input, lv_color_hex(0x333333), LV_STATE_DEFAULT);
     lv_obj_set_style_border_width(name_input, 0, LV_STATE_DEFAULT);
     lv_obj_set_style_radius(name_input, 6, LV_STATE_DEFAULT);
-    lv_textarea_set_placeholder_text(name_input, "0-8");
+    //lv_textarea_set_placeholder_text(name_input, "0-8");
     lv_textarea_set_max_length(name_input, 8);
     lv_textarea_set_one_line(name_input, true);
-    lv_obj_set_style_text_font(name_input, &lv_font_montserrat_24, LV_STATE_DEFAULT);
+    //lv_obj_set_style_text_font(name_input, &lv_font_montserrat_24, LV_STATE_DEFAULT);
     lv_obj_add_flag(name_input, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(name_input, LV_OPA_80, LV_STATE_PRESSED);
-    lv_obj_add_event_cb(name_input, name_input_click_cb, LV_EVENT_CLICKED, NULL);
+    //lv_obj_add_event_cb(name_input, name_input_click_cb, LV_EVENT_CLICKED, NULL);
     g_name_input = name_input;
 
     // 创建头像选择容器 一共六个颜色
-    create_text_label(custom_popup, "Avatar:", &lv_font_montserrat_24, lv_color_hex(0x7C7C7C), 41, 124, LV_OPA_100);
+    create_text_label(custom_popup, "初始头像", &eques_regular_24, lv_color_hex(0x7C7C7C), 41, 124, LV_OPA_100);
     lv_obj_t *avatar_con = create_container
     (custom_popup, 136, 171, 298, 192, lv_color_hex(0xFFFFFF), LV_OPA_100, 6, lv_color_hex(0x1F3150), 0, LV_OPA_90); 
     lv_obj_set_style_pad_all(avatar_con, 0, LV_STATE_DEFAULT);

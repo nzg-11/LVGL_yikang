@@ -116,7 +116,7 @@ void ui_pwd_add_create(lv_obj_t *enroll_scr)
     lv_obj_add_style(pwd_add_scr, &pwd_add_grad_style, LV_STATE_DEFAULT);
     
     // 标题文本
-    create_text_label(pwd_add_scr, "Add Password", &lv_font_montserrat_36, 
+    create_text_label(pwd_add_scr, "添加密码", &eques_bold_36, 
                       lv_color_hex(0xFFFFFF), 83, 80, LV_OPA_100);
 
     // 密码显示区域
@@ -128,19 +128,19 @@ void ui_pwd_add_create(lv_obj_t *enroll_scr)
     lv_obj_set_style_opa(pwd_show_con, LV_OPA_80, LV_STATE_PRESSED);
 
     // 提示标签
-    g_pwd_prompt_label = create_text_label(pwd_show_con, "Please input 6-digit password",
-                    &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_70);
+    g_pwd_prompt_label = create_text_label(pwd_show_con, "请输入6位密码",
+                    &eques_regular_32, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_70);
     lv_obj_align(g_pwd_prompt_label, LV_ALIGN_CENTER, 0, 0);
 
     // 密码显示标签(默认隐藏)
-    g_pwd_display_label = create_text_label(pwd_show_con, "", &lv_font_montserrat_48,
+    g_pwd_display_label = create_text_label(pwd_show_con, "", &eques_regular_48,
                     lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
     lv_obj_align(g_pwd_display_label, LV_ALIGN_CENTER, 0, 0);
     lv_obj_add_flag(g_pwd_display_label, LV_OBJ_FLAG_HIDDEN);
 
     // 返回按钮
-    lv_obj_t *back_btn = create_container_circle(pwd_add_scr, 52, 90, 30,
-                    true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
+    lv_obj_t *back_btn = create_text_label
+    (pwd_add_scr, ICON_CHEVORN_LEFT, &my_custom_icon, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
     lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(back_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(back_btn, LV_OPA_80, LV_STATE_PRESSED);
@@ -163,13 +163,12 @@ void ui_pwd_add_create(lv_obj_t *enroll_scr)
     
     // 退格按钮
     lv_obj_t *pwd_back_btn = create_container(pwd_add_scr, 698, 365, 150, 80,
-                    lv_color_hex(0x7698D0), LV_OPA_100, 100, 
-                    lv_color_hex(0x1F3150), 0, LV_OPA_70);
-    lv_obj_t *back_img = create_image_obj(pwd_back_btn, "H:delete_keyboard.png", 0, 0);
-    lv_obj_align(back_img, LV_ALIGN_CENTER, -3, 0);
+                    lv_color_hex(0x7698D0), LV_OPA_70, 6, 
+                    lv_color_hex(0x7698D0), 0, LV_OPA_70);
+    lv_obj_t *back_img = create_text_label(pwd_back_btn, ICON_DELETE, &my_custom_icon_60, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
+    lv_obj_align(back_img, LV_ALIGN_CENTER, 0, 0);
     lv_obj_add_flag(pwd_back_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(pwd_back_btn, LV_OPA_90, LV_STATE_PRESSED);
-    lv_obj_set_style_bg_color(pwd_back_btn, lv_color_hex(0xD9D9D9), LV_STATE_PRESSED);
     lv_obj_add_event_cb(pwd_back_btn, pwd_backspace_click_cb, LV_EVENT_CLICKED, NULL);
 
     // 加载页面
@@ -189,7 +188,7 @@ void pwd_add_btn_click_cb(lv_event_t *e)
 
     ui_pwd_add_create(parent_scr);
     update_status_bar_parent(pwd_add_scr);
-    // destroy_enroll();
+    destroy_enroll();
     // LV_LOG_WARN("进入密码添加界面，销毁录入界面");
 }
 
@@ -203,11 +202,15 @@ void pwd_add_back_btn_click_cb(lv_event_t *e)
     lv_obj_t *parent_scr = (lv_obj_t *)lv_event_get_user_data(e);
     lv_obj_t *current_scr = lv_disp_get_scr_act(NULL);
 
+    static uint8_t pwd_idx = 1;
+    char pwd_name[16];
+    pwd_enroll_info_t *info = get_current_pwd_info();
+    snprintf(pwd_name, sizeof(pwd_name), "密码%d", info->enroll_count + 1);
+
     if (lv_obj_is_valid(current_scr) && current_scr == pwd_add_scr) {
-        //common_member_info_t *member = get_current_enroll_member();
-        // ui_enroll_create(member, parent_scr);  
-        // lv_obj_del(current_scr);
-        lv_scr_load(parent_scr);  // 直接切回原来的页面！
+        common_member_info_t *member = get_current_enroll_member();
+        ui_enroll_create(member, parent_scr);  
+        //lv_scr_load(parent_scr);  // 直接切回原来的页面！
         lv_obj_del(current_scr);  // 只删除密码页
         current_scr = NULL;
     }
@@ -281,7 +284,7 @@ static void show_pwd_dialog(const char *msg, bool is_success, lv_obj_t *enroll_s
     lv_obj_set_style_pad_all(g_pwd_dialog, 0, LV_STATE_DEFAULT);
 
     // 弹窗提示文本
-    lv_obj_t *dialog_label = create_text_label(g_pwd_dialog, msg, &lv_font_montserrat_24,
+    lv_obj_t *dialog_label = create_text_label(g_pwd_dialog, msg, &eques_regular_24,
                     lv_color_hex(0x000000), 0, 38, LV_OPA_100);
     lv_obj_align(dialog_label, LV_ALIGN_TOP_MID, 0, 38);
 
@@ -295,13 +298,13 @@ static void show_pwd_dialog(const char *msg, bool is_success, lv_obj_t *enroll_s
         lv_obj_set_style_text_color(g_pwd_name_input, lv_color_hex(0x333333), LV_STATE_DEFAULT);
         lv_obj_set_style_border_width(g_pwd_name_input, 0, LV_STATE_DEFAULT);
         lv_obj_set_style_radius(g_pwd_name_input, 6, LV_STATE_DEFAULT);
-        lv_textarea_set_placeholder_text(g_pwd_name_input, "please input name");
+        //lv_textarea_set_placeholder_text(g_pwd_name_input, "please input name");
         lv_textarea_set_max_length(g_pwd_name_input, 16);
         lv_textarea_set_one_line(g_pwd_name_input, true);
-        lv_obj_set_style_text_font(g_pwd_name_input, &lv_font_montserrat_24, LV_STATE_DEFAULT);
+        //lv_obj_set_style_text_font(g_pwd_name_input, &lv_font_montserrat_24, LV_STATE_DEFAULT);
         lv_obj_add_flag(g_pwd_name_input, LV_OBJ_FLAG_CLICKABLE);
         lv_obj_set_style_opa(g_pwd_name_input, LV_OPA_80, LV_STATE_PRESSED);
-        lv_obj_add_event_cb(g_pwd_name_input, pwd_name_input_click_cb, LV_EVENT_CLICKED, NULL);
+        //lv_obj_add_event_cb(g_pwd_name_input, pwd_name_input_click_cb, LV_EVENT_CLICKED, NULL);
     }
     
     // 确认按钮
@@ -313,8 +316,7 @@ static void show_pwd_dialog(const char *msg, bool is_success, lv_obj_t *enroll_s
     lv_obj_set_style_pad_all(confirm_btn, 0, LV_STATE_DEFAULT);
     
     // 按钮文本
-    lv_obj_t *confirm_label = create_text_label(confirm_btn, "Confirm", &lv_font_montserrat_28,
-                    lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
+    lv_obj_t *confirm_label = create_text_label(confirm_btn, "确认并返回",&eques_bold_24, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
     lv_obj_set_align(confirm_label, LV_ALIGN_CENTER);
 
     // 绑定回调
@@ -345,7 +347,7 @@ static void pwd_error_confirm_cb(lv_event_t *e)
     lv_label_set_text(g_pwd_display_label, "");
     lv_obj_add_flag(g_pwd_display_label, LV_OBJ_FLAG_HIDDEN);
     lv_obj_clear_flag(g_pwd_prompt_label, LV_OBJ_FLAG_HIDDEN);
-    lv_label_set_text(g_pwd_prompt_label, "Please input 6-digit password");
+    lv_label_set_text(g_pwd_prompt_label, "请输入6位密码");
 }
 
 /**
@@ -359,7 +361,7 @@ static void pwd_delay_task_cb(lv_timer_t *timer)
         // 切换到第二次输入密码
         g_is_confirm_mode = true;
         g_pwd_input_len = 0;
-        lv_label_set_text(g_pwd_prompt_label, "Please enter the six-digit password again.");
+        lv_label_set_text(g_pwd_prompt_label, "请再次输入6位密码");
         lv_label_set_text(g_pwd_display_label, "");
         lv_obj_add_flag(g_pwd_display_label, LV_OBJ_FLAG_HIDDEN);
         lv_obj_clear_flag(g_pwd_prompt_label, LV_OBJ_FLAG_HIDDEN);
@@ -408,7 +410,7 @@ static void pwd_num_click_cb(lv_event_t *e)
     } else {
         g_tmp_need_switch_mode = false;
         g_tmp_is_success = (strcmp(g_pwd_first, g_pwd_second) == 0);
-        g_tmp_msg = g_tmp_is_success ? "add succeed" : "add fail";
+        g_tmp_msg = g_tmp_is_success ? "添加成功" : "添加失败";
     }
 
     // 创建延时定时器
@@ -447,7 +449,7 @@ static void pwd_confirm_click_cb(lv_event_t *e)
 {
     if (e == NULL) return;
     
-    //common_member_info_t *member = get_current_enroll_member();
+    common_member_info_t *member = get_current_enroll_member();
     lv_obj_t *parent_scr = (lv_obj_t *)lv_event_get_user_data(e);
     bool is_success = false;
 
@@ -456,13 +458,13 @@ static void pwd_confirm_click_cb(lv_event_t *e)
         lv_obj_t *dialog_label = lv_obj_get_child(g_pwd_dialog, 0);
         if (lv_obj_is_valid(dialog_label)) {
             const char *msg = lv_label_get_text(dialog_label);
-            is_success = (msg && strcmp(msg, "add succeed") == 0);
+            is_success = (msg && strcmp(msg, "添加成功") == 0);
         }
     }
 
     // 成功则完成注册
     if (is_success) {
-        const char *pwd_name = "pwd01";
+        const char *pwd_name = "";
         if (lv_obj_is_valid(g_pwd_name_input)) {
             const char *input_name = lv_textarea_get_text(g_pwd_name_input);
             if (input_name && strlen(input_name) > 0) {
@@ -473,8 +475,8 @@ static void pwd_confirm_click_cb(lv_event_t *e)
     }
 
     // 返回注册页面
-    //ui_enroll_create(member, parent_scr);
-    lv_scr_load(parent_scr);
+    ui_enroll_create(member, parent_scr);
+    //lv_scr_load(parent_scr);
     // 重置数据和UI
     close_pwd_dialog();
     memset(g_pwd_first, 0, sizeof(g_pwd_first));
@@ -485,7 +487,7 @@ static void pwd_confirm_click_cb(lv_event_t *e)
     lv_label_set_text(g_pwd_display_label, "");
     lv_obj_add_flag(g_pwd_display_label, LV_OBJ_FLAG_HIDDEN);
     lv_obj_clear_flag(g_pwd_prompt_label, LV_OBJ_FLAG_HIDDEN);
-    lv_label_set_text(g_pwd_prompt_label, "Please input 6-digit password");
+    lv_label_set_text(g_pwd_prompt_label, "请输入6位密码");
 
     // 销毁当前页面
     if (is_lv_obj_valid(pwd_add_scr)) {
@@ -540,8 +542,8 @@ static lv_obj_t *create_pwd_num_btn(lv_obj_t *parent, uint16_t x, uint16_t y, co
                     lv_color_hex(0x7698D0), LV_OPA_70, 6, 
                     lv_color_hex(0x1F3150), 0, LV_OPA_90);
     
-    lv_obj_t *num_label = create_text_label(num_btn, num, &lv_font_montserrat_48,
-                    lv_color_hex(0x000000), 0, 0, LV_OPA_100);
+    lv_obj_t *num_label = create_text_label(num_btn, num, &eques_regular_48,
+                    lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
     lv_obj_align(num_label, LV_ALIGN_CENTER, 0, 0);
     
     // 设置按钮样式

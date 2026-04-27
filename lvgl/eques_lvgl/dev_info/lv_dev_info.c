@@ -91,7 +91,7 @@ void dev_info_name_confirm_cb(lv_event_t *e)
     lv_obj_del(mask);
 }
 
-/***********************创建遮罩层（用于昵称编辑弹窗）*********************/
+/***********************创建遮罩层*********************/
 void dev_info_name_edit_cb(lv_event_t *e)
 {
     if(e == NULL) return;
@@ -102,7 +102,7 @@ void dev_info_name_edit_cb(lv_event_t *e)
         return;
     }
 
-    // 1. 创建遮罩层（父对象：scr）
+    // 创建遮罩层
     lv_obj_t *mask = lv_obj_create(scr);
     lv_obj_set_size(mask, lv_obj_get_width(scr), lv_obj_get_height(scr));
     lv_obj_set_style_radius(mask, 0, 0);
@@ -115,7 +115,7 @@ void dev_info_name_edit_cb(lv_event_t *e)
     lv_obj_set_style_pad_all(mask, 0, LV_STATE_DEFAULT);// 移除内边距
     lv_obj_clear_flag(mask, LV_OBJ_FLAG_SCROLLABLE);// 移除滚动功能
 
-    // 2. 创建修改昵称弹窗（父对象：mask，而非scr）
+    // 创建修改昵称弹窗（父对象：mask，而非scr）
     lv_obj_t *edit_dialog = lv_obj_create(mask);
     lv_obj_set_size(edit_dialog, 600, 297);//占满mask
     lv_obj_set_pos(edit_dialog, 212, 149);
@@ -125,31 +125,17 @@ void dev_info_name_edit_cb(lv_event_t *e)
     lv_obj_set_style_border_width(edit_dialog, 0, 0);
     lv_obj_set_style_border_opa(edit_dialog, LV_OPA_100, 0);
 
-    // 3. 添加标题（父对象：mask，坐标相对mask）
-    lv_obj_t *title = create_text_label(mask, "edit_title", &lv_font_montserrat_24, lv_color_hex(0x000000), 464, 187, LV_OPA_100);
-    if(title) {
-        lv_label_set_text(title, "change_nickname");
-    }
 
-    // 4. 添加提示文本（父对象：mask，坐标相对mask）
-    lv_obj_t *hint = create_text_label(mask, "edit_hint", &lv_font_montserrat_16, lv_color_hex(0x666666), 387, 225, LV_OPA_70);
-    if(hint) {
-        lv_label_set_text(hint, "character_not_exceed_8_no_special");
-    }
-
-    // 5. 昵称标签（父对象：mask，坐标相对mask）
-    lv_obj_t *hint2 = create_text_label(mask, "name", &lv_font_montserrat_24, lv_color_hex(0x666666), 293, 269, LV_OPA_80);
-
-    // 6. 添加输入框（父对象：mask，坐标相对mask）
+    // 添加输入框（父对象：mask，坐标相对mask）
     lv_obj_t *input = lv_textarea_create(mask);
     if(input) {
         lv_obj_set_size(input, 382, 44);
         lv_obj_set_pos(input, 348, 264);
         lv_textarea_set_placeholder_text(input, "change_nickname_placeholder");
-        lv_textarea_set_text(input, "dev_name");
+        lv_textarea_set_text(input, "text");
         lv_obj_clear_flag(input, LV_OBJ_FLAG_SCROLLABLE);
         lv_textarea_set_max_length(input, 8);
-        lv_obj_set_style_text_font(input, &lv_font_montserrat_24, 0);
+        
 
         // ========== 绑定点击事件：点击输入框弹出键盘 ==========
         lv_obj_add_flag(input, LV_OBJ_FLAG_CLICKABLE);
@@ -173,10 +159,10 @@ void dev_info_name_edit_cb(lv_event_t *e)
         lv_obj_set_style_radius(confirm_btn, 6, 0);
 
         // 8. 按钮文本（父对象：confirm_btn，坐标相对按钮）
-        lv_obj_t *confirm_label = create_text_label(confirm_btn, "confirm_label", &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 44, 0, LV_OPA_100);
-        if(confirm_label) {
-            lv_label_set_text(confirm_label, "button");
-        }
+        // lv_obj_t *confirm_label = create_text_label(confirm_btn, "confirm_label", &eques_bold_24, lv_color_hex(0xFFFFFF), 44, 0, LV_OPA_100);
+        // if(confirm_label) {
+        //     lv_label_set_text(confirm_label, "button");
+        // }
 
         // 绑定点击事件
         // mask遮罩层点击 → 关闭键盘
@@ -210,34 +196,44 @@ void ui_dev_info_create(lv_obj_t *homepage_scr)
     lv_obj_add_style(dev_info_scr, &dev_info_grad_style, LV_STATE_DEFAULT);
 
     // 添加标题
-    lv_obj_t *dev_info_label = create_text_label(dev_info_scr, "dev_info_label", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 83, 80, LV_OPA_100);
+    create_text_label(dev_info_scr, "设备信息", &eques_bold_36, lv_color_hex(0xFFFFFF), 83, 80, LV_OPA_100);
 
     // 设备昵称容器
     lv_obj_t *dev_con1 = create_container
     (dev_info_scr, 48, 150, 928, 83, lv_color_hex(0x192A46), LV_OPA_100, 16, lv_color_hex(0x2E4B7D), 0, LV_OPA_0);
     if(dev_con1) {
         lv_obj_add_flag(dev_con1, LV_OBJ_FLAG_CLICKABLE);
-        lv_obj_set_style_bg_opa(dev_con1, LV_OPA_70, LV_STATE_PRESSED);
-        lv_obj_add_event_cb(dev_con1, dev_info_name_edit_cb, LV_EVENT_CLICKED, dev_info_scr);
+        //lv_obj_set_style_bg_opa(dev_con1, LV_OPA_70, LV_STATE_PRESSED);
+        //lv_obj_add_event_cb(dev_con1, dev_info_name_edit_cb, LV_EVENT_CLICKED, dev_info_scr);
     }
 
     // 设备昵称标签
-    lv_obj_t *dev_lable1 = create_text_label(dev_info_scr, "dev_name", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 130, 169, LV_OPA_100);
-    dev_name_label = create_text_label(dev_info_scr, "dev_name", &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 801, 181, LV_OPA_50);
+    lv_obj_t *dev_name_title = create_text_label(dev_con1, "设备昵称", &eques_regular_36, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
+    lv_obj_align(dev_name_title, LV_ALIGN_LEFT_MID, 65, 0);
+    dev_name_label = create_text_label(dev_con1, "可视智能锁", &eques_regular_24, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_50);
+    lv_obj_align(dev_name_label, LV_ALIGN_RIGHT_MID, -10, 0);
+    lv_obj_t *dev_tag_label = create_text_label(dev_con1, ICON_TAG, &my_custom_icon, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
+    lv_obj_align(dev_tag_label, LV_ALIGN_LEFT_MID, 10, 0);
 
     // 设备编号容器
-    lv_obj_t *dev_con2 = create_container(dev_info_scr, 48, 241, 928, 83, lv_color_hex(0x192A46), LV_OPA_100, 16, lv_color_hex(0x2E4B7D), 0, LV_OPA_0);
-    lv_obj_t *dev_lable2 = create_text_label(dev_info_scr, "dev_num", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 130, 261, LV_OPA_100);
-    lv_obj_t *dev_neirong_lable2 = create_text_label(dev_info_scr, "123456", &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 808, 268, LV_OPA_50);
-
+    lv_obj_t *dev_con = create_container(dev_info_scr, 48, 241, 928, 83, lv_color_hex(0x192A46), LV_OPA_100, 16, lv_color_hex(0x2E4B7D), 0, LV_OPA_0);
+    lv_obj_t *dev_id_label = create_text_label(dev_con, "设备号", &eques_regular_36, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
+    lv_obj_align(dev_id_label, LV_ALIGN_LEFT_MID, 65, 0);
+    lv_obj_t *dev_id_num_label = create_text_label(dev_con, "12345678", &eques_regular_24, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_50);
+    lv_obj_align(dev_id_num_label, LV_ALIGN_RIGHT_MID, -10, 0);
+    lv_obj_t *dev_server_label = create_text_label(dev_con, ICON_SERVER, &my_custom_icon, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
+    lv_obj_align(dev_server_label, LV_ALIGN_LEFT_MID, 10, 0);    
     // WiFi信息容器
-    lv_obj_t *dev_con3 = create_container(dev_info_scr, 48, 332, 928, 83, lv_color_hex(0x192A46), LV_OPA_100, 16, lv_color_hex(0x2E4B7D), 0, LV_OPA_0);
-    lv_obj_t *dev_lable3 = create_text_label(dev_info_scr, "cru_wifi", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 130, 350, LV_OPA_100);
-    lv_obj_t *dev_neirong_lable3 = create_text_label(dev_info_scr, "wifi_name", &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 669, 355, LV_OPA_50);
-
+    lv_obj_t *wifi_con = create_container(dev_info_scr, 48, 332, 928, 83, lv_color_hex(0x192A46), LV_OPA_100, 16, lv_color_hex(0x2E4B7D), 0, LV_OPA_0);
+    create_text_label(dev_info_scr, "当前网络", &eques_regular_36, lv_color_hex(0xFFFFFF), 130, 350, LV_OPA_100);
+    lv_obj_t *wifi_name_label = create_text_label(wifi_con, "wifi-name", &eques_regular_24, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_50);
+    lv_obj_align(wifi_name_label, LV_ALIGN_RIGHT_MID, -60, 0);
+    create_text_label(dev_info_scr, ICON_WIFI, &my_custom_icon, lv_color_hex(0xC4C4C4), 912, 354, LV_OPA_100);
+    lv_obj_t *wifi_tag_label = create_text_label(wifi_con, ICON_PASSPORT, &my_custom_icon, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
+    lv_obj_align(wifi_tag_label, LV_ALIGN_LEFT_MID, 10, 0);
     // 返回
-    lv_obj_t *back_btn = create_container_circle(dev_info_scr, 52, 90, 30,
-    true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
+    lv_obj_t *back_btn = create_text_label
+    (dev_info_scr, ICON_CHEVORN_LEFT, &my_custom_icon, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
     lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(back_btn,LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(back_btn,LV_OPA_80,LV_STATE_PRESSED);
@@ -250,29 +246,45 @@ void ui_dev_info_create(lv_obj_t *homepage_scr)
 }
 
 /***********************设备信息界面回调*********************/
+extern void lv_homepage(void);
+extern void destroy_homepage(void);
 void dev_info_btn_click_cb(lv_event_t *e)
 {
     if(e == NULL) return;
 
-    lv_obj_t *homepage_scr = (lv_obj_t *)lv_event_get_user_data(e);
-    if(homepage_scr == NULL) {
-        LV_LOG_WARN("dev_info_btn_click_cb: homepage_scr is NULL!");
+    lv_obj_t *homepage_scr_temp = (lv_obj_t *)lv_event_get_user_data(e);
+    if(homepage_scr_temp == NULL) {
+        LV_LOG_WARN("dev_info_back_btn_click_cb: homepage_scr is NULL!");
         return;
     }
-    ui_dev_info_create(homepage_scr);
-}
 
-extern void lv_homepage();
-// 设备信息页面返回
+    // 创建设备信息界面
+    ui_dev_info_create(homepage_scr_temp);
+    // 更新状态栏
+    
+    // 销毁主页
+    destroy_homepage();
+    update_status_bar_parent(dev_info_scr);
+    LV_LOG_WARN("dev_info_back_btn_click_cb: Destroy the homepage and create the dev_info interface");
+}
+// 设备信息界面返回
 void dev_info_back_btn_click_cb(lv_event_t *e)
 {
-    if (e == NULL) return;
-    // 回到主页
-    lv_homepage();
-    // 销毁设备信息界面所有资源
-    dev_info_destroy();
+    if(e == NULL) return;
+
+    lv_obj_t *current_del_scr = lv_disp_get_scr_act(NULL);
+
+    if(!lv_obj_is_valid(current_del_scr)) return;
+
+    // 当前显示的是设备信息界面 → 重建主页并销毁当前界面
+    if(current_del_scr == dev_info_scr) {
+        lv_homepage();                      // 重建主页
+        lv_obj_del(current_del_scr);        // 销毁设备信息界面
+        dev_info_scr = NULL;            // 指针置空
+        return;
+    }
 }
-// 销毁设备信息界面所有资源（彻底清干净，无残留）
+// 销毁设备信息界面所有资源
 static void dev_info_destroy(void)
 {
     // 1. 销毁键盘
@@ -287,7 +299,7 @@ static void dev_info_destroy(void)
         dev_info_scr = NULL;
     }
 
-    // 3. 释放样式（解决你说的几KB泄漏）
+    // 3. 释放样式
     if (dev_info_style_inited) {
         lv_style_reset(&dev_info_grad_style);
         dev_info_style_inited = false;

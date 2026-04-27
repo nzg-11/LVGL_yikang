@@ -112,17 +112,10 @@ void ui_card_add_create(lv_obj_t *enroll_scr)
 
     // ===================== UI元素绘制 =====================
     // 标题
-    lv_obj_t *add_card_title = create_text_label(
-        card_add_scr, "Add Card", &lv_font_montserrat_36,
-        lv_color_hex(0xFFFFFF), 0, 115, LV_OPA_100
-    );
-    lv_obj_align(add_card_title, LV_ALIGN_TOP_MID, 0, 115);
+    create_text_label(card_add_scr, "添加卡片", &eques_bold_36, lv_color_hex(0xFFFFFF), 83, 80, LV_OPA_100);
 
     // 提示文本 (修复原代码指纹错误)
-    lv_obj_t *prompt_label = create_text_label(
-        card_add_scr, "Please place your card", &lv_font_montserrat_48,
-        lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100
-    );
+    lv_obj_t *prompt_label = create_text_label(card_add_scr, "正在录入", &eques_regular_32, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
     lv_obj_align(prompt_label, LV_ALIGN_TOP_MID, 0, 508);
 
     // 圆形装饰UI
@@ -153,10 +146,9 @@ void ui_card_add_create(lv_obj_t *enroll_scr)
     lv_obj_add_event_cb(confirm_enter_btn, card_confirm_btn_click_cb, LV_EVENT_CLICKED, enroll_scr);
 
     // 返回按钮
-    lv_obj_t *back_btn = create_container_circle(
-        card_add_scr, 52, 90, 30, true,
-        lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100
-    );
+    lv_obj_t *back_btn = create_text_label
+    (card_add_scr, ICON_CHEVORN_LEFT, &my_custom_icon, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
+    
     lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(back_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(back_btn, LV_OPA_80, LV_STATE_PRESSED);
@@ -281,7 +273,7 @@ static void card_timeout_timer_cb(lv_timer_t *timer)
 
     // 失败提示文本
     lv_obj_t *fail_label = create_text_label(
-        card_fail_popup, "Add failed (timeout)", &lv_font_montserrat_24,
+        card_fail_popup, "添加失败", &eques_regular_24,
         lv_color_hex(0xFF0000), 0, 38, LV_OPA_100
     );
     lv_obj_align(fail_label, LV_ALIGN_TOP_MID, 0, 38);
@@ -295,10 +287,7 @@ static void card_timeout_timer_cb(lv_timer_t *timer)
     lv_obj_set_style_opa(fail_confirm_btn, LV_OPA_80, LV_STATE_PRESSED);
     lv_obj_set_style_pad_all(fail_confirm_btn, 0, LV_STATE_DEFAULT);
 
-    lv_obj_t *fail_confirm_label = create_text_label(
-        fail_confirm_btn, "Confirm", &lv_font_montserrat_28,
-        lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100
-    );
+    lv_obj_t *fail_confirm_label = create_text_label(fail_confirm_btn, "确认并返回",&eques_bold_24, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
     lv_obj_set_align(fail_confirm_label, LV_ALIGN_CENTER);
     lv_obj_add_event_cb(fail_confirm_btn, card_fail_confirm_cb, LV_EVENT_CLICKED, enroll_scr);
 }
@@ -355,7 +344,7 @@ static void card_popup_confirm_cb(lv_event_t *e)
 
     // 名称为空则使用默认值
     if (card_name == NULL || strlen(card_name) == 0) {
-        card_name = "card01";
+        card_name = "";
     }
 
     // 通知录入完成
@@ -413,7 +402,7 @@ static void create_card_complete_popup(lv_obj_t *enroll_scr)
 
     // 标题文本
     lv_obj_t *succeed_add_label = create_text_label(
-        card_custom_popup, "succeed add", &lv_font_montserrat_24,
+        card_custom_popup, "添加成功", &eques_regular_24,
         lv_color_hex(0x000000), 0, 38, LV_OPA_100
     );
     lv_obj_align(succeed_add_label, LV_ALIGN_TOP_MID, 0, 38);
@@ -427,13 +416,13 @@ static void create_card_complete_popup(lv_obj_t *enroll_scr)
     lv_obj_set_style_text_color(card_input_textarea, lv_color_hex(0x333333), LV_STATE_DEFAULT);
     lv_obj_set_style_border_width(card_input_textarea, 0, LV_STATE_DEFAULT);
     lv_obj_set_style_radius(card_input_textarea, 6, LV_STATE_DEFAULT);
-    lv_textarea_set_placeholder_text(card_input_textarea, "please input card name");
+    //lv_textarea_set_placeholder_text(card_input_textarea, "please input card name");
     lv_textarea_set_max_length(card_input_textarea, CARD_NAME_MAX_LEN);
     lv_textarea_set_one_line(card_input_textarea, true);
-    lv_obj_set_style_text_font(card_input_textarea, &lv_font_montserrat_24, LV_STATE_DEFAULT);
+    //lv_obj_set_style_text_font(card_input_textarea, &lv_font_montserrat_24, LV_STATE_DEFAULT);
     lv_obj_add_flag(card_input_textarea, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(card_input_textarea, LV_OPA_80, LV_STATE_PRESSED);
-    lv_obj_add_event_cb(card_input_textarea, card_input_click_cb, LV_EVENT_CLICKED, NULL);
+    //lv_obj_add_event_cb(card_input_textarea, card_input_click_cb, LV_EVENT_CLICKED, NULL);
 
     // 确认按钮
     lv_obj_t *confirm_btn = create_custom_gradient_container(
@@ -444,10 +433,7 @@ static void create_card_complete_popup(lv_obj_t *enroll_scr)
     lv_obj_set_style_opa(confirm_btn, LV_OPA_80, LV_STATE_PRESSED);
     lv_obj_set_style_pad_all(confirm_btn, 0, LV_STATE_DEFAULT);
 
-    lv_obj_t *confirm_label = create_text_label(
-        confirm_btn, "Confirm", &lv_font_montserrat_28,
-        lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100
-    );
+    lv_obj_t *confirm_label = create_text_label(confirm_btn, "确认并返回",&eques_bold_24, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
     lv_obj_set_align(confirm_label, LV_ALIGN_CENTER);
     lv_obj_add_event_cb(confirm_btn, card_popup_confirm_cb, LV_EVENT_CLICKED, enroll_scr);
 

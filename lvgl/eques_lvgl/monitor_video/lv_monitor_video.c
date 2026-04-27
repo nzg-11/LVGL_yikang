@@ -395,7 +395,7 @@ static void monitor_lock_event_cb(lv_event_t *e);
 static void lock_auto_close_timer_cb(lv_timer_t *timer);
 // 清除定时器的函数
 static void clear_lock_auto_close_timer(void);
-void monitor_back_btn_click_cb(lv_event_t *e);
+void monitor_video_back_btn_click_cb(lv_event_t *e);
 static void monitor_video_destroy(void);
 
 // 同步声音按钮显示状态的函数
@@ -519,11 +519,7 @@ void ui_monitor_video_create(lv_obj_t *homepage_scr)
     monitor_video_scr = lv_obj_create(NULL);
     
     lv_style_reset(&monitor_video_grad_style);
-    lv_style_set_bg_color(&monitor_video_grad_style, lv_color_hex(0x010715));// 渐变主色：#010715（0%）
-    lv_style_set_bg_grad_color(&monitor_video_grad_style, lv_color_hex(0x0E1D37));// 渐变副色：#0E1D37（100%）
-    lv_style_set_bg_grad_dir(&monitor_video_grad_style, LV_GRAD_DIR_VER);// 渐变方向：垂直
-    lv_style_set_bg_main_stop(&monitor_video_grad_style, 0);// 渐变范围：0~255
-    lv_style_set_bg_grad_stop(&monitor_video_grad_style, 255);
+    lv_style_set_bg_color(&monitor_video_grad_style, lv_color_hex(0x888585));
     lv_obj_add_style(monitor_video_scr, &monitor_video_grad_style, LV_STATE_DEFAULT);// 应用渐变样式到屏幕
 
     /*******************************************监控操作容器*******************************************/
@@ -533,27 +529,27 @@ void ui_monitor_video_create(lv_obj_t *homepage_scr)
     lv_obj_set_style_pad_all(monitor_video_mode_con, 0, 0);
     /**********************************************监控操作*******************************************/
 
-    // 监控视频声音开关
-    monitor_sound_on_btn = create_image_obj(monitor_video_mode_con, &yinliang_off, 0, 0);//开启声音
+    // 监控视频音量开关
+    monitor_sound_on_btn = create_text_label(monitor_video_mode_con, ICON_VOLUME_ON, &my_custom_icon_60, lv_color_hex(0x838383), 0, 0, LV_OPA_100);
     lv_obj_align(monitor_sound_on_btn, LV_ALIGN_LEFT_MID, 46, 0);
     lv_obj_add_flag(monitor_sound_on_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(monitor_sound_on_btn, LV_OPA_80,LV_STATE_PRESSED);
     lv_obj_add_event_cb(monitor_sound_on_btn, monitor_sound_event_cb, LV_EVENT_CLICKED, NULL);
     
-    monitor_sound_off_btn = create_image_obj(monitor_video_mode_con, &yinliang, 0, 0);//关闭声音
+    monitor_sound_off_btn = create_text_label(monitor_video_mode_con, ICON_VOLUME_OFF, &my_custom_icon_60, lv_color_hex(0x838383), 0, 0, LV_OPA_100);
     lv_obj_align(monitor_sound_off_btn, LV_ALIGN_LEFT_MID, 46, 0);
     lv_obj_add_flag(monitor_sound_off_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(monitor_sound_off_btn, LV_OPA_80,LV_STATE_PRESSED);
     lv_obj_add_event_cb(monitor_sound_off_btn, monitor_sound_event_cb, LV_EVENT_CLICKED, NULL);
 
     // 监控视频麦克风开关
-    monitor_mic_on_btn = create_image_obj(monitor_video_mode_con, &kaimai, 0, 0);
+    monitor_mic_on_btn = create_text_label(monitor_video_mode_con, ICON_MICROPHONE_ON, &iconfont_icon_50, lv_color_hex(0x838383), 0, 0, LV_OPA_100);
     lv_obj_align(monitor_mic_on_btn, LV_ALIGN_LEFT_MID, 143, 0);
     lv_obj_add_flag(monitor_mic_on_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(monitor_mic_on_btn, LV_OPA_80,LV_STATE_PRESSED);
     lv_obj_add_event_cb(monitor_mic_on_btn, monitor_mic_event_cb, LV_EVENT_CLICKED, NULL);
 
-    monitor_mic_off_btn = create_image_obj(monitor_video_mode_con, &bimai, 0, 0);
+    monitor_mic_off_btn = create_text_label(monitor_video_mode_con, ICON_MICROPHONE_OFF, &iconfont_icon_50, lv_color_hex(0x838383), 0, 0, LV_OPA_100);
     lv_obj_align(monitor_mic_off_btn, LV_ALIGN_LEFT_MID, 143, 0);
     lv_obj_add_flag(monitor_mic_off_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(monitor_mic_off_btn, LV_OPA_80,LV_STATE_PRESSED);
@@ -579,32 +575,32 @@ void ui_monitor_video_create(lv_obj_t *homepage_scr)
     // 给背景容器绑定锁回调（扩大点击区域，仅触发开锁）
     lv_obj_add_event_cb(monitor_lock_on_con, monitor_lock_event_cb, LV_EVENT_CLICKED, NULL);
 
-    monitor_lock_on_btn = create_image_obj(monitor_lock_on_con, &kaisuo, 0, 0);//关锁图标
+    monitor_lock_on_btn = create_text_label(monitor_lock_on_con, ICON_LOCK_50, &iconfont_icon_50, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
     lv_obj_align(monitor_lock_on_btn, LV_ALIGN_CENTER, 0, 0);
     lv_obj_add_flag(monitor_lock_on_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(monitor_lock_on_btn, LV_OPA_80,LV_STATE_PRESSED);
     lv_obj_add_event_cb(monitor_lock_on_btn, monitor_lock_event_cb, LV_EVENT_CLICKED, NULL);
 
-    monitor_lock_off_btn = create_image_obj(monitor_lock_on_con, &kaisuo_off, 0, 0);//开锁图标
+    monitor_lock_off_btn = create_text_label(monitor_lock_on_con, ICON_UNLOCK_50, &iconfont_icon_50, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
     lv_obj_align(monitor_lock_off_btn, LV_ALIGN_CENTER, 0, 0);
     lv_obj_add_flag(monitor_lock_off_btn, LV_OBJ_FLAG_HIDDEN); // 默认隐藏开锁图标
 
     //监控视频截屏按钮
-    lv_obj_t *monitor_screenshot_btn = create_image_obj(monitor_video_mode_con, &jiepin, 0, 0);
+    lv_obj_t *monitor_screenshot_btn = create_text_label(monitor_video_mode_con, ICON_SCREENSHOT, &iconfont_icon_50, lv_color_hex(0x838383), 0, 0, LV_OPA_100);
     lv_obj_align(monitor_screenshot_btn, LV_ALIGN_LEFT_MID, 365, 0);
     lv_obj_add_flag(monitor_screenshot_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(monitor_screenshot_btn, LV_OPA_80,LV_STATE_PRESSED);
     
     //监控视频录屏开关
     // 开启录屏按钮
-    monitor_record_on_btn = create_image_obj(monitor_video_mode_con, &lupin_off, 0, 0);
+    monitor_record_on_btn = create_text_label(monitor_video_mode_con, ICON_VIDEO_50, &iconfont_icon_50, lv_color_hex(0x838383), 0, 0, LV_OPA_100);
     lv_obj_align(monitor_record_on_btn, LV_ALIGN_LEFT_MID, 466, 0);
     lv_obj_add_flag(monitor_record_on_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(monitor_record_on_btn, LV_OPA_80,LV_STATE_PRESSED);
     lv_obj_add_event_cb(monitor_record_on_btn, monitor_record_event_cb, LV_EVENT_CLICKED, NULL);
 
     // 关闭录屏按钮
-    monitor_record_off_btn = create_image_obj(monitor_video_mode_con, &lupin, 0, 0);
+    monitor_record_off_btn = create_text_label(monitor_video_mode_con, ICON_RECORDING, &iconfont_icon_50, lv_color_hex(0x838383), 0, 0, LV_OPA_100);
     lv_obj_align(monitor_record_off_btn, LV_ALIGN_LEFT_MID, 466, 0);
     lv_obj_add_flag(monitor_record_off_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(monitor_record_off_btn, LV_OPA_80,LV_STATE_PRESSED);
@@ -616,17 +612,17 @@ void ui_monitor_video_create(lv_obj_t *homepage_scr)
     (monitor_video_scr, 0, 0, 190, 47, lv_color_hex(0xFFFFFF), LV_OPA_70, 41,lv_color_hex(0x1F3150), 0, LV_OPA_90);
     lv_obj_align(monitor_record_time_con, LV_ALIGN_TOP_MID, 0, 80);
     lv_obj_set_style_pad_all(monitor_record_time_con, 0, 0);
-    monitor_record_time_label = create_text_label(monitor_record_time_con, "00:00:00", &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
+    monitor_record_time_label = create_text_label(monitor_record_time_con, "00:00:00", &eques_regular_24, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
     lv_obj_align(monitor_record_time_label, LV_ALIGN_CENTER, 0, 0);
     lv_obj_add_flag(monitor_record_time_con, LV_OBJ_FLAG_HIDDEN);
     // 左上角返回按钮
     //lv_obj_t *back_btn = create_image_obj(monitor_video_scr, "H:back.png", 52, 123);
-    lv_obj_t *back_btn = create_container_circle(monitor_video_scr, 52, 90, 30,
-    true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
+    lv_obj_t *back_btn = create_text_label
+    (monitor_video_scr, ICON_CHEVORN_LEFT, &my_custom_icon, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
     lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(back_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(back_btn, LV_OPA_80, LV_STATE_PRESSED);
-    lv_obj_add_event_cb(back_btn, monitor_back_btn_click_cb, LV_EVENT_CLICKED, homepage_scr);
+    lv_obj_add_event_cb(back_btn, monitor_video_back_btn_click_cb, LV_EVENT_CLICKED, homepage_scr);
     
     //更新状态条父对象
     update_status_bar_parent(monitor_video_scr);
@@ -766,26 +762,42 @@ static void monitor_lock_event_cb(lv_event_t *e)
     // 移除手动关锁逻辑：点击开锁图标时不处理，仅等待定时器自动关锁
 }
 
-extern void lv_homepage();
-// 监控界面返回
-void monitor_back_btn_click_cb(lv_event_t *e)
-{
-    if (e == NULL) return;
-    lv_homepage();
-    // 清理监控界面所有资源
-    monitor_video_destroy();
-}
-/***********************监控视频界面回调*********************/
+extern void lv_homepage(void);
+extern void destroy_homepage(void);
 void monitor_video_btn_click_cb(lv_event_t *e)
 {
     if(e == NULL) return;
-    
-    lv_obj_t *homepage_scr = (lv_obj_t *)lv_event_get_user_data(e);
-    if(homepage_scr == NULL) {
+
+    lv_obj_t *homepage_scr_temp = (lv_obj_t *)lv_event_get_user_data(e);
+    if(homepage_scr_temp == NULL) {
         LV_LOG_WARN("monitor_video_btn_click_cb: homepage_scr is NULL!");
         return;
     }
-    ui_monitor_video_create(homepage_scr);
+
+    // 创建监控视频界面
+    ui_monitor_video_create(homepage_scr_temp);
+    // 更新状态栏
+    
+    // 销毁主页
+    destroy_homepage();
+    update_status_bar_parent(monitor_video_scr);
+    LV_LOG_WARN("monitor_video_btn_click_cb: Destroy the homepage and create the monitor_video interface");
+}
+// 监控视频界面返回
+void monitor_video_back_btn_click_cb(lv_event_t *e)
+{
+    if(e == NULL) return;
+
+    lv_obj_t *current_del_scr = lv_disp_get_scr_act(NULL);
+
+    if(!lv_obj_is_valid(current_del_scr)) return;
+
+    // 当前显示的是系统设置界面 → 重建主页并销毁当前界面
+    if(current_del_scr == monitor_video_scr) {
+        lv_homepage();                      // 重建主页
+        monitor_video_destroy();
+        return;
+    }
 }
 // 完全清理监控视频界面所有资源（零泄漏）
 static void monitor_video_destroy(void)

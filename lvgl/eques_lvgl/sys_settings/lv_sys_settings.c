@@ -15,7 +15,7 @@ static lv_obj_t *reset_popup = NULL;
 lv_obj_t *sys_settings_scr = NULL; 
 lv_style_t sys_settings_grad_style;
 static bool sys_settings_style_inited = false;
-static lv_obj_t *g_time_view_label = NULL;
+lv_obj_t *g_time_view_label = NULL;
 // 三个滑块对象指针
 static lv_obj_t *light_slider = NULL;    // 屏幕亮度滑块
 static lv_obj_t *ring_slider = NULL;     // 铃声滑块
@@ -44,33 +44,25 @@ void set_notify_volume(uint8_t volume);         // 设置通知音量（0-100）
 uint8_t get_notify_volume(void);                // 获取当前通知音量
 
 void slider_reset_to_default(void);             // 滑块恢复默认值（50%）
-static void sys_settings_destroy(void);
+
 // ==================== 滑块回调函数实现 ====================
 // 屏幕亮度滑块值改变回调
 static void light_slider_value_changed_cb(lv_event_t *e) {
     if (e == NULL || light_slider == NULL) return;
-    int32_t value = lv_slider_get_value(light_slider);
-    // 这里添加硬件控制逻辑，例如：
-    // set_pwm_brightness(value); // 调用底层驱动设置PWM亮度
-    LV_LOG_USER("Light brightness set to: %d%%", value);
+    lv_slider_get_value(light_slider);
 }
 
 // 铃声滑块值改变回调
 static void ring_slider_value_changed_cb(lv_event_t *e) {
     if (e == NULL || ring_slider == NULL) return;
-    int32_t value = lv_slider_get_value(ring_slider);
-    // 这里添加硬件控制逻辑，例如：
-    // set_dac_volume(value, RING_CHANNEL); // 设置铃声通道音量
-    LV_LOG_USER("Ring volume set to: %d%%", value);
+    lv_slider_get_value(ring_slider);
+
 }
 
 // 通知音量滑块值改变回调
 static void notify_slider_value_changed_cb(lv_event_t *e) {
     if (e == NULL || notify_slider == NULL) return;
-    int32_t value = lv_slider_get_value(notify_slider);
-    // 这里添加硬件控制逻辑，例如：
-    // set_dac_volume(value, NOTIFY_CHANNEL); // 设置通知通道音量
-    LV_LOG_USER("Notify volume set to: %d%%", value);
+    lv_slider_get_value(notify_slider);
 }
 
 // ==================== 外部控制接口实现 ====================
@@ -128,22 +120,21 @@ void slider_reset_to_default(void) {
     LV_LOG_USER("All sliders reset to default value: %d%%", SLIDER_DEFAULT_VALUE);
 }
 
-static void light_time_click_cb(lv_event_t *e) {
-    if(e == NULL) return;
-    lv_obj_t *homepage_scr = (lv_obj_t *)lv_event_get_user_data(e);
-    ui_screen_time_settings_create(homepage_scr);
-}
+
 
 static void monitor_mode_click_cb(lv_event_t *e) {
     if(e == NULL) return;
-    //强制清空监控模式的残留弹窗，杜绝对象重叠
-    extern lv_obj_t *monitor_popup;
-    if(lv_obj_is_valid(monitor_popup)){
-        lv_obj_del(monitor_popup);
-        monitor_popup = NULL;
-    }
     lv_obj_t *homepage_scr = (lv_obj_t *)lv_event_get_user_data(e);
     ui_monitor_mode_settings_create(homepage_scr);
+}
+
+void light_time_click_cb(lv_event_t *e)
+{
+    if(e == NULL) return;
+    lv_obj_t *parent_scr = (lv_obj_t *)lv_event_get_user_data(e);
+    if(parent_scr == NULL) return;
+
+    ui_screen_time_settings_create(parent_scr);
 }
 
 static void biometrics_click_cb(lv_event_t *e) {
@@ -154,8 +145,8 @@ static void biometrics_click_cb(lv_event_t *e) {
 
 static void notification_click_cb(lv_event_t *e) {
     if(e == NULL) return;
-    lv_obj_t *homepage_scr = (lv_obj_t *)lv_event_get_user_data(e);
-    ui_notification_settings_create(homepage_scr);
+    lv_obj_t *parent_scr = (lv_obj_t *)lv_event_get_user_data(e);
+    ui_notification_settings_create(parent_scr);
 }
 
 // ==================== 样式初始化 ====================
@@ -168,10 +159,15 @@ static void init_sys_settings_styles(void) {
 
 // ==================== 主页面创建 ====================
 void ui_sys_settings_create(lv_obj_t *homepage_scr) {
+    if(sys_settings_scr != NULL) {
+        lv_obj_del(sys_settings_scr);
+        sys_settings_scr = NULL;
+    }
     init_sys_settings_styles();
-    notification_init();
-    biometrics_init();
-
+    
+    //notification_init();
+   // biometrics_init();
+    //screen_time_init(g_time_view_label);
     if(homepage_scr == NULL) {
         LV_LOG_WARN("ui_sys_settings_create: homepage_scr is NULL!");
         return;
@@ -187,9 +183,9 @@ void ui_sys_settings_create(lv_obj_t *homepage_scr) {
     lv_obj_add_style(sys_settings_scr, &sys_settings_grad_style, LV_STATE_DEFAULT);
     
     // 添加标签
-    lv_obj_t *sys_settings_label = create_text_label(sys_settings_scr, "sys_settings_label", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 83, 80, LV_OPA_100);
-    lv_obj_t *light = create_text_label(sys_settings_scr, "light", &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 65, 150, LV_OPA_70);
-    lv_obj_t *Ring_Notify = create_text_label(sys_settings_scr, "Ring_Notify", &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 65, 339, LV_OPA_70);
+    create_text_label(sys_settings_scr, "系统设置", &eques_bold_36, lv_color_hex(0xFFFFFF), 83, 80, LV_OPA_100);
+    create_text_label(sys_settings_scr, "亮度", &eques_regular_24, lv_color_hex(0xFFFFFF), 65, 150, LV_OPA_70);
+    create_text_label(sys_settings_scr, "铃声和通知", &eques_regular_24, lv_color_hex(0xFFFFFF), 65, 339, LV_OPA_70);
 
     // 屏幕亮度设置容器
     lv_obj_t *sys_settings_con = create_container(
@@ -202,8 +198,11 @@ void ui_sys_settings_create(lv_obj_t *homepage_scr) {
         lv_obj_set_style_bg_opa(sys_settings_con, LV_OPA_70, LV_STATE_PRESSED);
         lv_obj_add_event_cb(sys_settings_con, light_time_click_cb, LV_EVENT_CLICKED, sys_settings_scr);
     }
-    lv_obj_t *light_time = create_text_label(sys_settings_scr, "light_time", &lv_font_montserrat_32, lv_color_hex(0xFFFFFF), 73, 257, LV_OPA_100);
-    g_time_view_label = create_text_label(sys_settings_scr, "time", &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 890, 264, LV_OPA_70);
+    lv_obj_t *circel = create_container_circle(sys_settings_scr, 81, 210, 35 ,true, lv_color_hex(0xFFFFFF), lv_color_hex(0xffffff), 3, LV_OPA_100);
+    lv_obj_set_style_bg_opa(circel, LV_OPA_0, LV_STATE_DEFAULT);
+    create_text_label(sys_settings_scr, "亮屏时间", &eques_regular_32, lv_color_hex(0xFFFFFF), 73, 257, LV_OPA_100);
+    g_time_view_label = create_text_label(sys_settings_scr, screen_time_get_str(), &eques_regular_24, lv_color_hex(0xFFFFFF), 860, 264, LV_OPA_70);
+    create_text_label(sys_settings_scr, ICON_CHEVORN_RIGHT, &my_custom_icon, lv_color_hex(0xC4C4C4), 935, 260, LV_OPA_100);
     screen_time_init(g_time_view_label);
 
     // ==================== 创建屏幕亮度滑块 ====================
@@ -219,12 +218,6 @@ void ui_sys_settings_create(lv_obj_t *homepage_scr) {
     // 添加值改变回调
     lv_obj_add_event_cb(light_slider, light_slider_value_changed_cb, LV_EVENT_VALUE_CHANGED, NULL);
 
-    // lv_obj_t *quanquan_img = create_image_obj(sys_settings_scr, "D:quanquan.png", 74, 248);
-    // lv_obj_set_size(quanquan_img, 48, 48);
-    // lv_obj_t *qingtian_img = create_image_obj(sys_settings_scr, "D:qingtian.png", 676, 248);
-    // lv_obj_set_size(qingtian_img, 48, 48);
-    // lv_obj_t *Vector_img = create_image_obj(sys_settings_scr, "D:Vector.png", 710, 319);
-
     // ring notify 容器
     lv_obj_t *sys_settings_con1 = create_container(
         sys_settings_scr, 48, 374, 928, 250, 
@@ -235,9 +228,14 @@ void ui_sys_settings_create(lv_obj_t *homepage_scr) {
         lv_obj_add_flag(sys_settings_con1, LV_OBJ_FLAG_CLICKABLE);
         lv_obj_set_style_bg_opa(sys_settings_con1, LV_OPA_70, LV_STATE_PRESSED);
     }
-    lv_obj_t *ring = create_text_label(sys_settings_scr, "ring", &lv_font_montserrat_32, lv_color_hex(0xFFFFFF), 73, 396, LV_OPA_100);
-    lv_obj_t *notify = create_text_label(sys_settings_scr, "notify", &lv_font_montserrat_32, lv_color_hex(0xFFFFFF), 73, 499, LV_OPA_100);
+    create_text_label(sys_settings_scr, "铃声", &eques_regular_32, lv_color_hex(0xFFFFFF), 73, 396, LV_OPA_100);
+    create_text_label(sys_settings_scr, ICON_VOLUME_S, &my_custom_icon_50, lv_color_hex(0xFFFFFF), 90, 452, LV_OPA_100);
+    create_text_label(sys_settings_scr, ICON_VOLUME_L, &my_custom_icon_50, lv_color_hex(0xFFFFFF), 900, 452, LV_OPA_100);
 
+    create_text_label(sys_settings_scr, "通知", &eques_regular_32, lv_color_hex(0xFFFFFF), 73, 499, LV_OPA_100);
+    create_text_label(sys_settings_scr, ICON_VOLUME_S, &my_custom_icon_50, lv_color_hex(0xFFFFFF), 90, 565, LV_OPA_100);
+    create_text_label(sys_settings_scr, ICON_VOLUME_L, &my_custom_icon_50, lv_color_hex(0xFFFFFF), 900, 565, LV_OPA_100);
+    
     // ==================== 创建铃声滑块 ====================
     ring_slider = lv_slider_create(sys_settings_scr);
     lv_obj_set_size(ring_slider, 750, 8);
@@ -281,7 +279,8 @@ void ui_sys_settings_create(lv_obj_t *homepage_scr) {
         lv_obj_add_event_cb(sys_settings_con2, monitor_mode_click_cb, LV_EVENT_CLICKED, sys_settings_scr);
     }
     // lv_obj_t *Vector_img1 = create_image_obj(sys_settings_scr, "D:Vector.png", 710, 730);
-    lv_obj_t *Monitor_Mode = create_text_label(sys_settings_scr, "Monitor_Mode", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 75, 654, LV_OPA_100);
+    create_text_label(sys_settings_scr, "监控模式", &eques_regular_36, lv_color_hex(0xFFFFFF), 75, 654, LV_OPA_100);
+    create_text_label(sys_settings_scr, ICON_CHEVORN_RIGHT, &my_custom_icon, lv_color_hex(0xC4C4C4), 935, 660, LV_OPA_100);
 
     // 生物识别容器
     lv_obj_t *sys_settings_con3 = create_container(
@@ -295,7 +294,8 @@ void ui_sys_settings_create(lv_obj_t *homepage_scr) {
         lv_obj_add_event_cb(sys_settings_con3, biometrics_click_cb, LV_EVENT_CLICKED, sys_settings_scr);
     }
     // lv_obj_t *Vector_img2 = create_image_obj(sys_settings_scr, "D:Vector.png", 710, 820);
-    lv_obj_t *Biometrics = create_text_label(sys_settings_scr, "Biometrics", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 75, 747, LV_OPA_100);
+    create_text_label(sys_settings_scr, "生物识别", &eques_regular_36, lv_color_hex(0xFFFFFF), 75, 747, LV_OPA_100);
+    create_text_label(sys_settings_scr, ICON_CHEVORN_RIGHT, &my_custom_icon, lv_color_hex(0xC4C4C4), 935, 750, LV_OPA_100);
 
     // 消息通知容器
     lv_obj_t *sys_settings_con4 = create_container(
@@ -309,8 +309,8 @@ void ui_sys_settings_create(lv_obj_t *homepage_scr) {
         lv_obj_add_event_cb(sys_settings_con4, notification_click_cb, LV_EVENT_CLICKED, sys_settings_scr);
     }
     // lv_obj_t *Vector_img3 = create_image_obj(sys_settings_scr, "D:Vector.png", 710, 910);
-    lv_obj_t *Notifications = create_text_label(sys_settings_scr, "Notifications", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 75, 840, LV_OPA_100);
-
+    create_text_label(sys_settings_scr, "消息通知", &eques_regular_36, lv_color_hex(0xFFFFFF), 75, 840, LV_OPA_100);
+    create_text_label(sys_settings_scr, ICON_CHEVORN_RIGHT, &my_custom_icon, lv_color_hex(0xC4C4C4), 935, 840, LV_OPA_100);
     // 恢复出厂设置容器
     lv_obj_t *sys_settings_con5 = create_container(
         sys_settings_scr, 48, 913, 928, 83, 
@@ -322,11 +322,11 @@ void ui_sys_settings_create(lv_obj_t *homepage_scr) {
         lv_obj_set_style_bg_opa(sys_settings_con5, LV_OPA_70, LV_STATE_PRESSED);
         lv_obj_add_event_cb(sys_settings_con5, factory_reset_click_cb, LV_EVENT_CLICKED, sys_settings_scr);
     }
-    lv_obj_t *Factory_Reset = create_text_label(sys_settings_scr, "Factory_Reset", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 75, 933, LV_OPA_100);
+    create_text_label(sys_settings_scr, "恢复出厂设置", &eques_regular_36, lv_color_hex(0xFFFFFF), 75, 933, LV_OPA_100);
 
     // 返回
-    lv_obj_t *back_btn = create_container_circle(sys_settings_scr, 52, 90, 30,
-    true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
+    lv_obj_t *back_btn = create_text_label
+    (sys_settings_scr, ICON_CHEVORN_LEFT, &my_custom_icon, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
     lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(back_btn,LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(back_btn,LV_OPA_80,LV_STATE_PRESSED);
@@ -336,17 +336,7 @@ void ui_sys_settings_create(lv_obj_t *homepage_scr) {
     lv_scr_load(sys_settings_scr);
 }
 
-// ==================== 系统设置按钮回调 ====================
-void sys_settings_btn_click_cb(lv_event_t *e) {
-    if(e == NULL) return;
-    
-    lv_obj_t *homepage_scr = (lv_obj_t *)lv_event_get_user_data(e);
-    if(homepage_scr == NULL) {
-        LV_LOG_WARN("sys_settings_btn_click_cb: homepage_scr is NULL!");
-        return;
-    }
-    ui_sys_settings_create(homepage_scr);
-}
+
 
 // ==================== 弹窗相关函数 ====================
 static void reset_popup_close_cb(lv_event_t *e) {
@@ -403,8 +393,8 @@ static void factory_reset_click_cb(lv_event_t *e) {
     lv_obj_clear_flag(confirm_dialog, LV_OBJ_FLAG_EVENT_BUBBLE);
 
     // 添加标题
-    lv_obj_t *title_label = create_text_label(confirm_dialog, "Factory_Reset", 
-                                             &lv_font_montserrat_32, lv_color_hex(0xF03535), 
+    lv_obj_t *title_label = create_text_label(confirm_dialog, "确认恢复出厂设置", 
+                                             &eques_regular_32, lv_color_hex(0xF03535), 
                                              0, 0, LV_OPA_100);
     lv_obj_set_align(title_label, LV_ALIGN_TOP_MID);
     lv_obj_set_pos(title_label, 0, 30);
@@ -416,9 +406,7 @@ static void factory_reset_click_cb(lv_event_t *e) {
     lv_obj_set_pos(confirm_btn, 80, 20);
     lv_obj_set_style_bg_opa(confirm_btn, LV_OPA_TRANSP, LV_STATE_DEFAULT);
     lv_obj_set_style_border_width(confirm_btn, 0, LV_STATE_DEFAULT);
-    lv_obj_t *confirm_label = create_text_label(confirm_btn, "confirm", 
-                                               &lv_font_montserrat_24, lv_color_hex(0x666666), 
-                                               0, 0, LV_OPA_100);
+    create_text_label(confirm_btn, "确认", &eques_regular_32, lv_color_hex(0x666666), 0, 0, LV_OPA_100);
     lv_obj_set_style_shadow_width(confirm_btn, 0, LV_STATE_DEFAULT);
     lv_obj_add_event_cb(confirm_btn, reset_confirm_cb, LV_EVENT_CLICKED, NULL);
 
@@ -429,31 +417,59 @@ static void factory_reset_click_cb(lv_event_t *e) {
     lv_obj_set_pos(cancel_btn, -80, 20);
     lv_obj_set_style_bg_opa(cancel_btn, LV_OPA_TRANSP, LV_STATE_DEFAULT);
     lv_obj_set_style_border_width(cancel_btn, 0, LV_STATE_DEFAULT);
-    lv_obj_t *cancel_label = create_text_label(cancel_btn, "cancel", 
-                                             &lv_font_montserrat_24, lv_color_hex(0x00BDBD), 
+    create_text_label(cancel_btn, "取消", 
+                                             &eques_regular_32, lv_color_hex(0x00BDBD), 
                                              0, 0, LV_OPA_100);
     lv_obj_set_style_shadow_width(cancel_btn, 0, LV_STATE_DEFAULT);
     lv_obj_add_event_cb(cancel_btn, reset_popup_close_cb, LV_EVENT_CLICKED, NULL);
 }
 
 extern void lv_homepage(void);
+extern void destroy_homepage(void);
+void sys_settings_btn_click_cb(lv_event_t *e)
+{
+    if(e == NULL) return;
+
+    lv_obj_t *homepage_scr_temp = (lv_obj_t *)lv_event_get_user_data(e);
+    if(homepage_scr_temp == NULL) {
+        LV_LOG_WARN("sys_settings_btn_click_cb: homepage_scr is NULL!");
+        return;
+    }
+
+    // 创建用户管理界面
+    ui_sys_settings_create(homepage_scr_temp);
+    // 更新状态栏
+    
+    // 销毁主页
+    destroy_homepage();
+    update_status_bar_parent(sys_settings_scr);
+    LV_LOG_WARN("sys_settings_btn_click_cb: Destroy the homepage and create the sys_settings interface");
+}
 // 系统设置界面返回
 void sys_settings_back_btn_click_cb(lv_event_t *e)
 {
-    if (e == NULL) return;
-    // 回到主页
-    lv_homepage();
-    // 彻底清理系统设置界面
-    sys_settings_destroy();
+    if(e == NULL) return;
+
+    lv_obj_t *current_del_scr = lv_disp_get_scr_act(NULL);
+
+    if(!lv_obj_is_valid(current_del_scr)) return;
+
+    // 当前显示的是系统设置界面 → 重建主页并销毁当前界面
+    if(current_del_scr == sys_settings_scr) {
+        lv_homepage();                      // 重建主页
+        lv_obj_del(current_del_scr);        // 销毁系统设置界面
+        sys_settings_scr = NULL;            // 指针置空
+        return;
+    }
 }
 // 完全销毁系统设置界面 → 零内存泄漏
-static void sys_settings_destroy(void)
+void sys_settings_destroy(void)
 {
-    // 1. 销毁恢复出厂弹窗
-    if (lv_obj_is_valid(reset_popup)) {
-        lv_obj_del(reset_popup);
-        reset_popup = NULL;
-    }
+    // // 1. 销毁恢复出厂弹窗
+    // if (lv_obj_is_valid(reset_popup)) {
+    //     lv_obj_del(reset_popup);
+    //     reset_popup = NULL;
+    // }
 
     // 2. 销毁主界面
     if (lv_obj_is_valid(sys_settings_scr)) {
@@ -461,17 +477,17 @@ static void sys_settings_destroy(void)
         sys_settings_scr = NULL;
     }
 
-    // 3. 释放样式（解决你说的几KB泄漏）
-    if (sys_settings_style_inited) {
-        lv_style_reset(&sys_settings_grad_style);
-        sys_settings_style_inited = false;
-    }
+    // // 3. 释放样式（解决你说的几KB泄漏）
+    // if (sys_settings_style_inited) {
+    //     lv_style_reset(&sys_settings_grad_style);
+    //     sys_settings_style_inited = false;
+    // }
 
-    // 4. 所有全局控件指针 置空
-    g_time_view_label = NULL;
-    light_slider = NULL;
-    ring_slider = NULL;
-    notify_slider = NULL;
+    // // 4. 所有全局控件指针 置空
+    // g_time_view_label = NULL;
+    // light_slider = NULL;
+    // ring_slider = NULL;
+    // notify_slider = NULL;
 }
 #endif
 

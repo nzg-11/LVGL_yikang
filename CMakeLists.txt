@@ -56,7 +56,6 @@ file(GLOB_RECURSE SRCS
 	"ui/*.c"
 )
 
-
 # 创建可执行程序项目
 add_executable(demo ${SRCS})
 

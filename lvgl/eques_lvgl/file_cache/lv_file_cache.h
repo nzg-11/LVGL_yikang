@@ -34,7 +34,7 @@ void pic_delete_confirm_cb(lv_event_t *e);
 void delete_current_pic_cb(lv_event_t *e);
 void pic_list_item_click_cb(lv_event_t *e);
 // 通用返回回调
-void back_btn_click_cb(lv_event_t *e);
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif

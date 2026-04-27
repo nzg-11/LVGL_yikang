@@ -15,9 +15,10 @@ extern "C" {
 //                           lv_color_t bg_color, lv_opa_t bg_opa, int32_t radius,
 //                           lv_color_t border_color, int32_t border_width, lv_opa_t border_opa);
 // lv_obj_t *create_image_obj(lv_obj_t *parent, const void *img_src, int32_t x, int32_t y);
-void back_btn_click_cb(lv_event_t *e);
-void update_status_bar_parent(lv_obj_t *parent);
 
+void update_status_bar_parent(lv_obj_t *parent);
+void sys_settings_destroy(void);
+void sys_settings_destroy(void);
 // 全局样式声明
 extern lv_style_t sys_settings_grad_style;
 

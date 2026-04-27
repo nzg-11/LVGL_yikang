@@ -41,16 +41,16 @@ LockInfoLabels_t create_lock_info_group(lv_obj_t *parent, int base_x, int base_y
     LockInfoLabels_t labels = {NULL};
 
     labels.lock_type_label = create_text_label(
-        parent, init_lock_text, &lv_font_montserrat_24,
+        parent, init_lock_text, &eques_regular_24,
         lv_color_hex(0x50FF9F), base_x, base_y, LV_OPA_100);
 
     labels.open_door_label = create_text_label(
-        parent, "open door", &lv_font_montserrat_24,
+        parent, "打开门", &eques_regular_24,
         lv_color_hex(0xFFFFFF), 0, base_y, LV_OPA_100);
     lv_obj_align_to(labels.open_door_label, labels.lock_type_label, LV_ALIGN_OUT_RIGHT_MID, 10, 0);
 
     labels.open_time_label = create_text_label(
-        parent, init_time_text, &lv_font_montserrat_18,
+        parent, init_time_text, &eques_regular_24,
         lv_color_hex(0xB5B5B5), base_x + 2, base_y + 35, LV_OPA_100);
 
     return labels;
@@ -126,11 +126,11 @@ DoorbellInfoLabels_t create_doorbell_info_group(lv_obj_t *parent,
     DoorbellInfoLabels_t labels = {NULL};
 
     labels.bell_msg_label = create_text_label(
-        parent, init_bell_text, &lv_font_montserrat_24,
+        parent, init_bell_text, &eques_regular_24,
         lv_color_hex(0xFFCF52), base_x, base_y, LV_OPA_100);
 
     labels.bell_time_label = create_text_label(
-        parent, init_time_text, &lv_font_montserrat_20,
+        parent, init_time_text, &eques_regular_24,
         lv_color_hex(0xB5B5B5), base_x, base_y + 32, LV_OPA_100);
 
     labels.bell_container = create_container(
@@ -212,11 +212,11 @@ DoorbellInfoLabels_t create_alarm_info_group(lv_obj_t *parent,
     DoorbellInfoLabels_t labels = {NULL};
 
     labels.bell_msg_label = create_text_label(
-        parent, init_alarm_text, &lv_font_montserrat_24,
+        parent, init_alarm_text, &eques_regular_24,
         lv_color_hex(0xFF5252), base_x, base_y, LV_OPA_100);
 
     labels.bell_time_label = create_text_label(
-        parent, init_time_text, &lv_font_montserrat_20,
+        parent, init_time_text, &eques_regular_24,
         lv_color_hex(0xB5B5B5), base_x, base_y + 32, LV_OPA_100);
 
     labels.bell_container = create_container(
@@ -324,15 +324,15 @@ void switch_record_type(lv_obj_t *target_con)
     clear_all_doorbell_records();
 
     if(target_con == visitor_rec_con) {
-        add_visitor_record(msg_center_scr, "[finger01]", "13:39:20");
-        add_visitor_record(msg_center_scr, "[face01]", "12:39:20");
-        add_visitor_record(msg_center_scr, "[password01]", "08:39:20");
+        add_visitor_record(msg_center_scr, "[指纹01]", "13:39:20");
+        add_visitor_record(msg_center_scr, "[面容01]", "12:39:20");
+        add_visitor_record(msg_center_scr, "[密码01]", "08:39:20");
     } else if(target_con == alarm_rec_con) {
-        add_alarm_record(msg_center_scr, "Strangers lingering", "13:39:20");
-        add_alarm_record(msg_center_scr, "Lock exception",   "10:15:30");
+        add_alarm_record(msg_center_scr, "陌生人逗留", "13:39:20");
+        add_alarm_record(msg_center_scr, "陌生人逗留",   "10:15:30");
     } else if(target_con == doorbell_rec_con) {
-        add_doorbell_record(msg_center_scr, "Someone pressed the doorbell", "13:39:20");
-        add_doorbell_record(msg_center_scr, "Someone pressed the doorbell", "10:25:15");
+        add_doorbell_record(msg_center_scr, "有人按门铃", "13:39:20");
+        add_doorbell_record(msg_center_scr, "有人按门铃", "10:25:15");
     }
 }
 

@@ -29,7 +29,10 @@ void screen_time_init(lv_obj_t *display_label);
  */
 void ui_screen_time_settings_create(lv_obj_t *homepage_scr);
 void screen_time_reset_to_default(void);
-
+void light_time_click_cb(lv_event_t *e);
+// 获取当前亮屏时间字符串
+const char *screen_time_get_str(void);
+void screen_time_update_display_label(void);
 /**
  * @brief 获取当前选中的亮屏时间字符串
  * @return 如"15s"、"1min"等

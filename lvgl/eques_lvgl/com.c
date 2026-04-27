@@ -1,57 +1,7 @@
 #include "com.h"
 
 extern void update_status_bar_parent(lv_obj_t *new_scr);
-extern void lv_homepage(void);
-extern lv_obj_t *sys_settings_scr;
-extern lv_obj_t *msg_center_scr;
-extern lv_obj_t *monitor_video_scr;
-extern lv_obj_t *user_manage_scr;
-extern lv_obj_t *dev_info_scr;
-extern lv_obj_t *file_cache_scr;
-extern lv_obj_t *monitor_scr;
-extern lv_obj_t *g_switch;
-extern lv_obj_t *g_state_label;
-extern lv_obj_t *g_time_con;
-extern lv_obj_t *g_time_slot_label;
-extern lv_obj_t *enroll_scr;
-extern lv_obj_t *edit_record_scr; 
-/**
- * back回调函数（修正空指针检查）
- */
 
-void back_btn_click_cb(lv_event_t *e)
-{
-    if(e == NULL) return;
-    lv_obj_t *parent_scr = (lv_obj_t *)lv_event_get_user_data(e);
-    
-    // 获取当前正在显示的页面（要删除的目标）
-    lv_obj_t *current_del_scr = lv_disp_get_scr_act(NULL);
-    if(!lv_obj_is_valid(current_del_scr)) return;
-
-    // ===================== 分支2：其他普通页面（主页还在，直接返回父页面） =====================
-    if(!lv_obj_is_valid(parent_scr)) {
-        LV_LOG_ERROR("父页面无效");
-        return;
-    }
-    // 1. 先加载父页面（主页）
-    lv_scr_load(parent_scr);
-    update_status_bar_parent(parent_scr);
-    // 2. 销毁当前旧页面
-    if(current_del_scr == monitor_scr) {
-        lv_obj_del(current_del_scr);
-        monitor_scr = NULL;
-        g_switch = NULL; g_state_label = NULL; g_time_con = NULL; g_time_slot_label = NULL;
-    }
-    else if(current_del_scr == sys_settings_scr)  { lv_obj_del(current_del_scr); sys_settings_scr = NULL; }
-    else if(current_del_scr == msg_center_scr)     { lv_obj_del(current_del_scr); msg_center_scr = NULL; }
-    else if(current_del_scr == monitor_video_scr) { lv_obj_del(current_del_scr); monitor_video_scr = NULL; }
-    else if(current_del_scr == dev_info_scr)       { lv_obj_del(current_del_scr); dev_info_scr = NULL; }
-    else if(current_del_scr == file_cache_scr)     { lv_obj_del(current_del_scr); file_cache_scr = NULL; }
-    else if(current_del_scr == enroll_scr)        { lv_obj_del(current_del_scr); enroll_scr = NULL; }
-    else if(current_del_scr == edit_record_scr)   { lv_obj_del(current_del_scr); edit_record_scr = NULL; }
-
-    LV_LOG_WARN("普通页面返回成功");
-}
 
 /************************** 分割线相关函数实现 **************************/
 void config_divider_line_style(
@@ -98,6 +48,22 @@ lv_obj_t *create_text_label(
     lv_label_set_text(label, text);
     lv_obj_set_style_text_font(label, font, LV_STATE_DEFAULT);
     lv_obj_set_style_text_color(label, text_color, LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(label, opa, LV_STATE_DEFAULT);
+    lv_obj_set_pos(label, x, y);
+    return label;
+}
+
+lv_obj_t *create_img_label(
+    lv_obj_t *parent,
+    const char *text,
+    const lv_font_t *font,
+    int x,
+    int y,
+    lv_opa_t opa
+) {
+    lv_obj_t *label = lv_label_create(parent);
+    lv_label_set_text(label, text);
+    lv_obj_set_style_text_font(label, font, LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(label, opa, LV_STATE_DEFAULT);
     lv_obj_set_pos(label, x, y);
     return label;

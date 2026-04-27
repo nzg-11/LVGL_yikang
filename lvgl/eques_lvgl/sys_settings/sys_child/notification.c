@@ -20,8 +20,8 @@ const char *g_dnd_time_slot = "22:00-6:00";
 // ========== 新增：复选框数组（对应两个通知模式） ==========
 static lv_obj_t *g_notify_checkboxes[NOTIFY_MODE_MAX] = {NULL};
 // 通知模式文本（和亮屏时间的g_time_strs对应）
-static const char *g_notify_mode_strs[] = {"Accept all messages", "Accept alerts/doorbell only"};
-
+static const char *g_notify_mode_strs[] = {"接受全部消息", "仅接受报警/门铃"};
+lv_style_t notify_grad_style;
 // 免打扰开关对象
 static lv_obj_t *g_dnd_switch = NULL;
 
@@ -39,8 +39,11 @@ static void dnd_time_confirm_cb(lv_event_t *e);
 static void notify_destroy(void);
 void notify_back_btn_click_cb(lv_event_t *e);
 // 子模块初始化
-void notification_init(void) {
-    // 初始化默认状态
+void notification_init(void)
+{
+    g_notify_mode = NOTIFY_ALL;
+    g_dnd_state = false;
+    g_dnd_time_slot = "22:00-6:00";
 }
 
 // 获取通知模式
@@ -177,18 +180,18 @@ static void dnd_time_click_cb(lv_event_t *e) {
     lv_obj_set_style_border_width(cancel_btn, 0, LV_STATE_DEFAULT);
     //  移除阴影（如果有轻微的阴影线）
     lv_obj_set_style_shadow_width(cancel_btn, 0, LV_STATE_DEFAULT);
-    lv_obj_t *cancel_label = create_text_label(cancel_btn, "cancel", 
-                                               &lv_font_montserrat_36, lv_color_hex(0xBDBDBD), 
+    lv_obj_t *cancel_label = create_text_label(cancel_btn, "取消", 
+                                               &eques_regular_36, lv_color_hex(0xBDBDBD), 
                                                0, 0, LV_OPA_100);
     lv_obj_set_align(cancel_label, LV_ALIGN_CENTER);
 
     lv_obj_add_event_cb(cancel_btn, dnd_popup_close_cb, LV_EVENT_CLICKED, NULL);
 
     // 标题
-    lv_obj_t *title_label = create_text_label(header, "dnd_time", 
-                                             &lv_font_montserrat_36, lv_color_hex(0x192A46), 
-                                             0, 0, LV_OPA_100);
-    lv_obj_set_align(title_label, LV_ALIGN_CENTER);
+    // lv_obj_t *title_label = create_text_label(header, "dnd_time", 
+    //                                          &lv_font_montserrat_36, lv_color_hex(0x192A46), 
+    //                                          0, 0, LV_OPA_100);
+    // lv_obj_set_align(title_label, LV_ALIGN_CENTER);
 
     // 确定按钮
     lv_obj_t *confirm_btn = lv_btn_create(header);
@@ -199,8 +202,8 @@ static void dnd_time_click_cb(lv_event_t *e) {
     lv_obj_set_style_border_width(confirm_btn, 0, LV_STATE_DEFAULT);
     //  移除阴影（如果有轻微的阴影线）
     lv_obj_set_style_shadow_width(confirm_btn, 0, LV_STATE_DEFAULT);
-    lv_obj_t *confirm_label = create_text_label(confirm_btn, "confirm", 
-                                               &lv_font_montserrat_36, lv_color_hex(0x00BDBD), 
+    lv_obj_t *confirm_label = create_text_label(confirm_btn, "确定", 
+                                               &eques_regular_36, lv_color_hex(0x00BDBD), 
                                                0, 0, LV_OPA_100);
     lv_obj_set_align(confirm_label, LV_ALIGN_CENTER);
     lv_obj_add_event_cb(confirm_btn, dnd_time_confirm_cb, LV_EVENT_CLICKED, NULL);
@@ -231,8 +234,8 @@ static void dnd_time_click_cb(lv_event_t *e) {
     lv_obj_set_style_shadow_opa(start_time_cont, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_set_style_border_width(start_time_cont, 0, LV_STATE_DEFAULT);
 
-    lv_obj_t *start_label = create_text_label(start_time_cont, "start_time", 
-                                             &lv_font_montserrat_36, lv_color_hex(0x9E9E9E), 
+    lv_obj_t *start_label = create_text_label(start_time_cont, "开始时间", 
+                                             &eques_regular_36, lv_color_hex(0x9E9E9E), 
                                              0, 20, LV_OPA_100);
     lv_obj_set_align(start_label, LV_ALIGN_TOP_MID);
 
@@ -244,7 +247,7 @@ static void dnd_time_click_cb(lv_event_t *e) {
     lv_obj_set_pos(start_hour_roller, 75, 30);
     lv_roller_set_selected(start_hour_roller, start_h, LV_ANIM_OFF);//设置滚轮选中项
     //start_hour_roller里面字体大小为22
-    lv_obj_set_style_text_font(start_hour_roller, &lv_font_montserrat_22, LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(start_hour_roller, &eques_regular_24, LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(start_hour_roller, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_set_style_shadow_opa(start_hour_roller, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_set_style_border_width(start_hour_roller, 0, LV_STATE_DEFAULT);
@@ -264,7 +267,7 @@ static void dnd_time_click_cb(lv_event_t *e) {
     lv_obj_set_align(start_min_roller, LV_ALIGN_RIGHT_MID);
     lv_obj_set_pos(start_min_roller, -75, 30);
     lv_roller_set_selected(start_min_roller, start_m / 10, LV_ANIM_OFF);
-    lv_obj_set_style_text_font(start_min_roller, &lv_font_montserrat_22, LV_STATE_DEFAULT);//设置滚轮字体大小
+    lv_obj_set_style_text_font(start_min_roller, &eques_regular_24, LV_STATE_DEFAULT);//设置滚轮字体大小
     lv_obj_set_style_bg_opa(start_min_roller, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_set_style_shadow_opa(start_min_roller, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_set_style_border_width(start_min_roller, 0, LV_STATE_DEFAULT);
@@ -286,8 +289,8 @@ static void dnd_time_click_cb(lv_event_t *e) {
     lv_obj_set_style_shadow_opa(end_time_cont, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_set_style_border_width(end_time_cont, 0, LV_STATE_DEFAULT);
 
-    lv_obj_t *end_label = create_text_label(end_time_cont, "end_time", 
-                                           &lv_font_montserrat_36, lv_color_hex(0x9E9E9E), 
+    lv_obj_t *end_label = create_text_label(end_time_cont, "结束时间", 
+                                           &eques_regular_36, lv_color_hex(0x9E9E9E), 
                                            0, 20, LV_OPA_100);
     lv_obj_set_align(end_label, LV_ALIGN_TOP_MID);
 
@@ -298,7 +301,7 @@ static void dnd_time_click_cb(lv_event_t *e) {
     lv_obj_set_align(end_hour_roller, LV_ALIGN_LEFT_MID);
     lv_obj_set_pos(end_hour_roller, 75, 30);
     lv_roller_set_selected(end_hour_roller, end_h, LV_ANIM_OFF);
-    lv_obj_set_style_text_font(end_hour_roller, &lv_font_montserrat_22, LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(end_hour_roller, &eques_regular_24, LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(end_hour_roller, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_set_style_shadow_opa(end_hour_roller, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_set_style_border_width(end_hour_roller, 0, LV_STATE_DEFAULT);
@@ -318,7 +321,7 @@ static void dnd_time_click_cb(lv_event_t *e) {
     lv_obj_set_align(end_min_roller, LV_ALIGN_RIGHT_MID);
     lv_obj_set_pos(end_min_roller, -75, 30);
     lv_roller_set_selected(end_min_roller, end_m / 10, LV_ANIM_OFF);
-    lv_obj_set_style_text_font(end_min_roller, &lv_font_montserrat_22, LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(end_min_roller, &eques_regular_24, LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(end_min_roller, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_set_style_shadow_opa(end_min_roller, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_set_style_border_width(end_min_roller, 0, LV_STATE_DEFAULT);
@@ -333,15 +336,17 @@ static void dnd_time_click_cb(lv_event_t *e) {
 }
 
 // 弹窗关闭回调
-static void dnd_popup_close_cb(lv_event_t *e) {
-    if (dnd_popup != NULL) {
+static void dnd_popup_close_cb(lv_event_t *e)
+{
+    if (lv_obj_is_valid(dnd_popup))
+    {
         lv_obj_del(dnd_popup);
-        dnd_popup = NULL;
-        start_hour_roller = NULL;
-        start_min_roller = NULL;
-        end_hour_roller = NULL;
-        end_min_roller = NULL;
     }
+    dnd_popup = NULL;
+    start_hour_roller = NULL;
+    start_min_roller = NULL;
+    end_hour_roller = NULL;
+    end_min_roller = NULL;
 }
 
 // 确定按钮回调：更新时间段并关闭弹窗
@@ -371,35 +376,19 @@ static void dnd_time_confirm_cb(lv_event_t *e) {
 }
 
 // 创建消息通知子页面
-void ui_notification_settings_create(lv_obj_t *homepage_scr) {
-    // 1. 创建子页面对象
-    if(lv_obj_is_valid(notify_scr))
-    {
-        lv_obj_del(notify_scr);
-        notify_scr = NULL;
-    }
-    // 同时强制关闭残留弹窗
-    if(dnd_popup != NULL)
-    {
-        lv_obj_del(dnd_popup);
-        dnd_popup = NULL;
-        start_hour_roller = NULL;
-        start_min_roller = NULL;
-        end_hour_roller = NULL;
-        end_min_roller = NULL;
-    }
+void ui_notification_settings_create(lv_obj_t *parent_scr) {
+
     notify_scr = lv_obj_create(NULL);  
     
     // 2. 复用主模块渐变样式
-    extern lv_style_t sys_settings_grad_style;
-    lv_style_reset(&sys_settings_grad_style);
-    lv_style_set_bg_color(&sys_settings_grad_style, lv_color_hex(0x010715));
-    lv_style_set_bg_grad_color(&sys_settings_grad_style, lv_color_hex(0x0E1D37));
-    lv_style_set_bg_grad_dir(&sys_settings_grad_style, LV_GRAD_DIR_VER);
-    lv_obj_add_style(notify_scr, &sys_settings_grad_style, LV_STATE_DEFAULT);
+    lv_style_reset(&notify_grad_style);
+    lv_style_set_bg_color(&notify_grad_style, lv_color_hex(0x010715));
+    lv_style_set_bg_grad_color(&notify_grad_style, lv_color_hex(0x0E1D37));
+    lv_style_set_bg_grad_dir(&notify_grad_style, LV_GRAD_DIR_VER);
+    lv_obj_add_style(notify_scr, &notify_grad_style, LV_STATE_DEFAULT);
 
     // 3. 添加标题“消息通知”
-    create_text_label(notify_scr, "Message_Notification", &lv_font_montserrat_36, 
+    create_text_label(notify_scr, "消息通知", &eques_bold_36, 
                      lv_color_hex(0xFFFFFF), 83, 80, LV_OPA_100);
 
     int y_pos = 150;
@@ -427,13 +416,7 @@ void ui_notification_settings_create(lv_obj_t *homepage_scr) {
         lv_obj_t *parent_con = notify_con[i];
         if (parent_con == NULL) parent_con = notify_scr;
 
-        lv_obj_t *mode_label = create_text_label(
-            parent_con, g_notify_mode_strs[i], 
-            &lv_font_montserrat_36,  // 和亮屏时间一致的字体
-            lv_color_hex(0xFFFFFF),  // 白色文字
-            0, 0,                  // 容器内左偏移20px，垂直居中
-            LV_OPA_100
-        );
+       create_text_label(parent_con, g_notify_mode_strs[i], &eques_regular_36, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
 
         // 创建复选框
         g_notify_checkboxes[i] = lv_checkbox_create(parent_con);
@@ -454,7 +437,7 @@ void ui_notification_settings_create(lv_obj_t *homepage_scr) {
         lv_obj_set_style_size(g_notify_checkboxes[i], 20, LV_PART_INDICATOR | LV_STATE_CHECKED);
 
         // 文字样式
-        lv_obj_set_style_text_font(g_notify_checkboxes[i], &lv_font_montserrat_36, LV_STATE_DEFAULT);
+        lv_obj_set_style_text_font(g_notify_checkboxes[i], &eques_regular_36, LV_STATE_DEFAULT);
         lv_obj_set_style_text_color(g_notify_checkboxes[i], lv_color_hex(0xFFFFFF), LV_STATE_DEFAULT);
 
         // 默认选中当前配置的项
@@ -466,9 +449,7 @@ void ui_notification_settings_create(lv_obj_t *homepage_scr) {
     }
 
     // 提示文本
-    lv_obj_t *hint_label = create_text_label(notify_scr, "choose_notify_time", 
-                                           &lv_font_montserrat_16, lv_color_hex(0xFFFFFF), 
-                                           81, y_pos + 10, LV_OPA_70);
+    create_text_label(notify_scr, "可选择消息通知时间段", &eques_regular_24, lv_color_hex(0xFFFFFF), 81, y_pos + 10, LV_OPA_70);
     y_pos += 40;
 
     // --- 2. 消息免打扰开关 ---
@@ -479,9 +460,7 @@ void ui_notification_settings_create(lv_obj_t *homepage_scr) {
     );
     if (dnd_con) {
         // 免打扰文本
-        lv_obj_t *dnd_label = create_text_label(notify_scr, "Do_Not_Disturb", 
-                                               &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 
-                                               80, 390, LV_OPA_100);
+        create_text_label(notify_scr, "消息免打扰", &eques_regular_36, lv_color_hex(0xFFFFFF), 80, 390, LV_OPA_100);
 
         // 免打扰开关
         g_dnd_switch = lv_switch_create(dnd_con);
@@ -511,33 +490,26 @@ void ui_notification_settings_create(lv_obj_t *homepage_scr) {
         lv_obj_add_event_cb(time_con, dnd_time_click_cb, LV_EVENT_CLICKED, NULL);
 
         // 时间段文本
-        time_label = create_text_label(notify_scr, "dnd_time", 
-                                                &lv_font_montserrat_24, lv_color_hex(0xFFFFFF), 
+        time_label = create_text_label(notify_scr, "1", 
+                                                &eques_regular_24, lv_color_hex(0xFFFFFF), 
                                                 777, 485, LV_OPA_70);
         char time_text[64];
-        lv_obj_t *time_label1 = create_text_label(notify_scr, "DND_Time_Slot", 
-                                                &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 
-                                                80, 477, LV_OPA_100);
-        snprintf(time_text, sizeof(time_text), "       %s", notification_get_dnd_time_slot());
+        create_text_label(notify_scr, "免打扰时间段", &eques_regular_36, lv_color_hex(0xFFFFFF), 80, 477, LV_OPA_100);
+        snprintf(time_text, sizeof(time_text), "%s", notification_get_dnd_time_slot());
         lv_label_set_text(time_label, time_text);
 
         // // 右侧箭头图标
         // lv_obj_t *arrow_img = create_image_obj(notify_scr, "D:Vector.png", 720, 520);
     }
-    // // 4. 添加返回按钮
-    // lv_obj_t *back_btn = create_image_obj(notify_scr, "D:back.png", 52, 123);
-    // if (back_btn) {
-    //     lv_obj_add_flag(back_btn, LV_OBJ_FLAG_CLICKABLE);
-    //     lv_obj_set_style_opa(back_btn, LV_OPA_80, LV_STATE_PRESSED);
-    //     lv_obj_add_event_cb(back_btn, back_btn_click_cb, LV_EVENT_CLICKED, homepage_scr);
-    // }
+
+
     // 返回
-    lv_obj_t *back_btn = create_container_circle(notify_scr, 52, 90, 30,
-    true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
+    lv_obj_t *back_btn = create_text_label
+    (notify_scr, ICON_CHEVORN_LEFT, &my_custom_icon, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
     lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(back_btn,LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(back_btn,LV_OPA_80,LV_STATE_PRESSED);
-    lv_obj_add_event_cb(back_btn,notify_back_btn_click_cb,LV_EVENT_CLICKED,homepage_scr);
+    lv_obj_add_event_cb(back_btn ,notify_back_btn_click_cb, LV_EVENT_CLICKED, parent_scr);
 
     // 7. 更新状态栏父对象
     update_status_bar_parent(notify_scr);
@@ -548,18 +520,43 @@ void ui_notification_settings_create(lv_obj_t *homepage_scr) {
 
 void notify_back_btn_click_cb(lv_event_t *e)
 {
-    lv_obj_t *parent_scr = lv_event_get_user_data(e);
-    if (parent_scr == NULL || e == NULL) return;
-    // 2. 回到父页面（系统设置页）
-    lv_scr_load(parent_scr);
-    // 1. 销毁当前通知页面
-    notify_destroy();
+    lv_obj_t *current_del_scr = lv_disp_get_scr_act(NULL);
+
+    if(!lv_obj_is_valid(current_del_scr)) return;
+    if(current_del_scr == notify_scr) {
+        ui_sys_settings_create(current_del_scr);                     // 重建主页
+        notify_destroy();            // 清空所有控件指针
+        return;
+    }
 }
 static void notify_destroy(void)
 {
-    // 销毁主页面
-    if (lv_obj_is_valid(notify_scr)) {
+    // 1. 优先关闭弹窗（弹窗不是根屏幕，随便删）
+    if (lv_obj_is_valid(dnd_popup))
+    {
+        lv_obj_del(dnd_popup);
+    }
+    dnd_popup = NULL;
+
+    // 2. 仅当 notify_scr 不是【当前活跃屏幕】才删除
+    lv_obj_t *act_scr = lv_disp_get_scr_act(NULL);
+    if(notify_scr != act_scr && lv_obj_is_valid(notify_scr))
+    {
         lv_obj_del(notify_scr);
         notify_scr = NULL;
+    }
+
+    // ========== 核心：全部静态控件指针强制置空，杜绝二次进入野指针 ==========
+    start_hour_roller = NULL;
+    start_min_roller  = NULL;
+    end_hour_roller   = NULL;
+    end_min_roller    = NULL;
+    time_label        = NULL;
+    g_dnd_switch      = NULL;
+
+    // 清空复选框数组（最高危残留点）
+    for (int i = 0; i < NOTIFY_MODE_MAX; i++)
+    {
+        g_notify_checkboxes[i] = NULL;
     }
 }

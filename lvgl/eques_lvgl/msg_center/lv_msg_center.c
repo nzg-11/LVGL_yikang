@@ -376,7 +376,7 @@ static void clean_calendar_obj(void)
     memset(&g_selected_calendar_date, 0, sizeof(lv_calendar_date_t));
     memset(g_highlighted_dates, 0, sizeof(g_highlighted_dates));
 
-    // ========== 释放样式，根治KB级泄漏 ==========
+    // ========== 释放样式==========
     if(msg_center_style_inited)
     {
         lv_style_reset(&msg_center_grad_style);
@@ -450,8 +450,8 @@ static void create_calendar(lv_obj_t *parent)
 
     // 创建日历对象
     g_calendar = lv_calendar_create(parent);
-    lv_obj_set_size(g_calendar, 456, 484);
-    lv_obj_set_pos(g_calendar, 301, 255);
+    lv_obj_set_size(g_calendar, 456, 552);
+    lv_obj_set_pos(g_calendar, 100, 24);
     lv_obj_add_event_cb(g_calendar, calendar_event_handler, LV_EVENT_ALL, NULL);
     lv_obj_add_flag(g_calendar, LV_OBJ_FLAG_HIDDEN);
 
@@ -507,27 +507,26 @@ void ui_msg_center_create(lv_obj_t *homepage_scr)
     lv_obj_add_style(msg_center_scr, &msg_center_grad_style, 0);
 
     // 标题
-    create_text_label(msg_center_scr, "message center", &lv_font_montserrat_36, lv_color_hex(0xFFFFFF), 83, 80, LV_OPA_100);
+    create_text_label(msg_center_scr, "消息中心", &eques_bold_36, lv_color_hex(0xFFFFFF), 83, 80, LV_OPA_100);
 
     // 模式容器
-    lv_obj_t *mode_con = create_container(msg_center_scr,
-        47,176,450,46,
-        lv_color_hex(0x1F3150), LV_OPA_100, 31,
-        lv_color_hex(0x1F3150), 0, LV_OPA_0);
+    lv_obj_t *mode_con = create_container
+    (msg_center_scr,47,153,532,48,lv_color_hex(0x1F3150), LV_OPA_100, 31, lv_color_hex(0x1F3150), 0, LV_OPA_0);
     lv_obj_set_style_pad_all(mode_con, 0, 0);
 
     // 访客
     visitor_rec_con = create_custom_gradient_container(mode_con,
-    0,0,150,46, 31, 0x006BDC,0x00BDBD,LV_GRAD_DIR_HOR, 0,255,LV_OPA_100);
+    0,0,177,46, 31, 0x006BDC,0x00BDBD,LV_GRAD_DIR_HOR, 0,255,LV_OPA_100);
     lv_obj_set_style_pad_all(visitor_rec_con,0,0);
     lv_obj_add_flag(visitor_rec_con, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_add_event_cb(visitor_rec_con, rec_con_click_cb, LV_EVENT_CLICKED, NULL);
-    create_text_label(visitor_rec_con, "vis record", &lv_font_montserrat_20, lv_color_hex(0xFFFFFF),27,10,LV_OPA_100);
+    lv_obj_t *visitor_label = create_text_label(visitor_rec_con, "访客记录", &eques_regular_24, lv_color_hex(0xFFFFFF),0,0,LV_OPA_100);
+    lv_obj_align(visitor_label, LV_ALIGN_CENTER, 0, 0);
 
     // 报警
     alarm_rec_con = lv_obj_create(mode_con);
-    lv_obj_set_pos(alarm_rec_con,150,0);
-    lv_obj_set_size(alarm_rec_con,150,46);
+    lv_obj_set_pos(alarm_rec_con,177,0);
+    lv_obj_set_size(alarm_rec_con,177,46);
     lv_obj_set_style_radius(alarm_rec_con,31,0);
     lv_obj_set_style_bg_opa(alarm_rec_con,LV_OPA_100,0);
     lv_obj_set_style_bg_grad_dir(alarm_rec_con,LV_GRAD_DIR_NONE,0);
@@ -537,12 +536,13 @@ void ui_msg_center_create(lv_obj_t *homepage_scr)
     lv_obj_set_style_pad_all(alarm_rec_con,0,0);
     lv_obj_add_flag(alarm_rec_con,LV_OBJ_FLAG_CLICKABLE);
     lv_obj_add_event_cb(alarm_rec_con,rec_con_click_cb,LV_EVENT_CLICKED,NULL);
-    create_text_label(alarm_rec_con,"ala record",&lv_font_montserrat_20, lv_color_hex(0xFFFFFF),27,10,LV_OPA_100);
+    lv_obj_t *alarm_label = create_text_label(alarm_rec_con,"报警记录",&eques_regular_24, lv_color_hex(0xFFFFFF),0,0,LV_OPA_100);
+    lv_obj_align(alarm_label, LV_ALIGN_CENTER, 0, 0);
 
     // 门铃
     doorbell_rec_con = lv_obj_create(mode_con);
-    lv_obj_set_pos(doorbell_rec_con,300,0);
-    lv_obj_set_size(doorbell_rec_con,150,46);
+    lv_obj_set_pos(doorbell_rec_con,354,0);
+    lv_obj_set_size(doorbell_rec_con,177,46);
     lv_obj_set_style_radius(doorbell_rec_con,31,0);
     lv_obj_set_style_bg_opa(doorbell_rec_con,LV_OPA_100,0);
     lv_obj_set_style_bg_grad_dir(doorbell_rec_con,LV_GRAD_DIR_NONE,0);
@@ -552,14 +552,13 @@ void ui_msg_center_create(lv_obj_t *homepage_scr)
     lv_obj_set_style_pad_all(doorbell_rec_con,0,0);
     lv_obj_add_flag(doorbell_rec_con,LV_OBJ_FLAG_CLICKABLE);
     lv_obj_add_event_cb(doorbell_rec_con,rec_con_click_cb,LV_EVENT_CLICKED,NULL);
-    create_text_label(doorbell_rec_con, "bell record",&lv_font_montserrat_20, lv_color_hex(0xFFFFFF),27,10,LV_OPA_100);
+    lv_obj_t *doorbell_label = create_text_label(doorbell_rec_con, "门铃记录",&eques_regular_24, lv_color_hex(0xFFFFFF),0,0,LV_OPA_100);
+    lv_obj_align(doorbell_label, LV_ALIGN_CENTER, 0, 0);
 
     g_selected_rec_con = visitor_rec_con;
 
     // 日期选择
-    // date_picker = create_image_obj(msg_center_scr, "H:data.png",522,175);
-    date_picker = create_container_circle(msg_center_scr, 522, 175, 30,
-    true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
+    date_picker = create_text_label(msg_center_scr, ICON_CALENDAR, &my_custom_icon, lv_color_hex(0xFFFFFF), 620, 160, LV_OPA_100);
     lv_obj_set_style_bg_opa(date_picker, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(date_picker,LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(date_picker,LV_OPA_80,LV_STATE_PRESSED);
@@ -571,13 +570,14 @@ void ui_msg_center_create(lv_obj_t *homepage_scr)
     char buf[32];
     snprintf(buf,sizeof(buf),"%04d-%02d-%02d",y,m,d);
     visitor_data = create_text_label(msg_center_scr,
-        buf,&lv_font_montserrat_28,
+        buf,&eques_regular_28,
         lv_color_hex(0xFFFFFF),47,248,LV_OPA_100);
 
     // 返回
     //lv_obj_t *back = create_image_obj(msg_center_scr,"H:back.png",52,123);
-    lv_obj_t *back_btn = create_container_circle(msg_center_scr, 52, 90, 30,
-    true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
+    lv_obj_t *back_btn = create_text_label
+    (msg_center_scr, ICON_CHEVORN_LEFT, &my_custom_icon, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
+    lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(back_btn,LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(back_btn,LV_OPA_80,LV_STATE_PRESSED);
