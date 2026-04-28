@@ -127,7 +127,7 @@ void ui_face_add_create(lv_obj_t *enroll_scr)
     // ===================== UI元素绘制 =====================
     // 返回按钮
     lv_obj_t *back_btn = create_text_label
-    (face_add_scr, ICON_CHEVORN_LEFT, &my_custom_icon, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
+    (face_add_scr, ICON_CHEVORN_LEFT, &fontawesome_icon_32, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
     lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(back_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(back_btn, LV_OPA_80, LV_STATE_PRESSED);
@@ -138,7 +138,7 @@ void ui_face_add_create(lv_obj_t *enroll_scr)
     lv_obj_add_event_cb(back_btn, (lv_event_cb_t)close_face_fail_popup, LV_EVENT_CLICKED, NULL);
 
     // 标题
-    lv_obj_t *face_add_label = create_text_label(
+     create_text_label(
         face_add_scr, "添加人脸", &eques_bold_36,
         lv_color_hex(0xFFFFFF), 83, 80, LV_OPA_100);
 

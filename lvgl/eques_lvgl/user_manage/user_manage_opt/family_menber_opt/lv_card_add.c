@@ -137,17 +137,14 @@ void ui_card_add_create(lv_obj_t *enroll_scr)
     create_container(card_add_scr, 380, 168, 264, 264, lv_color_hex(0x1D3740), LV_OPA_0, 200, lv_color_hex(0xFFFFFF), 2, LV_OPA_100);
 
     // 确认按钮
-    lv_obj_t *confirm_enter_btn = create_container_circle(
-        card_add_scr, 467, 259, 90, true,
-        lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100
-    );
+    lv_obj_t *confirm_enter_btn = create_text_label(card_add_scr, ICON_CARD, &iconfont_icon_90, lv_color_hex(0xFFFFFF), 440, 259, LV_OPA_100);
     lv_obj_add_flag(confirm_enter_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(confirm_enter_btn, LV_OPA_80, LV_STATE_PRESSED);
     lv_obj_add_event_cb(confirm_enter_btn, card_confirm_btn_click_cb, LV_EVENT_CLICKED, enroll_scr);
 
     // 返回按钮
     lv_obj_t *back_btn = create_text_label
-    (card_add_scr, ICON_CHEVORN_LEFT, &my_custom_icon, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
+    (card_add_scr, ICON_CHEVORN_LEFT, &fontawesome_icon_32, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
     
     lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(back_btn, LV_OBJ_FLAG_CLICKABLE);

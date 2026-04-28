@@ -414,7 +414,7 @@ void ui_biometrics_settings_create(lv_obj_t *homepage_scr) {
         lv_color_hex(0x2E4B7D), 0, LV_OPA_0
     );
     // 密码提示文本
-    lv_obj_t *temp_pwd = create_text_label(bio_scr, "临时密码", &eques_regular_36, lv_color_hex(0xFFFFFF), 80, 542, LV_OPA_100);
+     create_text_label(bio_scr, "临时密码", &eques_regular_36, lv_color_hex(0xFFFFFF), 80, 542, LV_OPA_100);
     if (pwd_con) {
         // 密码显示标签
         lv_obj_t *pwd_label = create_text_label(bio_scr, "临时密码", &eques_regular_36, lv_color_hex(0x000000), 80, 620, LV_OPA_100);
@@ -445,7 +445,7 @@ void ui_biometrics_settings_create(lv_obj_t *homepage_scr) {
         lv_obj_add_event_cb(rand_btn, temp_pwd_btn_cb, LV_EVENT_CLICKED, pwd_label);
     }
     create_text_label(bio_scr, "设置六位数数字密码用于临时开锁", &eques_regular_24, lv_color_hex(0xFFFFFF), 80, 695, LV_OPA_70);
-    lv_obj_t *pwd_hint = create_text_label(bio_scr, "适用时间", &eques_regular_36, lv_color_hex(0xFFFFFF), 80, 727, LV_OPA_100);
+     create_text_label(bio_scr, "适用时间", &eques_regular_36, lv_color_hex(0xFFFFFF), 80, 727, LV_OPA_100);
 
     int switch_idx = 4; // 对应临时密码的枚举值 BIOMETRIC_TEMP_PWD
     lv_obj_t *time_switch = lv_switch_create(bio_scr);
@@ -488,7 +488,7 @@ void ui_biometrics_settings_create(lv_obj_t *homepage_scr) {
 
     // 返回
     lv_obj_t *back_btn = create_text_label
-    (bio_scr, ICON_CHEVORN_LEFT, &my_custom_icon, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
+    (bio_scr, ICON_CHEVORN_LEFT, &fontawesome_icon_32, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
     lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(back_btn,LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(back_btn,LV_OPA_80,LV_STATE_PRESSED);

@@ -1308,7 +1308,7 @@ void ui_other_member_create(lv_obj_t *user_manage_scr)
 
     // 返回按钮
     back_btn = create_text_label
-    (other_member_scr, ICON_CHEVORN_LEFT, &my_custom_icon, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
+    (other_member_scr, ICON_CHEVORN_LEFT, &fontawesome_icon_32, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
     lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(back_btn,LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(back_btn,LV_OPA_80,LV_STATE_PRESSED);
@@ -1511,7 +1511,7 @@ static void member_delete_btn_click_cb(lv_event_t *e)
         g_delete_flag_imgs[idx] = NULL;
     }
     
-    g_delete_flag_imgs[idx] = create_text_label(member_con, ICON_CHECK, &my_custom_icon, lv_color_hex(0xFFFFFF), 250, 10, LV_OPA_100);
+    g_delete_flag_imgs[idx] = create_text_label(member_con, ICON_CHECK, &fontawesome_icon_32, lv_color_hex(0xFFFFFF), 250, 10, LV_OPA_100);
     if(g_delete_flag_imgs[idx] != NULL && lv_obj_is_valid(g_delete_flag_imgs[idx])) {
         lv_obj_add_event_cb(g_delete_flag_imgs[idx], delete_flag_click_cb, LV_EVENT_CLICKED, (void*)(uintptr_t)idx);
         lv_obj_add_flag(g_delete_flag_imgs[idx], LV_OBJ_FLAG_CLICKABLE);
@@ -1746,7 +1746,7 @@ static lv_obj_t *create_other_member_card(lv_obj_t *parent, const char *member_n
     // ==========================
     lv_obj_t *icon_finger = lv_label_create(member_con);
     lv_label_set_text(icon_finger, ICON_FINGERPRINT_S);
-    lv_obj_set_style_text_font(icon_finger, &my_custom_icon_26, 0);
+    lv_obj_set_style_text_font(icon_finger, &fontawesome_icon_26, 0);
     lv_obj_set_pos(icon_finger, 88, 157);
     lv_obj_set_style_text_color(icon_finger,
         (finger_count > 0) ? lv_color_hex(0x00BDBD) : lv_color_hex(0xD4D4D4), 0);
@@ -1760,7 +1760,7 @@ static lv_obj_t *create_other_member_card(lv_obj_t *parent, const char *member_n
     // ==========================
     lv_obj_t *icon_pwd = lv_label_create(member_con);
     lv_label_set_text(icon_pwd, ICON_PASSWORD_S);
-    lv_obj_set_style_text_font(icon_pwd, &my_custom_icon_26, 0);
+    lv_obj_set_style_text_font(icon_pwd, &fontawesome_icon_26, 0);
     lv_obj_set_pos(icon_pwd, 150, 157);
     lv_obj_set_style_text_color(icon_pwd,
         (pwd_count > 0) ? lv_color_hex(0x00BDBD) : lv_color_hex(0xD4D4D4), 0);

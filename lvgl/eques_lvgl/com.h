@@ -53,26 +53,16 @@ void update_status_bar_parent(lv_obj_t *new_scr);
 void destroy_status_bar(void);
 bool is_lv_obj_valid(lv_obj_t *obj);
 
-LV_IMG_DECLARE(wifi);
-LV_IMG_DECLARE(lupin);
-LV_IMG_DECLARE(lupin_off);
-LV_IMG_DECLARE(jiepin);
-LV_IMG_DECLARE(yinliang);
-LV_IMG_DECLARE(yinliang_off);
-LV_IMG_DECLARE(kaimai);
-LV_IMG_DECLARE(bimai);    
-LV_IMG_DECLARE(kaisuo);
-LV_IMG_DECLARE(kaisuo_off);
 
 LV_FONT_DECLARE(eques_bold_24);
 LV_FONT_DECLARE(eques_regular_24);
 LV_FONT_DECLARE(eques_regular_28);
 LV_FONT_DECLARE(eques_regular_32);
 LV_FONT_DECLARE(eques_regular_48);
+LV_FONT_DECLARE(eques_regular_60);
 LV_FONT_DECLARE(eques_bold_28);
 LV_FONT_DECLARE(eques_regular_36);
 LV_FONT_DECLARE(eques_bold_36);
-LV_FONT_DECLARE(text111);
 
 LV_FONT_DECLARE(menu_icon);
 #define ICON_MSG_CENTER "\uf4ad"               // 消息中心图标
@@ -84,7 +74,14 @@ LV_FONT_DECLARE(menu_icon);
 
 
 
-LV_FONT_DECLARE(my_custom_icon);
+LV_FONT_DECLARE(fontawesome_icon_26);
+#define ICON_FINGERPRINT_S "\uf577"            // 小指纹图标
+#define ICON_PASSWORD_S "\uf03a"               // 小密码图标
+#define ICON_CARD_S "\uf2bb"                   // 小卡片图标
+#define ICON_FACE_S "\uf58c"                   // 小面容图标
+
+
+LV_FONT_DECLARE(fontawesome_icon_32);
 #define ICON_WIFI "\uf1eB"                     // WiFi图标
 #define ICON_LOCK "\uf09C"                     // 关锁图标
 #define ICON_UNLOCK "\uf023"                   // 解锁图标
@@ -100,7 +97,7 @@ LV_FONT_DECLARE(my_custom_icon);
 #define ICON_SERVER "\uf233"                   // 服务器图标
 #define ICON_PASSPORT "\uf5ab"                 // 护照图标
 
-LV_FONT_DECLARE(my_custom_icon_50);
+LV_FONT_DECLARE(fontawesome_icon_40);
 #define ICON_VOLUME_S "\uf026"                 // 小音量
 #define ICON_VOLUME_L "\uf028"                 // 大音量
 #define ICON_FINGERPRINT_L "\uf577"            // 大指纹图标
@@ -108,37 +105,38 @@ LV_FONT_DECLARE(my_custom_icon_50);
 #define ICON_CARD_L "\uf2bb"                   // 大卡片图标
 #define ICON_FACE_L "\uf58c"                   // 大面容图标
 
-LV_FONT_DECLARE(my_custom_icon_60);
-#define ICON_VOLUME_OFF "\uf028"                 // 音量关图标
-#define ICON_VOLUME_ON "\uf6a9"                 // 音量开图标
-#define ICON_DELETE "\uf55a"                    // 删除图标
+LV_FONT_DECLARE(fontawesome_icon_60);
+#define ICON_VOLUME_OFF "\uf028"               // 音量关图标
+#define ICON_VOLUME_ON "\uf6a9"                // 音量开图标
+#define ICON_DELETE "\uf55a"                   // 删除图标
+
+LV_FONT_DECLARE( fontawesome_icon_150);
+#define ICON_RAIN "\uf740"                    // 大雨图标
+
 
 LV_FONT_DECLARE(iconfont_icon_20);
-#define ICON_PLAY  "\uf04b"                // 播放图标
-#define ICON_PAUSE "\uf04c"                // 暂停图标
+#define ICON_PLAY  "\uf04b"                    // 播放图标
+#define ICON_PAUSE "\uf04c"                    // 暂停图标
 
-LV_FONT_DECLARE(my_custom_icon_26);
-#define ICON_FINGERPRINT_S "\uf577"            // 小指纹图标
-#define ICON_PASSWORD_S "\uf03a"               // 小密码图标
-#define ICON_CARD_S "\uf2bb"                   // 小卡片图标
-#define ICON_FACE_S "\uf58c"                   // 小面容图标
-
-LV_FONT_DECLARE(iconfont_icon);
+LV_FONT_DECLARE(iconfont_icon_32);
 #define ICON_VIDEO "\ue622"                    // 视频图标
-//#define ICON_VOLUME "\uea25"                 // 音量图标
-// #define ICON_RECORDING "\ue7be"             // 录制图标
 
-LV_FONT_DECLARE(iconfont_icon_50);
+LV_FONT_DECLARE(iconfont_icon_60);
 #define ICON_RECORDING "\ue7be"                // 录制图标
 #define ICON_VIDEO_50 "\uea72"                 // 视频图标
 #define ICON_SCREENSHOT "\ue7bc"               // 截屏图标
 #define ICON_MICROPHONE_OFF "\ue653"           // 麦克风关图标
 #define ICON_MICROPHONE_ON "\ue7bd"            // 麦克风开图标
-#define ICON_UNLOCK_50 "\ue635"                   // 解锁图标
-#define ICON_LOCK_50 "\ue634"                     // 锁定图标
+#define ICON_UNLOCK_50 "\ue635"                // 解锁图标
+#define ICON_LOCK_50 "\ue634"                  // 锁定图标
 
 LV_FONT_DECLARE(iconfont_icon_90);
-#define ICON_CLOUD "\ue62c"                     // 云存储图标
+#define ICON_CLOUD "\ue62c"                    // 云存储图标
+#define ICON_FINGERPRINT_BASE "\uea74"         // 指纹基图标
+#define ICON_CARD "\uea73"                     // 刷卡图标
+#define ICON_REPEAT "\ue677"                   // 重复图标
+#define ICON_CHECK_L "\ue605"                    // 大对勾图标
+#define ICON_ERROR "\ue63c"                    // 大X图标
 
 #define false 0
 #define true 1

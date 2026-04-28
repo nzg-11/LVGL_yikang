@@ -140,7 +140,7 @@ void ui_pwd_add_create(lv_obj_t *enroll_scr)
 
     // 返回按钮
     lv_obj_t *back_btn = create_text_label
-    (pwd_add_scr, ICON_CHEVORN_LEFT, &my_custom_icon, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
+    (pwd_add_scr, ICON_CHEVORN_LEFT, &fontawesome_icon_32, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
     lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(back_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(back_btn, LV_OPA_80, LV_STATE_PRESSED);
@@ -165,7 +165,7 @@ void ui_pwd_add_create(lv_obj_t *enroll_scr)
     lv_obj_t *pwd_back_btn = create_container(pwd_add_scr, 698, 365, 150, 80,
                     lv_color_hex(0x7698D0), LV_OPA_70, 6, 
                     lv_color_hex(0x7698D0), 0, LV_OPA_70);
-    lv_obj_t *back_img = create_text_label(pwd_back_btn, ICON_DELETE, &my_custom_icon_60, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
+    lv_obj_t *back_img = create_text_label(pwd_back_btn, ICON_DELETE, &fontawesome_icon_60, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
     lv_obj_align(back_img, LV_ALIGN_CENTER, 0, 0);
     lv_obj_add_flag(pwd_back_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(pwd_back_btn, LV_OPA_90, LV_STATE_PRESSED);
@@ -202,7 +202,7 @@ void pwd_add_back_btn_click_cb(lv_event_t *e)
     lv_obj_t *parent_scr = (lv_obj_t *)lv_event_get_user_data(e);
     lv_obj_t *current_scr = lv_disp_get_scr_act(NULL);
 
-    static uint8_t pwd_idx = 1;
+     
     char pwd_name[16];
     pwd_enroll_info_t *info = get_current_pwd_info();
     snprintf(pwd_name, sizeof(pwd_name), "密码%d", info->enroll_count + 1);

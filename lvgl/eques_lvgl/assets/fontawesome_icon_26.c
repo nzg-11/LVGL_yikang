@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Size: 26 px
  * Bpp: 2
- * Opts: --bpp 2 --size 26 --no-compress --stride 1 --align 1 --font FontAwesome5-Solid+Brands+Regular.woff --range 62839,61498,62139,62860 --format lvgl -o my_custom_icon_26.c
+ * Opts: --bpp 2 --size 26 --no-compress --stride 1 --align 1 --font FontAwesome5-Solid+Brands+Regular.woff --range 62839,61498,62139,62860 --format lvgl -o fontawesome_icon_26.c
  ******************************************************************************/
 
 #ifdef __has_include
@@ -20,11 +20,11 @@
 
 
 
-#ifndef MY_CUSTOM_ICON_26
-#define MY_CUSTOM_ICON_26 1
+#ifndef FONTAWESOME_ICON_26
+#define FONTAWESOME_ICON_26 1
 #endif
 
-#if MY_CUSTOM_ICON_26
+#if FONTAWESOME_ICON_26
 
 /*-----------------
  *    BITMAPS
@@ -188,7 +188,6 @@ static lv_font_fmt_txt_dsc_t font_dsc = {
 
 };
 
-extern const lv_font_t my_custom_icon_26;
 
 
 /*-----------------
@@ -197,9 +196,9 @@ extern const lv_font_t my_custom_icon_26;
 
 /*Initialize a public general font descriptor*/
 #if LVGL_VERSION_MAJOR >= 8
-const lv_font_t my_custom_icon_26 = {
+const lv_font_t fontawesome_icon_26 = {
 #else
-lv_font_t my_custom_icon_26 = {
+lv_font_t fontawesome_icon_26 = {
 #endif
     .get_glyph_dsc = lv_font_get_glyph_dsc_fmt_txt,    /*Function pointer to get glyph's data*/
     .get_glyph_bitmap = lv_font_get_bitmap_fmt_txt,    /*Function pointer to get glyph's bitmap*/
@@ -215,11 +214,11 @@ lv_font_t my_custom_icon_26 = {
     //.static_bitmap = 0,
     .dsc = &font_dsc,          /*The custom font data. Will be accessed by `get_glyph_bitmap/dsc` */
 #if LV_VERSION_CHECK(8, 2, 0) || LVGL_VERSION_MAJOR >= 9
-    .fallback = &my_custom_icon_26,
+    .fallback = NULL,
 #endif
     .user_data = NULL,
 };
 
 
 
-#endif /*#if MY_CUSTOM_ICON_26*/
+#endif /*#if FONTAWESOME_ICON_26*/

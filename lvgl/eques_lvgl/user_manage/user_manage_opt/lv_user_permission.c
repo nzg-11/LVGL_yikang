@@ -55,7 +55,7 @@ void ui_user_permission_create(lv_obj_t *user_manage_scr)
 
     // 左上角返回按钮
     lv_obj_t *back_btn = create_text_label
-    (user_permission_scr, ICON_CHEVORN_LEFT, &my_custom_icon, lv_color_hex(0xFFFFFF), 52, 90, LV_OPA_100);
+    (user_permission_scr, ICON_CHEVORN_LEFT, &fontawesome_icon_32, lv_color_hex(0xFFFFFF), 52, 90, LV_OPA_100);
     lv_obj_add_flag(back_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(back_btn, LV_OPA_80, LV_STATE_PRESSED);
     lv_obj_add_event_cb(back_btn, user_permission_back_btn_click_cb, LV_EVENT_CLICKED, user_manage_scr);

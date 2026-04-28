@@ -558,7 +558,7 @@ void ui_msg_center_create(lv_obj_t *homepage_scr)
     g_selected_rec_con = visitor_rec_con;
 
     // 日期选择
-    date_picker = create_text_label(msg_center_scr, ICON_CALENDAR, &my_custom_icon, lv_color_hex(0xFFFFFF), 620, 160, LV_OPA_100);
+    date_picker = create_text_label(msg_center_scr, ICON_CALENDAR, &fontawesome_icon_32, lv_color_hex(0xFFFFFF), 620, 160, LV_OPA_100);
     lv_obj_set_style_bg_opa(date_picker, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(date_picker,LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(date_picker,LV_OPA_80,LV_STATE_PRESSED);
@@ -576,7 +576,7 @@ void ui_msg_center_create(lv_obj_t *homepage_scr)
     // 返回
     //lv_obj_t *back = create_image_obj(msg_center_scr,"H:back.png",52,123);
     lv_obj_t *back_btn = create_text_label
-    (msg_center_scr, ICON_CHEVORN_LEFT, &my_custom_icon, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
+    (msg_center_scr, ICON_CHEVORN_LEFT, &fontawesome_icon_32, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
     lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(back_btn,LV_OBJ_FLAG_CLICKABLE);

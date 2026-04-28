@@ -144,15 +144,14 @@ void ui_finger_add_create(lv_obj_t *enroll_scr)
         lv_color_hex(0xFFFFFF), 2, LV_OPA_100);
 
     // 指纹点击按钮
-    finger_percent_img = create_container_circle(finger_add_scr, 467, 259, 90,
-        true, lv_color_hex(0xFFFFFF), lv_color_hex(0xFFFFFF), 3, LV_OPA_100);
+    finger_percent_img = create_text_label(finger_add_scr, ICON_FINGERPRINT_BASE, &iconfont_icon_90, lv_color_hex(0xFFFFFF), 467, 259, LV_OPA_100);
     lv_obj_add_flag(finger_percent_img, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(finger_percent_img, LV_OPA_80, LV_STATE_PRESSED);
     lv_obj_add_event_cb(finger_percent_img, finger_add_click_cb, LV_EVENT_CLICKED, enroll_scr);
 
     // 返回按钮
     lv_obj_t *back_btn = create_text_label
-    (finger_add_scr, ICON_CHEVORN_LEFT, &my_custom_icon, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
+    (finger_add_scr, ICON_CHEVORN_LEFT, &fontawesome_icon_32, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
     lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(back_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(back_btn, LV_OPA_80, LV_STATE_PRESSED);
@@ -172,7 +171,7 @@ static void finger_add_click_cb(lv_event_t *e)
 
     // 步骤+1，最多到5
     finger_add_step++;
-    if(finger_add_step > 5) {
+    if(finger_add_step > 6) {
         finger_add_step = 0;
         lv_label_set_text(precent_label, "请录入指纹");
         lv_obj_set_pos(finger_percent_img, 309, 415);
@@ -198,7 +197,8 @@ static void finger_add_click_cb(lv_event_t *e)
         case 2: lv_label_set_text(precent_label, "请再次输入2/5"); break;
         case 3: lv_label_set_text(precent_label, "请再次输入3/5"); break;
         case 4: lv_label_set_text(precent_label, "请再次输入4/5"); break;
-        case 5:{
+        case 5: lv_label_set_text(precent_label, "录入成功"); break;
+        case 6:{
             lv_obj_t *enroll_scr = (lv_obj_t *)lv_event_get_user_data(e);
             create_finger_complete_popup(enroll_scr);
             break;
@@ -259,7 +259,7 @@ static void finger_confirm_click_cb(lv_event_t *e)
     //     finger_name = "";
     // }
     // 自动生成指纹名称：指纹1、指纹2...
-    static uint8_t finger_idx = 1;
+     
     char finger_name[16];
     finger_enroll_info_t *info = get_current_finger_info();
     snprintf(finger_name, sizeof(finger_name), "指纹%d", info->enroll_count + 1);

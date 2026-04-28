@@ -202,7 +202,7 @@ void ui_sys_settings_create(lv_obj_t *homepage_scr) {
     lv_obj_set_style_bg_opa(circel, LV_OPA_0, LV_STATE_DEFAULT);
     create_text_label(sys_settings_scr, "亮屏时间", &eques_regular_32, lv_color_hex(0xFFFFFF), 73, 257, LV_OPA_100);
     g_time_view_label = create_text_label(sys_settings_scr, screen_time_get_str(), &eques_regular_24, lv_color_hex(0xFFFFFF), 860, 264, LV_OPA_70);
-    create_text_label(sys_settings_scr, ICON_CHEVORN_RIGHT, &my_custom_icon, lv_color_hex(0xC4C4C4), 935, 260, LV_OPA_100);
+    create_text_label(sys_settings_scr, ICON_CHEVORN_RIGHT, &fontawesome_icon_32, lv_color_hex(0xC4C4C4), 935, 260, LV_OPA_100);
     screen_time_init(g_time_view_label);
 
     // ==================== 创建屏幕亮度滑块 ====================
@@ -229,12 +229,12 @@ void ui_sys_settings_create(lv_obj_t *homepage_scr) {
         lv_obj_set_style_bg_opa(sys_settings_con1, LV_OPA_70, LV_STATE_PRESSED);
     }
     create_text_label(sys_settings_scr, "铃声", &eques_regular_32, lv_color_hex(0xFFFFFF), 73, 396, LV_OPA_100);
-    create_text_label(sys_settings_scr, ICON_VOLUME_S, &my_custom_icon_50, lv_color_hex(0xFFFFFF), 90, 452, LV_OPA_100);
-    create_text_label(sys_settings_scr, ICON_VOLUME_L, &my_custom_icon_50, lv_color_hex(0xFFFFFF), 900, 452, LV_OPA_100);
+    create_text_label(sys_settings_scr, ICON_VOLUME_S, &fontawesome_icon_40, lv_color_hex(0xFFFFFF), 90, 452, LV_OPA_100);
+    create_text_label(sys_settings_scr, ICON_VOLUME_L, &fontawesome_icon_40, lv_color_hex(0xFFFFFF), 900, 452, LV_OPA_100);
 
     create_text_label(sys_settings_scr, "通知", &eques_regular_32, lv_color_hex(0xFFFFFF), 73, 499, LV_OPA_100);
-    create_text_label(sys_settings_scr, ICON_VOLUME_S, &my_custom_icon_50, lv_color_hex(0xFFFFFF), 90, 565, LV_OPA_100);
-    create_text_label(sys_settings_scr, ICON_VOLUME_L, &my_custom_icon_50, lv_color_hex(0xFFFFFF), 900, 565, LV_OPA_100);
+    create_text_label(sys_settings_scr, ICON_VOLUME_S, &fontawesome_icon_40, lv_color_hex(0xFFFFFF), 90, 565, LV_OPA_100);
+    create_text_label(sys_settings_scr, ICON_VOLUME_L, &fontawesome_icon_40, lv_color_hex(0xFFFFFF), 900, 565, LV_OPA_100);
     
     // ==================== 创建铃声滑块 ====================
     ring_slider = lv_slider_create(sys_settings_scr);
@@ -280,7 +280,7 @@ void ui_sys_settings_create(lv_obj_t *homepage_scr) {
     }
     // lv_obj_t *Vector_img1 = create_image_obj(sys_settings_scr, "D:Vector.png", 710, 730);
     create_text_label(sys_settings_scr, "监控模式", &eques_regular_36, lv_color_hex(0xFFFFFF), 75, 654, LV_OPA_100);
-    create_text_label(sys_settings_scr, ICON_CHEVORN_RIGHT, &my_custom_icon, lv_color_hex(0xC4C4C4), 935, 660, LV_OPA_100);
+    create_text_label(sys_settings_scr, ICON_CHEVORN_RIGHT, &fontawesome_icon_32, lv_color_hex(0xC4C4C4), 935, 660, LV_OPA_100);
 
     // 生物识别容器
     lv_obj_t *sys_settings_con3 = create_container(
@@ -295,7 +295,7 @@ void ui_sys_settings_create(lv_obj_t *homepage_scr) {
     }
     // lv_obj_t *Vector_img2 = create_image_obj(sys_settings_scr, "D:Vector.png", 710, 820);
     create_text_label(sys_settings_scr, "生物识别", &eques_regular_36, lv_color_hex(0xFFFFFF), 75, 747, LV_OPA_100);
-    create_text_label(sys_settings_scr, ICON_CHEVORN_RIGHT, &my_custom_icon, lv_color_hex(0xC4C4C4), 935, 750, LV_OPA_100);
+    create_text_label(sys_settings_scr, ICON_CHEVORN_RIGHT, &fontawesome_icon_32, lv_color_hex(0xC4C4C4), 935, 750, LV_OPA_100);
 
     // 消息通知容器
     lv_obj_t *sys_settings_con4 = create_container(
@@ -310,7 +310,7 @@ void ui_sys_settings_create(lv_obj_t *homepage_scr) {
     }
     // lv_obj_t *Vector_img3 = create_image_obj(sys_settings_scr, "D:Vector.png", 710, 910);
     create_text_label(sys_settings_scr, "消息通知", &eques_regular_36, lv_color_hex(0xFFFFFF), 75, 840, LV_OPA_100);
-    create_text_label(sys_settings_scr, ICON_CHEVORN_RIGHT, &my_custom_icon, lv_color_hex(0xC4C4C4), 935, 840, LV_OPA_100);
+    create_text_label(sys_settings_scr, ICON_CHEVORN_RIGHT, &fontawesome_icon_32, lv_color_hex(0xC4C4C4), 935, 840, LV_OPA_100);
     // 恢复出厂设置容器
     lv_obj_t *sys_settings_con5 = create_container(
         sys_settings_scr, 48, 913, 928, 83, 
@@ -326,7 +326,7 @@ void ui_sys_settings_create(lv_obj_t *homepage_scr) {
 
     // 返回
     lv_obj_t *back_btn = create_text_label
-    (sys_settings_scr, ICON_CHEVORN_LEFT, &my_custom_icon, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
+    (sys_settings_scr, ICON_CHEVORN_LEFT, &fontawesome_icon_32, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
     lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(back_btn,LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(back_btn,LV_OPA_80,LV_STATE_PRESSED);

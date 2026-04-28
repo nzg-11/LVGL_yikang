@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Size: 32 px
  * Bpp: 2
- * Opts: --bpp 2 --size 32 --no-compress --stride 1 --align 1 --font FontAwesome5-Solid+Brands+Regular.woff --range 61931,61596,61475,62470,62725,61523,61524,61528,61555,62189,62210,61484,62003,62891 --format lvgl -o my_custom_icon.c
+ * Opts: --bpp 2 --size 32 --no-compress --stride 1 --align 1 --font FontAwesome5-Solid+Brands+Regular.woff --range 61931,61596,61475,62470,62725,61523,61524,61528,61555,62189,62210,61484,62003,62891 --format lvgl -o fontawesome_icon_32.c
  ******************************************************************************/
 
 #ifdef __has_include
@@ -20,11 +20,11 @@
 
 
 
-#ifndef MY_CUSTOM_ICON
-#define MY_CUSTOM_ICON 1
+#ifndef FONTAWESOME_ICON_32
+#define FONTAWESOME_ICON_32 1
 #endif
 
-#if MY_CUSTOM_ICON
+#if FONTAWESOME_ICON_32
 
 /*-----------------
  *    BITMAPS
@@ -548,7 +548,6 @@ static lv_font_fmt_txt_dsc_t font_dsc = {
 
 };
 
-extern const lv_font_t my_custom_icon;
 
 
 /*-----------------
@@ -557,9 +556,9 @@ extern const lv_font_t my_custom_icon;
 
 /*Initialize a public general font descriptor*/
 #if LVGL_VERSION_MAJOR >= 8
-const lv_font_t my_custom_icon = {
+const lv_font_t fontawesome_icon_32 = {
 #else
-lv_font_t my_custom_icon = {
+lv_font_t fontawesome_icon_32 = {
 #endif
     .get_glyph_dsc = lv_font_get_glyph_dsc_fmt_txt,    /*Function pointer to get glyph's data*/
     .get_glyph_bitmap = lv_font_get_bitmap_fmt_txt,    /*Function pointer to get glyph's bitmap*/
@@ -575,11 +574,11 @@ lv_font_t my_custom_icon = {
     //.static_bitmap = 0,
     .dsc = &font_dsc,          /*The custom font data. Will be accessed by `get_glyph_bitmap/dsc` */
 #if LV_VERSION_CHECK(8, 2, 0) || LVGL_VERSION_MAJOR >= 9
-    .fallback = &my_custom_icon,
+    .fallback = NULL,
 #endif
     .user_data = NULL,
 };
 
 
 
-#endif /*#if MY_CUSTOM_ICON*/
+#endif /*#if FONTAWESOME_ICON_32*/

@@ -530,26 +530,26 @@ void ui_monitor_video_create(lv_obj_t *homepage_scr)
     /**********************************************监控操作*******************************************/
 
     // 监控视频音量开关
-    monitor_sound_on_btn = create_text_label(monitor_video_mode_con, ICON_VOLUME_ON, &my_custom_icon_60, lv_color_hex(0x838383), 0, 0, LV_OPA_100);
+    monitor_sound_on_btn = create_text_label(monitor_video_mode_con, ICON_VOLUME_ON, &fontawesome_icon_60, lv_color_hex(0x838383), 0, 0, LV_OPA_100);
     lv_obj_align(monitor_sound_on_btn, LV_ALIGN_LEFT_MID, 46, 0);
     lv_obj_add_flag(monitor_sound_on_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(monitor_sound_on_btn, LV_OPA_80,LV_STATE_PRESSED);
     lv_obj_add_event_cb(monitor_sound_on_btn, monitor_sound_event_cb, LV_EVENT_CLICKED, NULL);
     
-    monitor_sound_off_btn = create_text_label(monitor_video_mode_con, ICON_VOLUME_OFF, &my_custom_icon_60, lv_color_hex(0x838383), 0, 0, LV_OPA_100);
+    monitor_sound_off_btn = create_text_label(monitor_video_mode_con, ICON_VOLUME_OFF, &fontawesome_icon_60, lv_color_hex(0x838383), 0, 0, LV_OPA_100);
     lv_obj_align(monitor_sound_off_btn, LV_ALIGN_LEFT_MID, 46, 0);
     lv_obj_add_flag(monitor_sound_off_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(monitor_sound_off_btn, LV_OPA_80,LV_STATE_PRESSED);
     lv_obj_add_event_cb(monitor_sound_off_btn, monitor_sound_event_cb, LV_EVENT_CLICKED, NULL);
 
     // 监控视频麦克风开关
-    monitor_mic_on_btn = create_text_label(monitor_video_mode_con, ICON_MICROPHONE_ON, &iconfont_icon_50, lv_color_hex(0x838383), 0, 0, LV_OPA_100);
+    monitor_mic_on_btn = create_text_label(monitor_video_mode_con, ICON_MICROPHONE_ON, &iconfont_icon_60, lv_color_hex(0x838383), 0, 0, LV_OPA_100);
     lv_obj_align(monitor_mic_on_btn, LV_ALIGN_LEFT_MID, 143, 0);
     lv_obj_add_flag(monitor_mic_on_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(monitor_mic_on_btn, LV_OPA_80,LV_STATE_PRESSED);
     lv_obj_add_event_cb(monitor_mic_on_btn, monitor_mic_event_cb, LV_EVENT_CLICKED, NULL);
 
-    monitor_mic_off_btn = create_text_label(monitor_video_mode_con, ICON_MICROPHONE_OFF, &iconfont_icon_50, lv_color_hex(0x838383), 0, 0, LV_OPA_100);
+    monitor_mic_off_btn = create_text_label(monitor_video_mode_con, ICON_MICROPHONE_OFF, &iconfont_icon_60, lv_color_hex(0x838383), 0, 0, LV_OPA_100);
     lv_obj_align(monitor_mic_off_btn, LV_ALIGN_LEFT_MID, 143, 0);
     lv_obj_add_flag(monitor_mic_off_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(monitor_mic_off_btn, LV_OPA_80,LV_STATE_PRESSED);
@@ -575,32 +575,32 @@ void ui_monitor_video_create(lv_obj_t *homepage_scr)
     // 给背景容器绑定锁回调（扩大点击区域，仅触发开锁）
     lv_obj_add_event_cb(monitor_lock_on_con, monitor_lock_event_cb, LV_EVENT_CLICKED, NULL);
 
-    monitor_lock_on_btn = create_text_label(monitor_lock_on_con, ICON_LOCK_50, &iconfont_icon_50, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
+    monitor_lock_on_btn = create_text_label(monitor_lock_on_con, ICON_LOCK_50, &iconfont_icon_60, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
     lv_obj_align(monitor_lock_on_btn, LV_ALIGN_CENTER, 0, 0);
     lv_obj_add_flag(monitor_lock_on_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(monitor_lock_on_btn, LV_OPA_80,LV_STATE_PRESSED);
     lv_obj_add_event_cb(monitor_lock_on_btn, monitor_lock_event_cb, LV_EVENT_CLICKED, NULL);
 
-    monitor_lock_off_btn = create_text_label(monitor_lock_on_con, ICON_UNLOCK_50, &iconfont_icon_50, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
+    monitor_lock_off_btn = create_text_label(monitor_lock_on_con, ICON_UNLOCK_50, &iconfont_icon_60, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
     lv_obj_align(monitor_lock_off_btn, LV_ALIGN_CENTER, 0, 0);
     lv_obj_add_flag(monitor_lock_off_btn, LV_OBJ_FLAG_HIDDEN); // 默认隐藏开锁图标
 
     //监控视频截屏按钮
-    lv_obj_t *monitor_screenshot_btn = create_text_label(monitor_video_mode_con, ICON_SCREENSHOT, &iconfont_icon_50, lv_color_hex(0x838383), 0, 0, LV_OPA_100);
+    lv_obj_t *monitor_screenshot_btn = create_text_label(monitor_video_mode_con, ICON_SCREENSHOT, &iconfont_icon_60, lv_color_hex(0x838383), 0, 0, LV_OPA_100);
     lv_obj_align(monitor_screenshot_btn, LV_ALIGN_LEFT_MID, 365, 0);
     lv_obj_add_flag(monitor_screenshot_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(monitor_screenshot_btn, LV_OPA_80,LV_STATE_PRESSED);
     
     //监控视频录屏开关
     // 开启录屏按钮
-    monitor_record_on_btn = create_text_label(monitor_video_mode_con, ICON_VIDEO_50, &iconfont_icon_50, lv_color_hex(0x838383), 0, 0, LV_OPA_100);
+    monitor_record_on_btn = create_text_label(monitor_video_mode_con, ICON_VIDEO_50, &iconfont_icon_60, lv_color_hex(0x838383), 0, 0, LV_OPA_100);
     lv_obj_align(monitor_record_on_btn, LV_ALIGN_LEFT_MID, 466, 0);
     lv_obj_add_flag(monitor_record_on_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(monitor_record_on_btn, LV_OPA_80,LV_STATE_PRESSED);
     lv_obj_add_event_cb(monitor_record_on_btn, monitor_record_event_cb, LV_EVENT_CLICKED, NULL);
 
     // 关闭录屏按钮
-    monitor_record_off_btn = create_text_label(monitor_video_mode_con, ICON_RECORDING, &iconfont_icon_50, lv_color_hex(0x838383), 0, 0, LV_OPA_100);
+    monitor_record_off_btn = create_text_label(monitor_video_mode_con, ICON_RECORDING, &iconfont_icon_60, lv_color_hex(0x838383), 0, 0, LV_OPA_100);
     lv_obj_align(monitor_record_off_btn, LV_ALIGN_LEFT_MID, 466, 0);
     lv_obj_add_flag(monitor_record_off_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(monitor_record_off_btn, LV_OPA_80,LV_STATE_PRESSED);
@@ -618,7 +618,7 @@ void ui_monitor_video_create(lv_obj_t *homepage_scr)
     // 左上角返回按钮
     //lv_obj_t *back_btn = create_image_obj(monitor_video_scr, "H:back.png", 52, 123);
     lv_obj_t *back_btn = create_text_label
-    (monitor_video_scr, ICON_CHEVORN_LEFT, &my_custom_icon, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
+    (monitor_video_scr, ICON_CHEVORN_LEFT, &fontawesome_icon_32, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
     lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(back_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(back_btn, LV_OPA_80, LV_STATE_PRESSED);

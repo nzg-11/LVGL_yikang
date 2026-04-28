@@ -203,7 +203,7 @@ void video_play_back_btn_click_cb(lv_event_t *e)
 static lv_obj_t *create_common_back_btn(lv_obj_t *parent, lv_obj_t *target_scr)
 {
     lv_obj_t *back_btn = create_text_label
-    (parent, ICON_CHEVORN_LEFT, &my_custom_icon, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
+    (parent, ICON_CHEVORN_LEFT, &fontawesome_icon_32, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
     if(back_btn == NULL) return NULL;
 
     lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
@@ -486,7 +486,7 @@ static void refresh_pic_list(void)
         lv_obj_set_style_bg_opa(check, LV_OPA_0, LV_STATE_DEFAULT);
 
         // 选中时显示你的对勾
-        lv_obj_set_style_text_font(check, &my_custom_icon, LV_PART_INDICATOR);
+        lv_obj_set_style_text_font(check, &fontawesome_icon_32, LV_PART_INDICATOR);
         lv_obj_set_style_text_color(check, lv_color_hex(0xFFFFFF), LV_PART_INDICATOR);
         lv_checkbox_set_text(check, ICON_CHECK);
 
@@ -589,7 +589,7 @@ void pic_list_item_click_cb(lv_event_t *e)
     lv_obj_t *back_btn = create_container_circle
     (pic_preview_scr, 52, 84, 46,true, lv_color_hex(0xCFCECE), lv_color_hex(0xFFFFFF), 0, LV_OPA_100);
     lv_obj_set_style_pad_all(back_btn, 0, LV_STATE_DEFAULT);
-    lv_obj_t *back_btn_img = create_text_label(back_btn, ICON_CHEVORN_LEFT, &my_custom_icon, lv_color_hex(0x888585), 0, 0, LV_OPA_100);
+    lv_obj_t *back_btn_img = create_text_label(back_btn, ICON_CHEVORN_LEFT, &fontawesome_icon_32, lv_color_hex(0x888585), 0, 0, LV_OPA_100);
     lv_obj_align(back_btn_img, LV_ALIGN_CENTER, -2, 0);
     lv_obj_add_event_cb(back_btn, pic_preview_back_btn_click_cb, LV_EVENT_CLICKED, fc_pic_scr);
 
@@ -602,7 +602,7 @@ void pic_list_item_click_cb(lv_event_t *e)
 
     // // 左切换按钮
     // lv_obj_t *prev_btn = create_text_label
-    // (pic_preview_scr, ICON_CHEVORN_LEFT, &my_custom_icon, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
+    // (pic_preview_scr, ICON_CHEVORN_LEFT, &fontawesome_icon_32, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
     // if(prev_btn) {
     //     lv_obj_add_flag(prev_btn, LV_OBJ_FLAG_CLICKABLE);
     //     lv_obj_align(prev_btn, LV_ALIGN_LEFT_MID, 20, 0);
@@ -612,7 +612,7 @@ void pic_list_item_click_cb(lv_event_t *e)
 
     // // 右切换按钮
     // lv_obj_t *next_btn = create_text_label
-    // (pic_preview_scr, ICON_CHEVORN_RIGHT, &my_custom_icon, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
+    // (pic_preview_scr, ICON_CHEVORN_RIGHT, &fontawesome_icon_32, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
     // if(next_btn) {
     //     lv_obj_add_flag(next_btn, LV_OBJ_FLAG_CLICKABLE);
     //     lv_obj_align(next_btn, LV_ALIGN_RIGHT_MID, -20, 0);
@@ -624,7 +624,7 @@ void pic_list_item_click_cb(lv_event_t *e)
     lv_obj_t *del_btn = create_container_circle
     (pic_preview_scr, 935, 84, 46,true, lv_color_hex(0xCFCECE), lv_color_hex(0xFFFFFF), 0, LV_OPA_100);
     lv_obj_set_style_pad_all(del_btn, 0, LV_STATE_DEFAULT);
-    lv_obj_t *del_btn_img = create_text_label(del_btn, ICON_TRASH, &my_custom_icon, lv_color_hex(0x888585), 0, 0, LV_OPA_100);
+    lv_obj_t *del_btn_img = create_text_label(del_btn, ICON_TRASH, &fontawesome_icon_32, lv_color_hex(0x888585), 0, 0, LV_OPA_100);
     lv_obj_align(del_btn_img, LV_ALIGN_CENTER, 0, 0);
 
     if(del_btn) {
@@ -651,14 +651,12 @@ void delete_current_pic_cb(lv_event_t *e)
 
     lv_obj_t *parent_scr;
     uint8_t del_index = 0;
-    bool is_preview_page_delete = false;
 
     if (pic_select_mode && fc_pic_scr && lv_obj_is_valid(fc_pic_scr)) {
         parent_scr = fc_pic_scr;
     } else if (lv_scr_act() != fc_pic_scr) {
         parent_scr = lv_scr_act();
         del_index = (uint8_t)(uintptr_t)lv_event_get_user_data(e);
-        is_preview_page_delete = true;
         if(del_index < MAX_PIC_ITEMS) {
             memset(pic_batch_selected_copy, 0, sizeof(pic_batch_selected_copy));
             pic_batch_selected_copy[del_index] = true;
@@ -1037,7 +1035,7 @@ static void video_list_item_click_cb(lv_event_t *e)
     lv_obj_t *back_btn = create_container_circle
     (fc_video_play_scr, 52, 84, 46,true, lv_color_hex(0xCFCECE), lv_color_hex(0xFFFFFF), 0, LV_OPA_100);
     lv_obj_set_style_pad_all(back_btn, 0, LV_STATE_DEFAULT);
-    lv_obj_t *back_btn_img = create_text_label(back_btn, ICON_CHEVORN_LEFT, &my_custom_icon, lv_color_hex(0x888585), 0, 0, LV_OPA_100);
+    lv_obj_t *back_btn_img = create_text_label(back_btn, ICON_CHEVORN_LEFT, &fontawesome_icon_32, lv_color_hex(0x888585), 0, 0, LV_OPA_100);
     lv_obj_align(back_btn_img, LV_ALIGN_CENTER, -2, 0);
     lv_obj_add_event_cb(back_btn, video_play_back_btn_click_cb, LV_EVENT_CLICKED, fc_video_scr);
 
@@ -1045,7 +1043,7 @@ static void video_list_item_click_cb(lv_event_t *e)
     lv_obj_t *del_btn = create_container_circle
     (fc_video_play_scr, 935, 84, 46,true, lv_color_hex(0xCFCECE), lv_color_hex(0xFFFFFF), 0, LV_OPA_100);
     lv_obj_set_style_pad_all(del_btn, 0, LV_STATE_DEFAULT);
-    lv_obj_t *del_btn_img = create_text_label(del_btn, ICON_TRASH, &my_custom_icon, lv_color_hex(0x888585), 0, 0, LV_OPA_100);
+    lv_obj_t *del_btn_img = create_text_label(del_btn, ICON_TRASH, &fontawesome_icon_32, lv_color_hex(0x888585), 0, 0, LV_OPA_100);
     lv_obj_align(del_btn_img, LV_ALIGN_CENTER, 0, 0);
     lv_obj_add_flag(del_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_align(del_btn, LV_ALIGN_TOP_RIGHT, -15, 123);
@@ -1168,7 +1166,7 @@ static void refresh_video_list(void)
         lv_obj_add_event_cb(video_btn, enter_select_mode, LV_EVENT_LONG_PRESSED, NULL);
 
         // 视频图标
-        lv_obj_t *video_icon = create_text_label(video_btn, ICON_VIDEO, &iconfont_icon, lv_color_hex(0xFFFFFF), 20, 20, LV_OPA_100);
+        lv_obj_t *video_icon = create_text_label(video_btn, ICON_VIDEO, &iconfont_icon_32, lv_color_hex(0xFFFFFF), 20, 20, LV_OPA_100);
         lv_obj_align(video_icon, LV_ALIGN_LEFT_MID, 20, 0);
 
         // 时间标签
@@ -1192,7 +1190,7 @@ static void refresh_video_list(void)
         lv_obj_set_style_bg_opa(check, LV_OPA_0, LV_STATE_DEFAULT);
 
         // 选中时显示你的图标
-        lv_obj_set_style_text_font(check, &my_custom_icon, LV_PART_INDICATOR);
+        lv_obj_set_style_text_font(check, &fontawesome_icon_32, LV_PART_INDICATOR);
         lv_obj_set_style_text_color(check, lv_color_hex(0xFFFFFF), LV_PART_INDICATOR);
         lv_checkbox_set_text(check, ICON_CHECK);  // 这里用你的对勾图标
 
@@ -1373,7 +1371,7 @@ void ui_file_cache_create(lv_obj_t *homepage_scr)
 
     // 返回按钮
     lv_obj_t *back_btn = create_text_label
-    (file_cache_scr, ICON_CHEVORN_LEFT, &my_custom_icon, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
+    (file_cache_scr, ICON_CHEVORN_LEFT, &fontawesome_icon_32, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
     lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(back_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(back_btn, LV_OPA_80, LV_STATE_PRESSED);
@@ -1406,7 +1404,7 @@ void ui_file_cache_create(lv_obj_t *homepage_scr)
     lv_obj_set_style_border_opa(video_btn, LV_OPA_0, LV_PART_MAIN);
     lv_obj_add_event_cb(video_btn, video_cache_btn_cb, LV_EVENT_CLICKED, file_cache_scr);
 
-    lv_obj_t *video_icon = create_text_label(video_btn, ICON_VIDEO, &iconfont_icon, lv_color_hex(0xFFFFFF), 20, 20, LV_OPA_100);
+    lv_obj_t *video_icon = create_text_label(video_btn, ICON_VIDEO, &iconfont_icon_32, lv_color_hex(0xFFFFFF), 20, 20, LV_OPA_100);
     lv_obj_align(video_icon, LV_ALIGN_LEFT_MID, 20, 0);
 
     lv_obj_t *video_label = lv_label_create(video_btn);
@@ -1415,7 +1413,7 @@ void ui_file_cache_create(lv_obj_t *homepage_scr)
     lv_obj_set_style_text_font(video_label, &eques_regular_36, LV_PART_MAIN);
     lv_obj_align_to(video_label, video_icon, LV_ALIGN_OUT_RIGHT_MID, 20, 0);
 
-    create_text_label(file_cache_scr, ICON_CHEVORN_RIGHT, &my_custom_icon, lv_color_hex(0xC4C4C4), 935, 370, LV_OPA_100);
+    create_text_label(file_cache_scr, ICON_CHEVORN_RIGHT, &fontawesome_icon_32, lv_color_hex(0xC4C4C4), 935, 370, LV_OPA_100);
 
     // 图片缓存按钮
     lv_obj_t *pic_btn = lv_btn_create(file_cache_scr);
@@ -1427,7 +1425,7 @@ void ui_file_cache_create(lv_obj_t *homepage_scr)
     lv_obj_set_style_border_opa(pic_btn, LV_OPA_0, LV_PART_MAIN);
     lv_obj_add_event_cb(pic_btn, pic_cache_btn_cb, LV_EVENT_CLICKED, file_cache_scr);
 
-    lv_obj_t *pic_icon = create_text_label(pic_btn, ICON_PICTURE, &my_custom_icon, lv_color_hex(0xFFFFFF), 20, 20, LV_OPA_100);
+    lv_obj_t *pic_icon = create_text_label(pic_btn, ICON_PICTURE, &fontawesome_icon_32, lv_color_hex(0xFFFFFF), 20, 20, LV_OPA_100);
     lv_obj_align(pic_icon, LV_ALIGN_LEFT_MID, 20, 0);
 
     lv_obj_t *pic_label = lv_label_create(pic_btn);
@@ -1436,7 +1434,7 @@ void ui_file_cache_create(lv_obj_t *homepage_scr)
     lv_obj_set_style_text_font(pic_label, &eques_regular_36, LV_PART_MAIN);
     lv_obj_align_to(pic_label, pic_icon, LV_ALIGN_OUT_RIGHT_MID, 20, 0);
 
-    create_text_label(file_cache_scr, ICON_CHEVORN_RIGHT, &my_custom_icon, lv_color_hex(0xC4C4C4), 935, 465, LV_OPA_100);
+    create_text_label(file_cache_scr, ICON_CHEVORN_RIGHT, &fontawesome_icon_32, lv_color_hex(0xC4C4C4), 935, 465, LV_OPA_100);
 
     // 底部提示
     create_text_label(file_cache_scr, "若文件没有上传云端，只可保留三天", &eques_regular_24, lv_color_hex(0xCDCDCD), 48, 527, LV_OPA_100);
@@ -1564,7 +1562,6 @@ void delete_current_video_cb(lv_event_t *e)
     // 确定弹窗父对象
     lv_obj_t *parent_scr;
     uint8_t del_index = 0;
-    bool is_play_page_delete = false; // 标记是否为播放页删除
 
     if (select_mode && fc_video_scr && lv_obj_is_valid(fc_video_scr)) {
         parent_scr = fc_video_scr;
@@ -1572,7 +1569,6 @@ void delete_current_video_cb(lv_event_t *e)
         parent_scr = fc_video_play_scr;
         // 【修复点2】强化索引校验，避免越界
         del_index = (uint8_t)(uintptr_t)lv_event_get_user_data(e);
-        is_play_page_delete = true;
         if(del_index < current_video_count) {
             memset(batch_selected_copy, 0, sizeof(batch_selected_copy)); // 清空原有状态
             batch_selected_copy[del_index] = true;

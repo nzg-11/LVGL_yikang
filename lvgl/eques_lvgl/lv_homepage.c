@@ -76,23 +76,26 @@ static void homepage_scr_load_cb(lv_event_t *e)
     // 重建状态栏
     update_status_bar_parent(scr);
     //云朵替代
-    create_container_circle(scr, 217, 163, 89,
-    true, lv_color_hex(0xFFCE50), lv_color_hex(0x808080), 0, LV_OPA_0);
-    create_container_circle(scr, 181, 192, 107,
-    true, lv_color_hex(0xFFFFFF), lv_color_hex(0x808080), 0, LV_OPA_0);
-    create_text_label(scr, "25", &eques_regular_36, lv_color_hex(0xFFFFFF), 212, 327, LV_OPA_100);
+    // create_container_circle(scr, 217, 163, 89,
+    // true, lv_color_hex(0xFFCE50), lv_color_hex(0x808080), 0, LV_OPA_0);
+    // create_container_circle(scr, 181, 192, 107,
+    // true, lv_color_hex(0xFFFFFF), lv_color_hex(0x808080), 0, LV_OPA_0);
+    // 大雨图标
+    create_text_label(scr, ICON_RAIN, & fontawesome_icon_150, lv_color_hex(0xFFFFFF), 200, 134, LV_OPA_100);
+    
+    create_text_label(scr, "25°C", &eques_regular_60, lv_color_hex(0xFFFFFF), 200, 327, LV_OPA_100);
 
     //开关锁容器
     lv_obj_t *unlocking_con = create_custom_gradient_container
     (scr, 48, 470, 239, 82, 0, 0x006BDC, 0x00BDBD, LV_GRAD_DIR_VER, 0, 225, LV_OPA_100);
     lv_obj_set_style_pad_all(unlocking_con, 0, LV_STATE_DEFAULT);
-    lv_obj_t *unlock_img = create_text_label(unlocking_con, ICON_UNLOCK, &my_custom_icon, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
+    lv_obj_t *unlock_img = create_text_label(unlocking_con, ICON_UNLOCK, &fontawesome_icon_32, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
     lv_obj_align_to(unlock_img, unlocking_con, LV_ALIGN_LEFT_MID, 25, 0);
 
     lv_obj_t *locking_con = create_container
     (scr, 287, 470, 239, 82, lv_color_hex(0x2E4B7D), LV_OPA_100, 0, lv_color_hex(0x2E4B7D), 0, LV_OPA_0);
     lv_obj_set_style_pad_all(locking_con, 0, LV_STATE_DEFAULT);
-    lv_obj_t *lock_img = create_text_label(locking_con, ICON_LOCK, &my_custom_icon, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
+    lv_obj_t *lock_img = create_text_label(locking_con, ICON_LOCK, &fontawesome_icon_32, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
     lv_obj_align_to(lock_img, locking_con, LV_ALIGN_LEFT_MID, 25, 0);
     //开关锁文本
     create_text_label(scr, "一键开锁", &eques_bold_28, lv_color_hex(0xFFFFFF), 130, 495, LV_OPA_100);
@@ -301,7 +304,7 @@ static void create_status_bar_ex(bool is_homepage)
         lv_obj_align(time_label, LV_ALIGN_LEFT_MID, 270, 0);
 
         // WiFi
-        wifi_img = create_text_label(status_bar, ICON_WIFI, &my_custom_icon, lv_color_hex(0xFFFFFF), 0, 15, LV_OPA_100);
+        wifi_img = create_text_label(status_bar, ICON_WIFI, &fontawesome_icon_32, lv_color_hex(0xFFFFFF), 0, 15, LV_OPA_100);
         lv_obj_align(wifi_img, LV_ALIGN_LEFT_MID, 390, 0);
 
         // 电池外框
@@ -325,7 +328,7 @@ static void create_status_bar_ex(bool is_homepage)
         lv_obj_align(time_label, LV_ALIGN_LEFT_MID, 740, 0);
 
         // WiFi
-        wifi_img = create_text_label(status_bar, ICON_WIFI, &my_custom_icon, lv_color_hex(0xFFFFFF), 0, 15, LV_OPA_100);
+        wifi_img = create_text_label(status_bar, ICON_WIFI, &fontawesome_icon_32, lv_color_hex(0xFFFFFF), 0, 15, LV_OPA_100);
         lv_obj_align(wifi_img, LV_ALIGN_LEFT_MID, 860, 0);
 
         // 电池外框

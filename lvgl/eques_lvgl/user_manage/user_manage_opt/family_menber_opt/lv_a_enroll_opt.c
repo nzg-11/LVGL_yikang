@@ -1,3 +1,4 @@
+
 #if 0
 
 #else
@@ -169,7 +170,7 @@ void ui_enroll_create(common_member_info_t *member_info, lv_obj_t *parent_scr)
     
     // 返回按钮
     lv_obj_t *back_btn = create_text_label
-    (enroll_scr, ICON_CHEVORN_LEFT, &my_custom_icon, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
+    (enroll_scr, ICON_CHEVORN_LEFT, &fontawesome_icon_32, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
     lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(back_btn,LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(back_btn,LV_OPA_80,LV_STATE_PRESSED);
@@ -225,7 +226,7 @@ static uint16_t update_finger_opt_container(void)
     }
 
     // 顶部标题与分割线
-    create_text_label(g_finger_opt_con, ICON_FINGERPRINT_L, &my_custom_icon_50, lv_color_hex(0x00BDBD), 28, 21, LV_OPA_100);
+    create_text_label(g_finger_opt_con, ICON_FINGERPRINT_L, &fontawesome_icon_40, lv_color_hex(0x00BDBD), 28, 21, LV_OPA_100);
     lv_obj_t *finger_divider01 = lv_line_create(g_finger_opt_con);
     static lv_point_t divider_top_points[] = {{38, LINE_TOP_Y}, {881, LINE_TOP_Y}};
     config_divider_line_style(finger_divider01, divider_top_points, 2, 0xD4D4D4, 1, LV_OPA_100);
@@ -349,7 +350,7 @@ static uint16_t update_pwd_opt_container(uint16_t finger_con_height)
     }
 
     // 顶部标题与分割线
-    create_text_label(g_pwd_opt_con, ICON_PASSWORD_L, &my_custom_icon_50, lv_color_hex(0x00BDBD), 28, 17, LV_OPA_100);
+    create_text_label(g_pwd_opt_con, ICON_PASSWORD_L, &fontawesome_icon_40, lv_color_hex(0x00BDBD), 28, 17, LV_OPA_100);
     lv_obj_t *pwd_divider01 = lv_line_create(g_pwd_opt_con);
     static lv_point_t divider_top_points[] = {{38, LINE_TOP_Y}, {881, LINE_TOP_Y}};
     config_divider_line_style(pwd_divider01, divider_top_points, 2, 0xD4D4D4, 1, LV_OPA_100);
@@ -470,7 +471,7 @@ static uint16_t update_card_opt_container(uint16_t pwd_con_height, uint16_t fing
     }
 
     // 顶部标题与分割线
-    create_text_label(g_card_opt_con, ICON_CARD_L, &my_custom_icon_50, lv_color_hex(0x00BDBD), 28, 30, LV_OPA_100);
+    create_text_label(g_card_opt_con, ICON_CARD_L, &fontawesome_icon_40, lv_color_hex(0x00BDBD), 28, 30, LV_OPA_100);
     lv_obj_t *card_divider01 = lv_line_create(g_card_opt_con);
     static lv_point_t divider_top_points[] = {{38, LINE_TOP_Y}, {881, LINE_TOP_Y}};
     config_divider_line_style(card_divider01, divider_top_points, 2, 0xD4D4D4, 1, LV_OPA_100);
@@ -592,7 +593,7 @@ static uint16_t update_face_opt_container(uint16_t card_con_height, uint16_t pwd
     }
 
     // 顶部标题与分割线
-    create_text_label(g_face_opt_con, ICON_FACE_L, &my_custom_icon_50, lv_color_hex(0x00BDBD), 28, 30, LV_OPA_100);
+    create_text_label(g_face_opt_con, ICON_FACE_L, &fontawesome_icon_40, lv_color_hex(0x00BDBD), 28, 30, LV_OPA_100);
     lv_obj_t *face_divider01 = lv_line_create(g_face_opt_con);
     static lv_point_t divider_top_points[] = {{38, LINE_TOP_Y}, {881, LINE_TOP_Y}};
     config_divider_line_style(face_divider01, divider_top_points, 2, 0xD4D4D4, 1, LV_OPA_100);

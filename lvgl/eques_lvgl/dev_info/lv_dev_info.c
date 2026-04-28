@@ -212,7 +212,7 @@ void ui_dev_info_create(lv_obj_t *homepage_scr)
     lv_obj_align(dev_name_title, LV_ALIGN_LEFT_MID, 65, 0);
     dev_name_label = create_text_label(dev_con1, "可视智能锁", &eques_regular_24, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_50);
     lv_obj_align(dev_name_label, LV_ALIGN_RIGHT_MID, -10, 0);
-    lv_obj_t *dev_tag_label = create_text_label(dev_con1, ICON_TAG, &my_custom_icon, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
+    lv_obj_t *dev_tag_label = create_text_label(dev_con1, ICON_TAG, &fontawesome_icon_32, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
     lv_obj_align(dev_tag_label, LV_ALIGN_LEFT_MID, 10, 0);
 
     // 设备编号容器
@@ -221,19 +221,19 @@ void ui_dev_info_create(lv_obj_t *homepage_scr)
     lv_obj_align(dev_id_label, LV_ALIGN_LEFT_MID, 65, 0);
     lv_obj_t *dev_id_num_label = create_text_label(dev_con, "12345678", &eques_regular_24, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_50);
     lv_obj_align(dev_id_num_label, LV_ALIGN_RIGHT_MID, -10, 0);
-    lv_obj_t *dev_server_label = create_text_label(dev_con, ICON_SERVER, &my_custom_icon, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
+    lv_obj_t *dev_server_label = create_text_label(dev_con, ICON_SERVER, &fontawesome_icon_32, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
     lv_obj_align(dev_server_label, LV_ALIGN_LEFT_MID, 10, 0);    
     // WiFi信息容器
     lv_obj_t *wifi_con = create_container(dev_info_scr, 48, 332, 928, 83, lv_color_hex(0x192A46), LV_OPA_100, 16, lv_color_hex(0x2E4B7D), 0, LV_OPA_0);
     create_text_label(dev_info_scr, "当前网络", &eques_regular_36, lv_color_hex(0xFFFFFF), 130, 350, LV_OPA_100);
     lv_obj_t *wifi_name_label = create_text_label(wifi_con, "wifi-name", &eques_regular_24, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_50);
     lv_obj_align(wifi_name_label, LV_ALIGN_RIGHT_MID, -60, 0);
-    create_text_label(dev_info_scr, ICON_WIFI, &my_custom_icon, lv_color_hex(0xC4C4C4), 912, 354, LV_OPA_100);
-    lv_obj_t *wifi_tag_label = create_text_label(wifi_con, ICON_PASSPORT, &my_custom_icon, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
+    create_text_label(dev_info_scr, ICON_WIFI, &fontawesome_icon_32, lv_color_hex(0xC4C4C4), 912, 354, LV_OPA_100);
+    lv_obj_t *wifi_tag_label = create_text_label(wifi_con, ICON_PASSPORT, &fontawesome_icon_32, lv_color_hex(0xFFFFFF), 0, 0, LV_OPA_100);
     lv_obj_align(wifi_tag_label, LV_ALIGN_LEFT_MID, 10, 0);
     // 返回
     lv_obj_t *back_btn = create_text_label
-    (dev_info_scr, ICON_CHEVORN_LEFT, &my_custom_icon, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
+    (dev_info_scr, ICON_CHEVORN_LEFT, &fontawesome_icon_32, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
     lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(back_btn,LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(back_btn,LV_OPA_80,LV_STATE_PRESSED);

@@ -20,7 +20,7 @@ lv_obj_t *edit_record_scr = NULL;
 
 // 样式相关
 static lv_style_t edit_record_grad_style;
-static bool edit_record_style_inited = false;
+ 
 
 // 键盘与弹窗组件
 static lv_obj_t *g_keyboard = NULL;
@@ -183,7 +183,7 @@ switch(g_edit_type) {
 
     // 返回按钮
     lv_obj_t *back_btn = create_text_label
-    (edit_record_scr, ICON_CHEVORN_LEFT, &my_custom_icon, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
+    (edit_record_scr, ICON_CHEVORN_LEFT, &fontawesome_icon_32, lv_color_hex(0xFFFFFF), 52, 84, LV_OPA_100);
     lv_obj_set_style_bg_opa(back_btn, LV_OPA_0, LV_STATE_DEFAULT);
     lv_obj_add_flag(back_btn,LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_style_opa(back_btn,LV_OPA_80,LV_STATE_PRESSED);
@@ -397,9 +397,9 @@ static void dialog_confirm_cb(lv_event_t *e)
     hide_keyboard(NULL);
 
     // 返回录入界面并重建
-    // common_member_info_t *member = get_current_enroll_member();
-    // ui_enroll_create(member, g_parent_scr);  
-    lv_scr_load(parent_scr);
+    common_member_info_t *member = get_current_enroll_member();
+    ui_enroll_create(member, g_parent_scr);  
+    //lv_scr_load(parent_scr);
 
     // 销毁编辑界面
     if(lv_obj_is_valid(edit_record_scr)) {
