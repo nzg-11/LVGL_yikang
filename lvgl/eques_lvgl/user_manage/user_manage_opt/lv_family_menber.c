@@ -1261,15 +1261,12 @@ lv_obj_t *family_menber_scr = NULL;
 static lv_style_t family_menber_grad_style;
 static bool family_menber_style_inited = false;
 static lv_obj_t *name_keyboard = NULL;
-static lv_obj_t *g_name_input = NULL;
 static lv_color_t selected_avatar_color = {0};
 static uint8_t member_count = 0;
 lv_obj_t *family_menber_add_con = NULL;
 lv_obj_t *family_menber_add = NULL;
 
-// 常量定义
-static const lv_coord_t avatar_x_offset[] = {19, 110, 201};
-static const lv_coord_t avatar_y_offset[] = {12, 101};
+
 
 // 函数声明
 static void close_custom_popup(void);
@@ -1624,7 +1621,7 @@ static void member_delete_btn_click_cb(lv_event_t *e)
         g_member_selected[idx] = true;
 
         if(g_member_cards[idx] != NULL && lv_obj_is_valid(g_member_cards[idx])) {
-            lv_obj_set_style_opa(g_member_cards[idx], LV_OPA_50, LV_STATE_DEFAULT);
+            //lv_obj_set_style_opa(g_member_cards[idx], LV_OPA_50, LV_STATE_DEFAULT);
         }
     } else {
         lv_obj_clear_flag(delete_hid, LV_OBJ_FLAG_HIDDEN);
@@ -1703,7 +1700,7 @@ static void switch_delete_mode(bool enter)
                 lv_color_hex(0x00BDBD), 48, 90, LV_OPA_100
             );
             lv_obj_add_flag(g_delete_cancel_btn, LV_OBJ_FLAG_CLICKABLE);
-            lv_obj_set_style_opa(g_delete_cancel_btn, LV_OPA_80, LV_STATE_PRESSED);
+            //lv_obj_set_style_opa(g_delete_cancel_btn, LV_OPA_80, LV_STATE_PRESSED);
             lv_obj_add_event_cb(g_delete_cancel_btn, delete_cancel_click_cb, LV_EVENT_CLICKED, NULL);
         } 
         else {
@@ -1716,7 +1713,7 @@ static void switch_delete_mode(bool enter)
                 lv_color_hex(0xFF0000), 928, 90, LV_OPA_100
             );
             lv_obj_add_flag(g_delete_confirm_btn, LV_OBJ_FLAG_CLICKABLE);
-            lv_obj_set_style_opa(g_delete_confirm_btn, LV_OPA_80, LV_STATE_PRESSED);
+            //lv_obj_set_style_opa(g_delete_confirm_btn, LV_OPA_80, LV_STATE_PRESSED);
             lv_obj_add_event_cb(g_delete_confirm_btn, delete_confirm_click_cb, LV_EVENT_CLICKED, NULL);
         } 
         else {
@@ -1734,11 +1731,11 @@ static void switch_delete_mode(bool enter)
         
         if(family_menber_add_con != NULL && lv_obj_is_valid(family_menber_add_con)) {
             lv_obj_clear_flag(family_menber_add_con, LV_OBJ_FLAG_CLICKABLE);
-            lv_obj_set_style_opa(family_menber_add_con, LV_OPA_50, LV_STATE_DEFAULT);
+            //lv_obj_set_style_opa(family_menber_add_con, LV_OPA_50, LV_STATE_DEFAULT);
         }
         if(family_menber_add != NULL && lv_obj_is_valid(family_menber_add)) {
             lv_obj_clear_flag(family_menber_add, LV_OBJ_FLAG_CLICKABLE);
-            lv_obj_set_style_opa(family_menber_add, LV_OPA_50, LV_STATE_DEFAULT);
+            //lv_obj_set_style_opa(family_menber_add, LV_OPA_50, LV_STATE_DEFAULT);
         }
 
         
@@ -2042,48 +2039,43 @@ void update_member_count_ui(uint8_t member_idx)
 
 // ====================================== 弹窗&键盘 ======================================
 // 头像点击回调 记录当前选择的头像属性
-static void avatar_click_cb(lv_event_t *e)
+static void family_member_btn_click_cb(lv_event_t *e)
 {
     if(e == NULL) return;
-    lv_obj_t *avatar = lv_event_get_target(e);
-    
+
+    // 成员数量上限判断
     if(member_count >= MAX_FAMILY_MEMBER_COUNT) {
-            LV_LOG_USER("成员数量已达上限（%d个),无法添加", MAX_FAMILY_MEMBER_COUNT);
-            close_custom_popup();
-            return;
-        }
-    // 记录当前选择的头像颜色
-    selected_avatar_color = lv_obj_get_style_bg_color(avatar, LV_STATE_DEFAULT);
-
-    // 记录当前选择的姓名
-    char member_name[16] = {0};
-    if(g_name_input != NULL && lv_obj_is_valid(g_name_input)) {
-        const char *input_name = lv_textarea_get_text(g_name_input);
-        if(input_name != NULL && strlen(input_name) > 0) {
-            strncpy(member_name, input_name, sizeof(member_name)-1);
-        } else {
-            snprintf(member_name, sizeof(member_name), "00%d", member_count + 1);
-        }
-    } else {
-        snprintf(member_name, sizeof(member_name), "00%d", member_count + 1);
+        LV_LOG_USER("成员数量已达上限（%d个),无法添加", MAX_FAMILY_MEMBER_COUNT);
+        close_custom_popup();
+        return;
     }
-    
-    // 保存当前选择的成员信息
-    uint8_t member_idx = save_family_member_info(member_name, selected_avatar_color);
 
+    // 获取按钮绑定的成员姓名字符串
+    const char *member_name = (const char *)lv_event_get_user_data(e);
+    if(member_name == NULL) {
+        LV_LOG_WARN("成员姓名为空");
+        return;
+    }
+
+    // 头像颜色 统一设置为白色
+    selected_avatar_color = lv_color_hex(0xFFFFFF);
+
+    // 保存成员信息
+    uint8_t member_idx = save_family_member_info(member_name, selected_avatar_color);
     if(member_idx == MAX_FAMILY_MEMBER_COUNT) {
         LV_LOG_WARN("No empty slot for new member");
         close_custom_popup();
         return;
     }
-    // 正式创建成员卡片
+
+    // 创建成员卡片
     if(family_menber_scr != NULL && lv_obj_is_valid(family_menber_scr)) {
         create_family_member_card(family_menber_scr, member_name, selected_avatar_color, member_idx);
         member_count++;
         update_add_member_btn_state();
     }
-    
-    // 关闭自定义弹窗 销毁资源
+
+    // 关闭弹窗
     close_custom_popup();
 }
 
@@ -2143,6 +2135,7 @@ static void popup_close_btn_cb(lv_event_t *e)
 }
 
 // 添加家庭成员头像选择弹窗
+// 添加家庭成员头像选择弹窗（主函数）
 void family_menber_add_click_cb(lv_event_t *e)
 {
     if(e == NULL) return;
@@ -2160,50 +2153,97 @@ void family_menber_add_click_cb(lv_event_t *e)
     (family_menber_scr, 212, 94, 600, 423, lv_color_hex(0xE0EDFF), LV_OPA_100, 16, lv_color_hex(0x1F3150), 0, LV_OPA_90);
     lv_obj_set_style_pad_all(custom_popup, 0, LV_STATE_DEFAULT);
 
-    // 创建姓名输入框
-    create_text_label(custom_popup, "名称", &eques_regular_24, lv_color_hex(0x7C7C7C), 81, 75, LV_OPA_100);
-    lv_obj_t *name_input = lv_textarea_create(custom_popup);
-    lv_obj_clear_flag(name_input, LV_OBJ_FLAG_SCROLLABLE);
-    lv_obj_set_size(name_input, 382, 44);
-    lv_obj_set_pos(name_input, 136, 64);
-    lv_obj_set_style_bg_color(name_input, lv_color_hex(0xFFFFFF), LV_STATE_DEFAULT);
-    lv_obj_set_style_text_color(name_input, lv_color_hex(0x333333), LV_STATE_DEFAULT);
-    lv_obj_set_style_border_width(name_input, 0, LV_STATE_DEFAULT);
-    lv_obj_set_style_radius(name_input, 6, LV_STATE_DEFAULT);
-    //lv_textarea_set_placeholder_text(name_input, "0-8");
-    lv_textarea_set_max_length(name_input, 8);
-    lv_textarea_set_one_line(name_input, true);
-    //lv_obj_set_style_text_font(name_input, &lv_font_montserrat_24, LV_STATE_DEFAULT);
-    lv_obj_add_flag(name_input, LV_OBJ_FLAG_CLICKABLE);
-    lv_obj_set_style_opa(name_input, LV_OPA_80, LV_STATE_PRESSED);
-    //lv_obj_add_event_cb(name_input, name_input_click_cb, LV_EVENT_CLICKED, NULL);
-    g_name_input = name_input;
+    // 创建姓名输入框（全部改为可点击按钮，绑定对应姓名）
+    create_text_label(custom_popup, "名称", &eques_regular_24, lv_color_hex(0x7C7C7C), 81, 65, LV_OPA_100);
 
-    // 创建头像选择容器 一共六个颜色
-    create_text_label(custom_popup, "初始头像", &eques_regular_24, lv_color_hex(0x7C7C7C), 41, 124, LV_OPA_100);
-    lv_obj_t *avatar_con = create_container
-    (custom_popup, 136, 171, 298, 192, lv_color_hex(0xFFFFFF), LV_OPA_100, 6, lv_color_hex(0x1F3150), 0, LV_OPA_90); 
-    lv_obj_set_style_pad_all(avatar_con, 0, LV_STATE_DEFAULT);
-    lv_color_t avatar_colors[] = {
-        lv_color_hex(0xFFDADA), lv_color_hex(0xD0FFD0), lv_color_hex(0xFFD0FF),
-        lv_color_hex(0xD0D0FF), lv_color_hex(0xFFFFD0), lv_color_hex(0xD0FFFF)
-    };
-    for(uint8_t row = 0; row < 2; row++) {
-        for(uint8_t col = 0; col < 3; col++) {
-            uint8_t avatar_idx = row * 3 + col;
-            lv_obj_t *avatar = create_container
-            (avatar_con, 
-            avatar_x_offset[col], avatar_y_offset[row],
-            80, 80,
-            avatar_colors[avatar_idx], LV_OPA_100,
-            0, lv_color_hex(0x1F3150), 0, LV_OPA_90);
-            
-            lv_obj_add_flag(avatar, LV_OBJ_FLAG_CLICKABLE);
-            lv_obj_set_style_opa(avatar, LV_OPA_80, LV_STATE_PRESSED);
-            lv_obj_add_event_cb(avatar, avatar_click_cb, LV_EVENT_CLICKED, (void*)(uintptr_t)avatar_idx);
-        }
-    }
-    
+    // 第一行
+    lv_obj_t *name_input01 = create_container(custom_popup, 81, 116, 128, 44, lv_color_hex(0xFFFFFF), LV_OPA_100, 6, lv_color_hex(0x1F3150), 0, LV_OPA_90);
+    lv_obj_t *name_input01_label = create_text_label(name_input01, "+妈妈", &eques_regular_24, lv_color_hex(0x000000), 0, 0, LV_OPA_100);
+    lv_obj_align(name_input01_label, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_add_flag(name_input01, LV_OBJ_FLAG_CLICKABLE);
+    lv_obj_set_style_opa(name_input01, LV_OPA_80, LV_STATE_PRESSED);
+    lv_obj_add_event_cb(name_input01, family_member_btn_click_cb, LV_EVENT_CLICKED, "妈妈");  // 传姓名
+
+    lv_obj_t *name_input02 = create_container(custom_popup, 81+155, 116, 128, 44, lv_color_hex(0xFFFFFF), LV_OPA_100, 6, lv_color_hex(0x1F3150), 0, LV_OPA_90);
+    lv_obj_t *name_input02_label = create_text_label(name_input02, "+爸爸", &eques_regular_24, lv_color_hex(0x000000), 0, 0, LV_OPA_100);
+    lv_obj_align(name_input02_label, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_add_flag(name_input02, LV_OBJ_FLAG_CLICKABLE);
+    lv_obj_set_style_opa(name_input02, LV_OPA_80, LV_STATE_PRESSED);
+    lv_obj_add_event_cb(name_input02, family_member_btn_click_cb, LV_EVENT_CLICKED, "爸爸");
+
+    lv_obj_t *name_input03 = create_container(custom_popup, 81+155+155, 116, 128, 44, lv_color_hex(0xFFFFFF), LV_OPA_100, 6, lv_color_hex(0x1F3150), 0, LV_OPA_90);
+    lv_obj_t *name_input03_label = create_text_label(name_input03, "+儿子1", &eques_regular_24, lv_color_hex(0x000000), 0, 0, LV_OPA_100);
+    lv_obj_align(name_input03_label, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_add_flag(name_input03, LV_OBJ_FLAG_CLICKABLE);
+    lv_obj_set_style_opa(name_input03, LV_OPA_80, LV_STATE_PRESSED);
+    lv_obj_add_event_cb(name_input03, family_member_btn_click_cb, LV_EVENT_CLICKED, "儿子1");
+
+    // 第二行
+    lv_obj_t *name_input04 = create_container(custom_popup, 81, 116+63, 128, 44, lv_color_hex(0xFFFFFF), LV_OPA_100, 6, lv_color_hex(0x1F3150), 0, LV_OPA_90);
+    lv_obj_t *name_input04_label = create_text_label(name_input04, "+爷爷", &eques_regular_24, lv_color_hex(0x000000), 0, 0, LV_OPA_100);
+    lv_obj_align(name_input04_label, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_add_flag(name_input04, LV_OBJ_FLAG_CLICKABLE);
+    lv_obj_set_style_opa(name_input04, LV_OPA_80, LV_STATE_PRESSED);
+    lv_obj_add_event_cb(name_input04, family_member_btn_click_cb, LV_EVENT_CLICKED, "爷爷");
+
+    lv_obj_t *name_input05 = create_container(custom_popup, 81+155, 116+63, 128, 44, lv_color_hex(0xFFFFFF), LV_OPA_100, 6, lv_color_hex(0x1F3150), 0, LV_OPA_90);
+    lv_obj_t *name_input05_label = create_text_label(name_input05, "+奶奶", &eques_regular_24, lv_color_hex(0x000000), 0, 0, LV_OPA_100);
+    lv_obj_align(name_input05_label, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_add_flag(name_input05, LV_OBJ_FLAG_CLICKABLE);
+    lv_obj_set_style_opa(name_input05, LV_OPA_80, LV_STATE_PRESSED);
+    lv_obj_add_event_cb(name_input05, family_member_btn_click_cb, LV_EVENT_CLICKED, "奶奶");
+
+    lv_obj_t *name_input06 = create_container(custom_popup, 81+155+155, 116+63, 128, 44, lv_color_hex(0xFFFFFF), LV_OPA_100, 6, lv_color_hex(0x1F3150), 0, LV_OPA_90);
+    lv_obj_t *name_input06_label = create_text_label(name_input06, "+儿子2", &eques_regular_24, lv_color_hex(0x000000), 0, 0, LV_OPA_100);
+    lv_obj_align(name_input06_label, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_add_flag(name_input06, LV_OBJ_FLAG_CLICKABLE);
+    lv_obj_set_style_opa(name_input06, LV_OPA_80, LV_STATE_PRESSED);
+    lv_obj_add_event_cb(name_input06, family_member_btn_click_cb, LV_EVENT_CLICKED, "儿子2");
+
+    // 第三行
+    lv_obj_t *name_input07 = create_container(custom_popup, 81, 116+63+63, 128, 44, lv_color_hex(0xFFFFFF), LV_OPA_100, 6, lv_color_hex(0x1F3150), 0, LV_OPA_90);
+    lv_obj_t *name_input07_label = create_text_label(name_input07, "+外公", &eques_regular_24, lv_color_hex(0x000000), 0, 0, LV_OPA_100);
+    lv_obj_align(name_input07_label, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_add_flag(name_input07, LV_OBJ_FLAG_CLICKABLE);
+    lv_obj_set_style_opa(name_input07, LV_OPA_80, LV_STATE_PRESSED);
+    lv_obj_add_event_cb(name_input07, family_member_btn_click_cb, LV_EVENT_CLICKED, "外公");
+
+    lv_obj_t *name_input08 = create_container(custom_popup, 81+155, 116+63+63, 128, 44, lv_color_hex(0xFFFFFF), LV_OPA_100, 6, lv_color_hex(0x1F3150), 0, LV_OPA_90);
+    lv_obj_t *name_input08_label = create_text_label(name_input08, "+外婆", &eques_regular_24, lv_color_hex(0x000000), 0, 0, LV_OPA_100);
+    lv_obj_align(name_input08_label, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_add_flag(name_input08, LV_OBJ_FLAG_CLICKABLE);
+    lv_obj_set_style_opa(name_input08, LV_OPA_80, LV_STATE_PRESSED);
+    lv_obj_add_event_cb(name_input08, family_member_btn_click_cb, LV_EVENT_CLICKED, "外婆");
+
+    lv_obj_t *name_input09 = create_container(custom_popup, 81+155+155, 116+63+63, 128, 44, lv_color_hex(0xFFFFFF), LV_OPA_100, 6, lv_color_hex(0x1F3150), 0, LV_OPA_90);
+    lv_obj_t *name_input09_label = create_text_label(name_input09, "+儿子3", &eques_regular_24, lv_color_hex(0x000000), 0, 0, LV_OPA_100);
+    lv_obj_align(name_input09_label, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_add_flag(name_input09, LV_OBJ_FLAG_CLICKABLE);
+    lv_obj_set_style_opa(name_input09, LV_OPA_80, LV_STATE_PRESSED);
+    lv_obj_add_event_cb(name_input09, family_member_btn_click_cb, LV_EVENT_CLICKED, "儿子3");
+
+    // 第四行
+    lv_obj_t *name_input10 = create_container(custom_popup, 81, 116+63+63+63, 128, 44, lv_color_hex(0xFFFFFF), LV_OPA_100, 6, lv_color_hex(0x1F3150), 0, LV_OPA_90);
+    lv_obj_t *name_input10_label = create_text_label(name_input10, "+女儿1", &eques_regular_24, lv_color_hex(0x000000), 0, 0, LV_OPA_100);
+    lv_obj_align(name_input10_label, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_add_flag(name_input10, LV_OBJ_FLAG_CLICKABLE);
+    lv_obj_set_style_opa(name_input10, LV_OPA_80, LV_STATE_PRESSED);
+    lv_obj_add_event_cb(name_input10, family_member_btn_click_cb, LV_EVENT_CLICKED, "女儿1");
+
+    lv_obj_t *name_input11 = create_container(custom_popup, 81+155, 116+63+63+63, 128, 44, lv_color_hex(0xFFFFFF), LV_OPA_100, 6, lv_color_hex(0x1F3150), 0, LV_OPA_90);
+    lv_obj_t *name_input11_label = create_text_label(name_input11, "+女儿2", &eques_regular_24, lv_color_hex(0x000000), 0, 0, LV_OPA_100);
+    lv_obj_align(name_input11_label, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_add_flag(name_input11, LV_OBJ_FLAG_CLICKABLE);
+    lv_obj_set_style_opa(name_input11, LV_OPA_80, LV_STATE_PRESSED);
+    lv_obj_add_event_cb(name_input11, family_member_btn_click_cb, LV_EVENT_CLICKED, "女儿2");
+
+    lv_obj_t *name_input12 = create_container(custom_popup, 81+155+155, 116+63+63+63, 128, 44, lv_color_hex(0xFFFFFF), LV_OPA_100, 6, lv_color_hex(0x1F3150), 0, LV_OPA_90);
+    lv_obj_t *name_input12_label = create_text_label(name_input12, "+女儿3", &eques_regular_24, lv_color_hex(0x000000), 0, 0, LV_OPA_100);
+    lv_obj_align(name_input12_label, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_add_flag(name_input12, LV_OBJ_FLAG_CLICKABLE);
+    lv_obj_set_style_opa(name_input12, LV_OPA_80, LV_STATE_PRESSED);
+    lv_obj_add_event_cb(name_input12, family_member_btn_click_cb, LV_EVENT_CLICKED, "女儿3");
+
     // 创建关闭按钮
     lv_obj_t *back_con = create_custom_gradient_container
         (custom_popup, 540, 20, 40, 40, 200, 0xE0EDFF, 0xE0EDFF, LV_GRAD_DIR_VER, 0, 225, LV_OPA_100);

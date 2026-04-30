@@ -237,9 +237,9 @@ void edit_record_back_btn_click_cb(lv_event_t *e)
     hide_keyboard(NULL);
 
     // 返回录入界面并重建
-    // common_member_info_t *member = get_current_enroll_member();
-    // ui_enroll_create(member, g_parent_scr);  
-    lv_scr_load(parent_scr);
+    common_member_info_t *member = get_current_enroll_member();
+    ui_enroll_create(member, g_parent_scr);  
+    //lv_scr_load(parent_scr);
     // 销毁编辑界面
     if(lv_obj_is_valid(edit_record_scr)) {
         lv_obj_del(edit_record_scr);
@@ -274,7 +274,7 @@ void edit_record_btn_click_cb(lv_event_t *e)
         for(int i=0; i<MAX_FINGER_COUNT; i++){
             if(finger_info->finger_record_cons[i] == target && lv_obj_is_valid(finger_info->finger_record_cons[i])){
                 ui_edit_record_create(EDIT_TYPE_FINGER, finger_info->finger_names[i], i, enroll_scr);
-                //destroy_enroll();
+                destroy_enroll();
                 return;
             }
         }
@@ -285,7 +285,7 @@ void edit_record_btn_click_cb(lv_event_t *e)
         for(int i=0; i<MAX_PWD_COUNT; i++){
             if(pwd_info->pwd_record_cons[i] == target && lv_obj_is_valid(pwd_info->pwd_record_cons[i])){
                 ui_edit_record_create(EDIT_TYPE_PWD, pwd_info->pwd_names[i], i, enroll_scr);
-                //destroy_enroll();
+                destroy_enroll();
                 return;
             }
         }
@@ -301,7 +301,7 @@ void edit_record_btn_click_cb(lv_event_t *e)
             for(int i=0; i<MAX_CARD_COUNT; i++){
                 if(card_info->card_record_cons[i] == target && lv_obj_is_valid(card_info->card_record_cons[i])){
                     ui_edit_record_create(EDIT_TYPE_CARD, card_info->card_names[i], i, enroll_scr);
-                    //destroy_enroll();
+                    destroy_enroll();
                     return;
                 }
             }
@@ -311,7 +311,7 @@ void edit_record_btn_click_cb(lv_event_t *e)
             for(int i=0; i<MAX_FACE_COUNT; i++){
                 if(face_info->face_record_cons[i] == target && lv_obj_is_valid(face_info->face_record_cons[i])){
                     ui_edit_record_create(EDIT_TYPE_FACE, face_info->face_names[i], i, enroll_scr);
-                    //destroy_enroll();
+                    destroy_enroll();
                     return;
                 }
             }

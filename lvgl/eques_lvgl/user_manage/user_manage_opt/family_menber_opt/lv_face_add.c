@@ -11,6 +11,7 @@
 #include "lv_face_add.h"
 #include "lv_a_enroll_opt.h"
 #include <string.h>
+#include "stdio.h"
 
 /*********************
  * 宏定义
@@ -32,7 +33,7 @@ static bool        face_add_style_inited = false;
 static lv_obj_t   *face_bg_mask_layer = NULL;
 static lv_obj_t   *face_custom_popup = NULL;
 static lv_obj_t   *face_name_keyboard = NULL;
-static lv_obj_t   *face_input_textarea = NULL;
+//static lv_obj_t   *face_input_textarea = NULL;
 static lv_timer_t *face_timeout_timer = NULL;
 static lv_obj_t   *face_fail_popup = NULL;
 static lv_obj_t   *face_timeout_enroll_scr = NULL;
@@ -271,20 +272,20 @@ static void create_face_complete_popup(lv_obj_t *enroll_scr)
     lv_obj_align(succeed_label, LV_ALIGN_TOP_MID, 0, 38);
 
     // 名称输入框
-    face_input_textarea = lv_textarea_create(face_custom_popup);
-    lv_obj_clear_flag(face_input_textarea, LV_OBJ_FLAG_SCROLLABLE);
-    lv_obj_set_size(face_input_textarea, 382, 44);
-    lv_obj_set_pos(face_input_textarea, 137, 90);
-    lv_obj_set_style_bg_color(face_input_textarea, lv_color_hex(0xFFFFFF), LV_STATE_DEFAULT);
-    lv_obj_set_style_text_color(face_input_textarea, lv_color_hex(0x333333), LV_STATE_DEFAULT);
-    lv_obj_set_style_border_width(face_input_textarea, 0, LV_STATE_DEFAULT);
-    lv_obj_set_style_radius(face_input_textarea, 6, LV_STATE_DEFAULT);
-    //lv_textarea_set_placeholder_text(face_input_textarea, "please input face name");
-    lv_textarea_set_max_length(face_input_textarea, FACE_NAME_MAX_LEN);
-    lv_textarea_set_one_line(face_input_textarea, true);
-    //lv_obj_set_style_text_font(face_input_textarea, &lv_font_montserrat_24, LV_STATE_DEFAULT);
-    lv_obj_add_flag(face_input_textarea, LV_OBJ_FLAG_CLICKABLE);
-    lv_obj_set_style_opa(face_input_textarea, LV_OPA_80, LV_STATE_PRESSED);
+    // face_input_textarea = lv_textarea_create(face_custom_popup);
+    // lv_obj_clear_flag(face_input_textarea, LV_OBJ_FLAG_SCROLLABLE);
+    // lv_obj_set_size(face_input_textarea, 382, 44);
+    // lv_obj_set_pos(face_input_textarea, 137, 90);
+    // lv_obj_set_style_bg_color(face_input_textarea, lv_color_hex(0xFFFFFF), LV_STATE_DEFAULT);
+    // lv_obj_set_style_text_color(face_input_textarea, lv_color_hex(0x333333), LV_STATE_DEFAULT);
+    // lv_obj_set_style_border_width(face_input_textarea, 0, LV_STATE_DEFAULT);
+    // lv_obj_set_style_radius(face_input_textarea, 6, LV_STATE_DEFAULT);
+    // //lv_textarea_set_placeholder_text(face_input_textarea, "please input face name");
+    // lv_textarea_set_max_length(face_input_textarea, FACE_NAME_MAX_LEN);
+    // lv_textarea_set_one_line(face_input_textarea, true);
+    // //lv_obj_set_style_text_font(face_input_textarea, &lv_font_montserrat_24, LV_STATE_DEFAULT);
+    // lv_obj_add_flag(face_input_textarea, LV_OBJ_FLAG_CLICKABLE);
+    // lv_obj_set_style_opa(face_input_textarea, LV_OPA_80, LV_STATE_PRESSED);
     //lv_obj_add_event_cb(face_input_textarea, face_input_click_cb, LV_EVENT_CLICKED, NULL);
 
     // 确认按钮
@@ -308,16 +309,18 @@ static void create_face_complete_popup(lv_obj_t *enroll_scr)
 static void face_popup_confirm_cb(lv_event_t *e)
 {
     if(e == NULL) return;
-
+    lv_obj_t *parent_scr = lv_event_get_user_data(e);
     //common_member_info_t *member = get_current_enroll_member();
-    lv_obj_t *parent_scr = (lv_obj_t *)lv_event_get_user_data(e);
+    // lv_obj_t *parent_scr = (lv_obj_t *)lv_event_get_user_data(e);
 
-    // 获取名称，空值使用默认
-    const char *face_name = lv_textarea_get_text(face_input_textarea);
-    if(face_name == NULL || strlen(face_name) == 0) {
-        face_name = "";
-    }
-
+    // // 获取名称，空值使用默认
+    // const char *face_name = lv_textarea_get_text(face_input_textarea);
+    // if(face_name == NULL || strlen(face_name) == 0) {
+    //     face_name = "";
+    // }
+    char face_name[16];
+    face_enroll_info_t *info = get_current_face_info();
+    snprintf(face_name, sizeof(face_name), "面容%d", info->enroll_count + 1);
     // 通知录入完成
     face_enroll_complete(face_name);
     close_face_popup();

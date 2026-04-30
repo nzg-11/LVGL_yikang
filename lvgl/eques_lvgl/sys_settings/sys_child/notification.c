@@ -367,7 +367,7 @@ static void dnd_time_confirm_cb(lv_event_t *e) {
     // 更新主页面的时间段文本
     if (time_label != NULL && lv_obj_is_valid(time_label)) {
         char time_text[64];
-        snprintf(time_text, sizeof(time_text), "       %s", notification_get_dnd_time_slot());
+        snprintf(time_text, sizeof(time_text), "%s", notification_get_dnd_time_slot());
         lv_label_set_text(time_label, time_text);
     }
 

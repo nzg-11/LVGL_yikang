@@ -40,7 +40,7 @@ static lv_obj_t      *finger_success_label = NULL;
 static lv_obj_t      *finger_bg_mask_layer = NULL;
 static lv_obj_t      *finger_custom_popup = NULL;
 static lv_obj_t      *finger_name_keyboard = NULL;
-static lv_obj_t      *finger_input_textarea = NULL;
+//static lv_obj_t      *finger_input_textarea = NULL;
 
 /*********************
  * 静态函数前置声明
@@ -308,23 +308,23 @@ static void create_finger_complete_popup(lv_obj_t *enroll_scr)
     // 成功提示
     lv_obj_t *succeed_add_label = create_text_label(finger_custom_popup, "录入成功", &eques_regular_32, lv_color_hex(0x000000), 0, 38, LV_OPA_100);
     lv_obj_align(succeed_add_label, LV_ALIGN_TOP_MID, 0, 38);
-    create_text_label(finger_custom_popup, "名称", &eques_regular_24, lv_color_hex(0x7C7C7C), 82, 100, LV_OPA_100);
+    //create_text_label(finger_custom_popup, "名称", &eques_regular_24, lv_color_hex(0x7C7C7C), 82, 100, LV_OPA_100);
     // 名称输入框
-    finger_input_textarea = lv_textarea_create(finger_custom_popup);
-    lv_obj_clear_flag(finger_input_textarea, LV_OBJ_FLAG_SCROLLABLE);
-    lv_obj_set_size(finger_input_textarea, 382, 44);
-    lv_obj_set_pos(finger_input_textarea, 137, 90);
-    lv_obj_set_style_bg_color(finger_input_textarea, lv_color_hex(0xFFFFFF), LV_STATE_DEFAULT);
-    lv_obj_set_style_text_color(finger_input_textarea, lv_color_hex(0x333333), LV_STATE_DEFAULT);
-    lv_obj_set_style_border_width(finger_input_textarea, 0, LV_STATE_DEFAULT);
-    lv_obj_set_style_radius(finger_input_textarea, 6, LV_STATE_DEFAULT);
-    //lv_textarea_set_placeholder_text(finger_input_textarea, "please input name");
-    lv_textarea_set_max_length(finger_input_textarea, FINGER_NAME_MAX_LEN);
-    lv_textarea_set_one_line(finger_input_textarea, true);
-    //lv_obj_set_style_text_font(finger_input_textarea, &eques_regular_24, LV_STATE_DEFAULT);
-    lv_obj_add_flag(finger_input_textarea, LV_OBJ_FLAG_CLICKABLE);
-    lv_obj_set_style_opa(finger_input_textarea, LV_OPA_80, LV_STATE_PRESSED);
-    //lv_obj_add_event_cb(finger_input_textarea, finger_input_click_cb, LV_EVENT_CLICKED, NULL);
+    // finger_input_textarea = lv_textarea_create(finger_custom_popup);
+    // lv_obj_clear_flag(finger_input_textarea, LV_OBJ_FLAG_SCROLLABLE);
+    // lv_obj_set_size(finger_input_textarea, 382, 44);
+    // lv_obj_set_pos(finger_input_textarea, 137, 90);
+    // lv_obj_set_style_bg_color(finger_input_textarea, lv_color_hex(0xFFFFFF), LV_STATE_DEFAULT);
+    // lv_obj_set_style_text_color(finger_input_textarea, lv_color_hex(0x333333), LV_STATE_DEFAULT);
+    // lv_obj_set_style_border_width(finger_input_textarea, 0, LV_STATE_DEFAULT);
+    // lv_obj_set_style_radius(finger_input_textarea, 6, LV_STATE_DEFAULT);
+    // //lv_textarea_set_placeholder_text(finger_input_textarea, "please input name");
+    // lv_textarea_set_max_length(finger_input_textarea, FINGER_NAME_MAX_LEN);
+    // lv_textarea_set_one_line(finger_input_textarea, true);
+    // //lv_obj_set_style_text_font(finger_input_textarea, &eques_regular_24, LV_STATE_DEFAULT);
+    // lv_obj_add_flag(finger_input_textarea, LV_OBJ_FLAG_CLICKABLE);
+    // lv_obj_set_style_opa(finger_input_textarea, LV_OPA_80, LV_STATE_PRESSED);
+    // //lv_obj_add_event_cb(finger_input_textarea, finger_input_click_cb, LV_EVENT_CLICKED, NULL);
 
     // 确认按钮
     lv_obj_t *confirm_btn = create_custom_gradient_container(finger_custom_popup, 197, 171, 205, 44, 6,

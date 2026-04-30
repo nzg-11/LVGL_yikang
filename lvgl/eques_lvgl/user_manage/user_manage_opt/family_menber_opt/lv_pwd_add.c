@@ -188,7 +188,7 @@ void pwd_add_btn_click_cb(lv_event_t *e)
 
     ui_pwd_add_create(parent_scr);
     update_status_bar_parent(pwd_add_scr);
-    destroy_enroll();
+    //destroy_enroll();
     // LV_LOG_WARN("进入密码添加界面，销毁录入界面");
 }
 
@@ -208,9 +208,9 @@ void pwd_add_back_btn_click_cb(lv_event_t *e)
     snprintf(pwd_name, sizeof(pwd_name), "密码%d", info->enroll_count + 1);
 
     if (lv_obj_is_valid(current_scr) && current_scr == pwd_add_scr) {
-        common_member_info_t *member = get_current_enroll_member();
-        ui_enroll_create(member, parent_scr);  
-        //lv_scr_load(parent_scr);  // 直接切回原来的页面！
+        //common_member_info_t *member = get_current_enroll_member();
+        //ui_enroll_create(member, parent_scr);  
+        lv_scr_load(parent_scr);  // 直接切回原来的页面！
         lv_obj_del(current_scr);  // 只删除密码页
         current_scr = NULL;
     }
@@ -290,20 +290,20 @@ static void show_pwd_dialog(const char *msg, bool is_success, lv_obj_t *enroll_s
 
     // 成功时显示名称输入框
     if (is_success) {
-        g_pwd_name_input = lv_textarea_create(g_pwd_dialog);
-        lv_obj_clear_flag(g_pwd_name_input, LV_OBJ_FLAG_SCROLLABLE);
-        lv_obj_set_size(g_pwd_name_input, 382, 44);
-        lv_obj_set_pos(g_pwd_name_input, 137, 90);
-        lv_obj_set_style_bg_color(g_pwd_name_input, lv_color_hex(0xFFFFFF), LV_STATE_DEFAULT);
-        lv_obj_set_style_text_color(g_pwd_name_input, lv_color_hex(0x333333), LV_STATE_DEFAULT);
-        lv_obj_set_style_border_width(g_pwd_name_input, 0, LV_STATE_DEFAULT);
-        lv_obj_set_style_radius(g_pwd_name_input, 6, LV_STATE_DEFAULT);
-        //lv_textarea_set_placeholder_text(g_pwd_name_input, "please input name");
-        lv_textarea_set_max_length(g_pwd_name_input, 16);
-        lv_textarea_set_one_line(g_pwd_name_input, true);
-        //lv_obj_set_style_text_font(g_pwd_name_input, &lv_font_montserrat_24, LV_STATE_DEFAULT);
-        lv_obj_add_flag(g_pwd_name_input, LV_OBJ_FLAG_CLICKABLE);
-        lv_obj_set_style_opa(g_pwd_name_input, LV_OPA_80, LV_STATE_PRESSED);
+        // g_pwd_name_input = lv_textarea_create(g_pwd_dialog);
+        // lv_obj_clear_flag(g_pwd_name_input, LV_OBJ_FLAG_SCROLLABLE);
+        // lv_obj_set_size(g_pwd_name_input, 382, 44);
+        // lv_obj_set_pos(g_pwd_name_input, 137, 90);
+        // lv_obj_set_style_bg_color(g_pwd_name_input, lv_color_hex(0xFFFFFF), LV_STATE_DEFAULT);
+        // lv_obj_set_style_text_color(g_pwd_name_input, lv_color_hex(0x333333), LV_STATE_DEFAULT);
+        // lv_obj_set_style_border_width(g_pwd_name_input, 0, LV_STATE_DEFAULT);
+        // lv_obj_set_style_radius(g_pwd_name_input, 6, LV_STATE_DEFAULT);
+        // //lv_textarea_set_placeholder_text(g_pwd_name_input, "please input name");
+        // lv_textarea_set_max_length(g_pwd_name_input, 16);
+        // lv_textarea_set_one_line(g_pwd_name_input, true);
+        // //lv_obj_set_style_text_font(g_pwd_name_input, &lv_font_montserrat_24, LV_STATE_DEFAULT);
+        // lv_obj_add_flag(g_pwd_name_input, LV_OBJ_FLAG_CLICKABLE);
+        // lv_obj_set_style_opa(g_pwd_name_input, LV_OPA_80, LV_STATE_PRESSED);
         //lv_obj_add_event_cb(g_pwd_name_input, pwd_name_input_click_cb, LV_EVENT_CLICKED, NULL);
     }
     
@@ -449,7 +449,7 @@ static void pwd_confirm_click_cb(lv_event_t *e)
 {
     if (e == NULL) return;
     
-    common_member_info_t *member = get_current_enroll_member();
+    // common_member_info_t *member = get_current_enroll_member();
     lv_obj_t *parent_scr = (lv_obj_t *)lv_event_get_user_data(e);
     bool is_success = false;
 
@@ -475,8 +475,8 @@ static void pwd_confirm_click_cb(lv_event_t *e)
     }
 
     // 返回注册页面
-    ui_enroll_create(member, parent_scr);
-    //lv_scr_load(parent_scr);
+    //ui_enroll_create(member, parent_scr);
+    lv_scr_load(parent_scr);
     // 重置数据和UI
     close_pwd_dialog();
     memset(g_pwd_first, 0, sizeof(g_pwd_first));

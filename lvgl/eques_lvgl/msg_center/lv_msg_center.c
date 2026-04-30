@@ -440,32 +440,31 @@ static void calendar_event_handler(lv_event_t * e)
 }
 
 // 创建日历控件
+// 创建日历控件
 static void create_calendar(lv_obj_t *parent)
 {
-    if(g_calendar != NULL) return; // 避免重复创建
+    if(g_calendar != NULL) return;
 
-    // 获取系统实时时间
+    // 🔥 这里强制从你的 RTC 获取真实时间
     int year, month, day;
     get_current_date(&year, &month, &day);
 
-    // 创建日历对象
     g_calendar = lv_calendar_create(parent);
     lv_obj_set_size(g_calendar, 456, 552);
     lv_obj_set_pos(g_calendar, 100, 24);
     lv_obj_add_event_cb(g_calendar, calendar_event_handler, LV_EVENT_ALL, NULL);
     lv_obj_add_flag(g_calendar, LV_OBJ_FLAG_HIDDEN);
 
-    // 设置日历基础参数：使用实时时间
+    // 🔥 强制把 RTC 时间塞给 LVGL日历！
     lv_calendar_set_today_date(g_calendar, year, month, day);
-    lv_calendar_set_showed_date(g_calendar, year, month);
+    lv_calendar_set_showed_date(g_calendar, year, month);  // 显示当前年月
 
-    // 初始化当天日期的蓝色边框样式
+    // 初始化当天高亮
     lv_calendar_date_t today_date = {year, month, day};
     update_calendar_selected_style(g_calendar, &today_date);
 
-    // ===== 表头创建逻辑 =====
 #if LV_USE_CALENDAR_HEADER_DROPDOWN
-    lv_calendar_header_dropdown_create(g_calendar); // 仅保留这行，不额外修改
+    lv_calendar_header_dropdown_create(g_calendar);
 #elif LV_USE_CALENDAR_HEADER_ARROW
     lv_calendar_header_arrow_create(g_calendar);
 #endif
@@ -479,7 +478,7 @@ static void date_picker_click_cb(lv_event_t *e)
 
     if(g_calendar == NULL) {
         // 首次点击：创建日历并显示
-        create_calendar(lv_obj_get_parent(date_picker));
+        create_calendar(msg_center_scr);
         lv_obj_clear_flag(g_calendar, LV_OBJ_FLAG_HIDDEN);
     } else {
         // 非首次点击：切换日历显示/隐藏状态

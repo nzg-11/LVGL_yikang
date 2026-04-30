@@ -11,7 +11,7 @@
 #include <string.h>
 #include "lv_card_add.h"
 #include "lv_a_enroll_opt.h"  // 生物特征录入回调头文件
-
+#include "stdio.h"
 /*********************
  * 宏定义
  *********************/
@@ -38,7 +38,7 @@ static lv_obj_t *card_bg_mask_layer = NULL;
 // 录入成功弹窗组件
 static lv_obj_t *card_custom_popup = NULL;
 static lv_obj_t *card_name_keyboard = NULL;
-static lv_obj_t *card_input_textarea = NULL;
+//static lv_obj_t *card_input_textarea = NULL;
 
 // 录入失败弹窗组件
 static lv_obj_t *card_fail_popup = NULL;
@@ -337,12 +337,16 @@ static void card_popup_confirm_cb(lv_event_t *e)
 
     //common_member_info_t *member = get_current_enroll_member();
     lv_obj_t *parent_scr = lv_event_get_user_data(e);
-    const char *card_name = lv_textarea_get_text(card_input_textarea);
+    // const char *card_name = lv_textarea_get_text(card_input_textarea);
 
-    // 名称为空则使用默认值
-    if (card_name == NULL || strlen(card_name) == 0) {
-        card_name = "";
-    }
+    // // 名称为空则使用默认值
+    // if (card_name == NULL || strlen(card_name) == 0) {
+    //     card_name = "";
+    // }
+
+    char card_name[16];
+    finger_enroll_info_t *info = get_current_finger_info();
+    snprintf(card_name, sizeof(card_name), "卡片%d", info->enroll_count + 1);
 
     // 通知录入完成
     card_enroll_complete(card_name);
@@ -405,20 +409,20 @@ static void create_card_complete_popup(lv_obj_t *enroll_scr)
     lv_obj_align(succeed_add_label, LV_ALIGN_TOP_MID, 0, 38);
 
     // 卡片名称输入框
-    card_input_textarea = lv_textarea_create(card_custom_popup);
-    lv_obj_clear_flag(card_input_textarea, LV_OBJ_FLAG_SCROLLABLE);
-    lv_obj_set_size(card_input_textarea, 382, 44);
-    lv_obj_set_pos(card_input_textarea, 137, 90);
-    lv_obj_set_style_bg_color(card_input_textarea, lv_color_hex(0xFFFFFF), LV_STATE_DEFAULT);
-    lv_obj_set_style_text_color(card_input_textarea, lv_color_hex(0x333333), LV_STATE_DEFAULT);
-    lv_obj_set_style_border_width(card_input_textarea, 0, LV_STATE_DEFAULT);
-    lv_obj_set_style_radius(card_input_textarea, 6, LV_STATE_DEFAULT);
-    //lv_textarea_set_placeholder_text(card_input_textarea, "please input card name");
-    lv_textarea_set_max_length(card_input_textarea, CARD_NAME_MAX_LEN);
-    lv_textarea_set_one_line(card_input_textarea, true);
-    //lv_obj_set_style_text_font(card_input_textarea, &lv_font_montserrat_24, LV_STATE_DEFAULT);
-    lv_obj_add_flag(card_input_textarea, LV_OBJ_FLAG_CLICKABLE);
-    lv_obj_set_style_opa(card_input_textarea, LV_OPA_80, LV_STATE_PRESSED);
+    // card_input_textarea = lv_textarea_create(card_custom_popup);
+    // lv_obj_clear_flag(card_input_textarea, LV_OBJ_FLAG_SCROLLABLE);
+    // lv_obj_set_size(card_input_textarea, 382, 44);
+    // lv_obj_set_pos(card_input_textarea, 137, 90);
+    // lv_obj_set_style_bg_color(card_input_textarea, lv_color_hex(0xFFFFFF), LV_STATE_DEFAULT);
+    // lv_obj_set_style_text_color(card_input_textarea, lv_color_hex(0x333333), LV_STATE_DEFAULT);
+    // lv_obj_set_style_border_width(card_input_textarea, 0, LV_STATE_DEFAULT);
+    // lv_obj_set_style_radius(card_input_textarea, 6, LV_STATE_DEFAULT);
+    // //lv_textarea_set_placeholder_text(card_input_textarea, "please input card name");
+    // lv_textarea_set_max_length(card_input_textarea, CARD_NAME_MAX_LEN);
+    // lv_textarea_set_one_line(card_input_textarea, true);
+    // //lv_obj_set_style_text_font(card_input_textarea, &lv_font_montserrat_24, LV_STATE_DEFAULT);
+    // lv_obj_add_flag(card_input_textarea, LV_OBJ_FLAG_CLICKABLE);
+    // lv_obj_set_style_opa(card_input_textarea, LV_OPA_80, LV_STATE_PRESSED);
     //lv_obj_add_event_cb(card_input_textarea, card_input_click_cb, LV_EVENT_CLICKED, NULL);
 
     // 确认按钮
